@@ -1,36 +1,212 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Unsubscribr 🎯
 
-## Getting Started
+A web-based subscription management platform built for the Indian market. Track, manage, and cancel your recurring subscriptions all in one place.
 
-First, run the development server:
+## 🚀 Project Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Unsubscribr helps Indian consumers discover, track, and manage all their recurring subscriptions - from OTT platforms to SaaS tools. Get visibility into your monthly spending, receive renewal reminders, and access guided cancellation flows.
+
+**Target:** Save users ₹500-1000/month by helping them identify and eliminate unwanted subscriptions.
+
+## 🛠️ Tech Stack
+
+- **Framework:** Next.js 14 (App Router) + TypeScript
+- **Styling:** Tailwind CSS v4
+- **UI Components:** shadcn/ui
+- **Backend:** Next.js API Routes (Serverless)
+- **Database:** Supabase (PostgreSQL)
+- **Authentication:** Supabase Auth (Phone OTP + OAuth)
+- **Notifications:** Firebase Cloud Messaging
+- **Payments:** Razorpay (India) + Stripe (future)
+- **Charts:** Recharts
+- **Forms:** react-hook-form + Zod
+- **Hosting:** Vercel
+
+## 📁 Project Structure
+
+```
+unsubscribr/
+├── app/                    # Next.js 14 app directory
+│   ├── (auth)/            # Auth pages (login, signup)
+│   ├── (dashboard)/       # Protected dashboard pages
+│   ├── api/               # API routes
+│   └── globals.css        # Global styles
+├── components/            # React components
+│   ├── ui/               # Reusable UI components (shadcn)
+│   ├── auth/             # Authentication components
+│   ├── subscriptions/    # Subscription management
+│   ├── dashboard/        # Dashboard & analytics
+│   ├── notifications/    # Notification components
+│   ├── cancellation/     # Cancellation guides
+│   └── onboarding/       # Welcome flow
+├── lib/                   # Utilities and configurations
+│   ├── supabase/         # Supabase clients (browser, server, middleware)
+│   ├── firebase/         # Firebase config & messaging
+│   └── utils.ts          # Helper functions
+├── types/                 # TypeScript type definitions
+├── constants/             # App constants (Indian services list)
+├── hooks/                 # Custom React hooks
+└── public/               # Static assets
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚦 Getting Started
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Prerequisites
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Node.js 18+ and npm
+- Supabase account and project
+- Firebase account and project (for notifications)
 
-## Learn More
+### Installation
 
-To learn more about Next.js, take a look at the following resources:
+1. Clone the repository:
+```bash
+git clone https://github.com/ShreyamKeshri/unsubscribr.git
+cd unsubscribr
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. Set up environment variables:
+```bash
+cp .env.example .env.local
+```
 
-## Deploy on Vercel
+4. Add your credentials to `.env.local`:
+```env
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Firebase
+NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.firebasestorage.app
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+NEXT_PUBLIC_FIREBASE_VAPID_KEY=your_vapid_key
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# App
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+5. Run the development server:
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) to see the app.
+
+## 📊 Development Progress
+
+**Phase 1: Project Setup & Architecture** ✅ Complete
+- [x] Install dependencies
+- [x] Setup Supabase connection
+- [x] Configure Firebase Cloud Messaging
+- [x] Create project structure
+
+**Phase 2: Database Design** 🚧 In Progress
+- [ ] Create Supabase database tables
+- [ ] Setup Row Level Security policies
+- [ ] Generate TypeScript types
+
+**Phase 3: Authentication System** ⏳ Pending
+- [ ] Setup Supabase Auth with phone OTP
+- [ ] Build login/signup UI
+- [ ] Implement protected routes
+
+**Phase 4: Core Subscription Management** ⏳ Pending
+- [ ] Add/Edit/Delete subscriptions
+- [ ] Subscription list view
+- [ ] Manual entry form with Indian services
+
+**Phase 5: Dashboard & Analytics** ⏳ Pending
+- [ ] Dashboard overview with key metrics
+- [ ] Category breakdown (pie chart)
+- [ ] Spending trends (line chart)
+- [ ] Insights & recommendations
+
+**Phase 6: Notifications System** ⏳ Pending
+- [ ] Push notification infrastructure
+- [ ] Renewal reminder scheduling
+- [ ] In-app notification center
+
+**Phase 7: Cancellation Guides** ⏳ Pending
+- [ ] Cancellation guide data
+- [ ] Guide viewer component
+- [ ] Status tracking
+
+**Phase 8: Polish & Testing** ⏳ Pending
+- [ ] Profile & settings
+- [ ] Onboarding flow
+- [ ] Responsive design optimization
+- [ ] Performance optimization
+
+See [DEVELOPMENT_PROGRESS.md](./DEVELOPMENT_PROGRESS.md) for detailed checkpoint tracking.
+
+## 🎯 Key Features (MVP)
+
+- **Manual Subscription Entry:** Add subscriptions with service name, cost, billing cycle, and date
+- **Dashboard:** View total monthly/yearly spending with upcoming renewals
+- **Renewal Reminders:** Push notifications 3 days and 1 day before renewal
+- **Cancellation Guides:** Step-by-step instructions for popular Indian services
+- **Analytics:** Spending breakdown by category with trend charts
+- **50+ Indian Services:** Pre-loaded list of popular subscriptions (OTT, Music, SaaS, etc.)
+
+## 🇮🇳 Supported Indian Services
+
+The app includes 50+ popular Indian subscription services across categories:
+
+- **OTT:** Netflix, Prime Video, Disney+ Hotstar, SonyLIV, ZEE5, Voot, and more
+- **Music:** Spotify, Apple Music, JioSaavn, Gaana, YouTube Music
+- **Food Delivery:** Zomato Gold, Swiggy One, Dineout Passport
+- **SaaS:** Microsoft 365, Google Workspace, Adobe Creative Cloud, Canva Pro
+- **Fitness:** Cult.fit, HealthifyMe, Fitpass
+- **News:** Times Prime, The Hindu, Economic Times
+- **Gaming:** Xbox Game Pass, PlayStation Plus, Apple Arcade
+- **Education:** Coursera, Udemy, Unacademy, BYJU'S
+
+## 🔧 Available Scripts
+
+```bash
+# Development with Turbopack
+npm run dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
+
+# Run linter
+npm run lint
+
+# Add shadcn component
+npx shadcn@latest add [component-name]
+```
+
+## 🤝 Contributing
+
+This is a personal project by Shreyam Keshri. Contributions are welcome after MVP launch!
+
+## 📄 License
+
+This project is private and not yet licensed for public use.
+
+## 🙏 Acknowledgments
+
+- Built with [Next.js](https://nextjs.org)
+- UI components from [shadcn/ui](https://ui.shadcn.com)
+- Database and Auth by [Supabase](https://supabase.com)
+- Notifications by [Firebase](https://firebase.google.com)
+
+---
+
+**Status:** 🚧 In Active Development | **Progress:** Phase 1 Complete (25%)
+
+For detailed development tracking, see [DEVELOPMENT_PROGRESS.md](./DEVELOPMENT_PROGRESS.md)
