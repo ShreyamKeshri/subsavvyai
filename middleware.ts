@@ -1,6 +1,6 @@
 /**
- * Next.js Middleware for Authentication
- * Protects routes and handles auth state
+ * Next.js Middleware for Authentication and Security
+ * Protects routes, handles auth state, and implements security measures
  */
 
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
@@ -12,6 +12,20 @@ export async function middleware(request: NextRequest) {
       headers: request.headers,
     },
   })
+
+  // CSRF Protection for state-changing requests
+  if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(request.method)) {
+    const origin = request.headers.get('origin')
+    const host = request.headers.get('host')
+
+    // Verify origin matches host (prevent CSRF)
+    if (origin && !origin.endsWith(host || '')) {
+      return NextResponse.json(
+        { error: 'CSRF validation failed' },
+        { status: 403 }
+      )
+    }
+  }
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
