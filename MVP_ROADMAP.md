@@ -29,6 +29,9 @@
    - ❌ **NO** Google OAuth (add after MVP)
 
 2. **Subscription Management** (Core Value!)
+   - [ ] **Smart catalog of common Indian subscriptions**
+     - Pre-populated list (Netflix, Prime, Spotify, Hotstar, etc.)
+     - Quick-add with pre-filled price
    - [ ] Add subscription manually
      - Name, cost (₹), billing cycle (monthly/yearly), next billing date
    - [ ] View all subscriptions (simple list/cards)
@@ -37,7 +40,7 @@
    - [ ] Mark as cancelled
    - ❌ **NO** categories/tags yet
    - ❌ **NO** file uploads yet
-   - ❌ **NO** auto-detection yet
+   - ❌ **NO** email/bank auto-detection (Phase 2)
 
 3. **Dashboard**
    - [ ] Total monthly cost
