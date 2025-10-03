@@ -8,8 +8,6 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { authWithPhone, authWithGoogle, authWithEmail, validatePhoneNumber, validateEmail, validatePassword } from '@/lib/auth/auth-helpers'
 import { Loader2, Mail as MailIcon } from 'lucide-react'
@@ -182,14 +180,14 @@ export default function SignUpPage() {
                 </div>
 
                 {/* Phone Input */}
-                <Input
+                <input
                   id="phone"
                   type="tel"
                   placeholder="9760051763"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, '').slice(0, 10))}
                   disabled={otpSent}
-                  className="flex-1 h-12 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-indigo-500"
+                  className="flex-1 h-12 px-4 border border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed text-gray-900"
                 />
               </div>
               {otpSent && (
@@ -212,14 +210,14 @@ export default function SignUpPage() {
                 <Label htmlFor="otp" className="text-gray-900 font-medium">
                   Enter OTP
                 </Label>
-                <Input
+                <input
                   id="otp"
                   type="text"
                   placeholder="000000"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                   maxLength={6}
-                  className="h-12 border-gray-200 rounded-xl text-center text-2xl tracking-widest font-semibold focus:border-indigo-500 focus:ring-indigo-500"
+                  className="h-12 px-4 border border-gray-200 rounded-xl text-center text-2xl tracking-widest font-semibold focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all text-gray-900"
                 />
                 <p className="text-xs text-gray-500 text-center">
                   OTP sent to +91 {phoneNumber}
@@ -228,11 +226,10 @@ export default function SignUpPage() {
             )}
 
             {/* Continue Button */}
-            <Button
+            <button
               onClick={handlePhoneSignUp}
               disabled={loading || (!otpSent && phoneNumber.length !== 10) || (otpSent && otp.length !== 6)}
-              className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-200 transition-all"
-              size="lg"
+              className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -242,7 +239,7 @@ export default function SignUpPage() {
               ) : (
                 otpSent ? 'Verify & Continue' : 'Continue'
               )}
-            </Button>
+            </button>
           </div>
         )}
 
@@ -253,13 +250,13 @@ export default function SignUpPage() {
               <Label htmlFor="name" className="text-gray-900 font-medium">
                 Full Name
               </Label>
-              <Input
+              <input
                 id="name"
                 type="text"
                 placeholder="John Doe"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="h-12 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-indigo-500"
+                className="h-12 px-4 border border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all text-gray-900"
               />
             </div>
 
@@ -267,13 +264,13 @@ export default function SignUpPage() {
               <Label htmlFor="email" className="text-gray-900 font-medium">
                 Email
               </Label>
-              <Input
+              <input
                 id="email"
                 type="email"
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="h-12 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-indigo-500"
+                className="h-12 px-4 border border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all text-gray-900"
               />
             </div>
 
@@ -281,24 +278,23 @@ export default function SignUpPage() {
               <Label htmlFor="password" className="text-gray-900 font-medium">
                 Password
               </Label>
-              <Input
+              <input
                 id="password"
                 type="password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="h-12 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-indigo-500"
+                className="h-12 px-4 border border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all text-gray-900"
               />
               <p className="text-xs text-gray-500">
                 At least 8 characters with uppercase, lowercase, and numbers
               </p>
             </div>
 
-            <Button
+            <button
               onClick={handleEmailSignUp}
               disabled={loading || !email || !password}
-              className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-200 transition-all"
-              size="lg"
+              className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -308,7 +304,7 @@ export default function SignUpPage() {
               ) : (
                 'Create Account'
               )}
-            </Button>
+            </button>
 
             {/* Back to Phone */}
             <button
@@ -336,12 +332,10 @@ export default function SignUpPage() {
             </div>
 
             {/* Google OAuth Button */}
-            <Button
-              variant="outline"
+            <button
               onClick={handleGoogleSignUp}
               disabled={loading}
-              className="w-full h-12 border-gray-200 hover:bg-gray-50 rounded-xl font-medium transition-all"
-              size="lg"
+              className="w-full h-12 border border-gray-200 bg-white hover:bg-gray-50 rounded-xl font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-gray-900"
             >
               {loading ? (
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -366,7 +360,7 @@ export default function SignUpPage() {
                 </svg>
               )}
               Continue with Google
-            </Button>
+            </button>
 
             {/* Email Link */}
             <button
