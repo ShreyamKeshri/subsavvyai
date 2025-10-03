@@ -125,7 +125,7 @@ export const authWithGoogle = {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+          redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/callback`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -205,7 +205,7 @@ export const authWithEmail = {
           data: {
             full_name: fullName
           },
-          emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`
+          emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/callback`
         }
       })
 
@@ -287,7 +287,7 @@ export const authWithEmail = {
       const supabase = createClient()
 
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/reset-password`
+        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/reset-password`
       })
 
       if (error) {
@@ -351,12 +351,10 @@ export const auth = {
   async getSession() {
     try {
       const supabase = createClient()
-      const { data: { session }, error } = await supabase.auth.getSession()
-
-      if (error) throw error
+      const { data: { session } } = await supabase.auth.getSession()
 
       return session
-    } catch (error) {
+    } catch {
       return null
     }
   },
@@ -367,12 +365,10 @@ export const auth = {
   async getUser() {
     try {
       const supabase = createClient()
-      const { data: { user }, error } = await supabase.auth.getUser()
-
-      if (error) throw error
+      const { data: { user } } = await supabase.auth.getUser()
 
       return user
-    } catch (error) {
+    } catch {
       return null
     }
   },

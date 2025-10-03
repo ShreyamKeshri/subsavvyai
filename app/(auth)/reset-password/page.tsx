@@ -107,7 +107,7 @@ export default function ResetPasswordPage() {
                   </p>
                 </div>
 
-                <Link href="/auth/forgot-password">
+                <Link href="/forgot-password">
                   <Button className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-200 transition-all">
                     Request a new link
                   </Button>

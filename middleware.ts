@@ -81,7 +81,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Public routes (accessible without authentication)
-  const publicRoutes = ['/login', '/signup', '/auth/callback', '/auth/reset-password']
+  const publicRoutes = ['/login', '/signup', '/callback', '/reset-password', '/forgot-password']
   const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route))
 
   // Auth routes (redirect to dashboard if already logged in)

@@ -55,8 +55,21 @@ Multi-method authentication via Supabase Auth:
 ### Database (Supabase/PostgreSQL)
 - **Complete schema in:** `DATABASE_SCHEMA.md`
 - Row-Level Security (RLS) enabled on all tables
-- Key tables: `profiles`, `subscriptions`, `services`, `payment_methods`, `notifications`
-- Service role key bypasses RLS (server-side only)
+- **Normalized schema with 4 migrations applied:**
+  - `001_initial_schema.sql` - Core tables
+  - `002_security_events.sql` - Audit logging
+  - `003_auto_create_profile.sql` - Auto-create profile trigger
+  - `004_proper_schema.sql` - User preferences & category preferences
+- **Key tables:**
+  - `profiles` - User identity (name, avatar, phone, timezone, currency)
+  - `user_preferences` - App settings (budget, onboarding, theme, language)
+  - `user_category_preferences` - Subscription category interests
+  - `notification_preferences` - Email/SMS/push settings
+  - `services` - 52 Indian services pre-populated
+  - `subscriptions` - User subscriptions
+  - `payment_methods`, `payment_history` - Payment tracking
+  - `security_events` - Security audit log
+  - `user_analytics_cache` - Pre-calculated analytics
 
 **Supabase Clients:**
 ```typescript
@@ -127,20 +140,18 @@ unsubscribr/
 
 ## Development Phases
 
-**Current Status:** Phase 3 (90% complete) - Authentication System
-
-Detailed progress tracked in `PROGRESS.md`.
+**Current Status:** Phase 3 Complete ✅ | Phase 4 Starting
 
 ### Completed:
-- ✅ Phase 1: Project setup
-- ✅ Phase 2: Database design
-- ✅ Phase 3: Auth UI complete
+- ✅ Phase 1: Project setup (Next.js 14, TypeScript, Tailwind v4)
+- ✅ Phase 2: Database design (Normalized schema, RLS, triggers)
+- ✅ Phase 3: Authentication (Email/password, Google OAuth, onboarding flow, landing page)
 
 ### Pending:
-- ⏳ Phase 4: Subscription management
-- ⏳ Phase 5: Dashboard & analytics
-- ⏳ Phase 6: Notifications
-- ⏳ Phase 7: Cancellation guides
+- 🔄 Phase 4: Subscription CRUD (Add/edit/delete subscriptions)
+- ⏳ Phase 5: Dashboard & analytics (Real data, spending calculations)
+- ⏳ Phase 6: Notifications (Renewal reminders via email/SMS/push)
+- ⏳ Phase 7: Cancellation guides (Step-by-step instructions)
 
 ## Git Workflow
 
@@ -176,9 +187,18 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 ### Sign Up Flow
 1. User enters credentials (email/password or Google OAuth)
 2. `lib/auth/auth-helpers.ts` handles authentication
-3. Profile created in `profiles` table
-4. Redirect to `/onboarding` for 3-step data collection
-5. Complete → redirect to `/dashboard`
+3. Database trigger auto-creates:
+   - `profiles` entry
+   - `user_preferences` entry (with onboarding_completed: false)
+   - `notification_preferences` entry (with defaults)
+4. Email confirmation sent (for email/password)
+5. After confirmation, callback route checks onboarding status
+6. Redirect to `/onboarding` for 3-step data collection:
+   - Step 1: Full name
+   - Step 2: Monthly budget + category preferences
+   - Step 3: Notification settings (email/SMS)
+7. Data saved to normalized tables (profiles, user_preferences, user_category_preferences, notification_preferences)
+8. Redirect to `/dashboard`
 
 ### Login Flow
 1. User authenticates via email/password or Google
