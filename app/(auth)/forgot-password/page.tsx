@@ -48,17 +48,16 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-md mx-auto">
-        {/* Logo/Icon */}
-        <div className="flex justify-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
-            <MailIcon className="w-8 h-8 text-white" />
-          </div>
+    <div className="w-full max-w-md mx-auto">
+      {/* Logo/Icon */}
+      <div className="flex justify-center mb-8">
+        <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+          <MailIcon className="w-8 h-8 text-white" />
         </div>
+      </div>
 
-        {/* Card */}
-        <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+      {/* Card */}
+      <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
           {!success ? (
             <>
               {/* Title */}
@@ -165,7 +164,6 @@ export default function ForgotPasswordPage() {
             </>
           )}
         </div>
-      </div>
     </div>
   )
 }
