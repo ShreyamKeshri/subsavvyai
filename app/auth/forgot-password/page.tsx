@@ -40,8 +40,8 @@ export default function ForgotPasswordPage() {
       }
 
       setSuccess(true)
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setLoading(false)
     }
@@ -67,7 +67,7 @@ export default function ForgotPasswordPage() {
                   Forgot your password?
                 </h1>
                 <p className="text-gray-500 text-sm">
-                  No worries, we'll send you reset instructions
+                  No worries, we&apos;ll send you reset instructions
                 </p>
               </div>
 
@@ -145,7 +145,7 @@ export default function ForgotPasswordPage() {
 
                 <div className="bg-indigo-50 border border-indigo-200 px-4 py-3 rounded-xl">
                   <p className="text-sm text-indigo-700">
-                    Didn't receive the email? Check your spam folder or{' '}
+                    Didn&apos;t receive the email? Check your spam folder or{' '}
                     <button
                       onClick={() => setSuccess(false)}
                       className="font-medium underline hover:no-underline"

@@ -96,9 +96,9 @@ export default function OnboardingPage() {
       setTimeout(() => {
         router.push('/dashboard')
       }, 1500)
-    } catch (err: any) {
+    } catch (err) {
       console.error('Onboarding error:', err)
-      setError(err.message || 'Something went wrong')
+      setError(err instanceof Error ? err.message : 'Something went wrong')
       setLoading(false)
     }
   }
@@ -143,10 +143,10 @@ export default function OnboardingPage() {
             <div className="space-y-6">
               <div className="text-center">
                 <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                  What's your name?
+                  What&apos;s your name?
                 </h1>
                 <p className="text-gray-500 text-sm">
-                  Let's personalize your experience
+                  Let&apos;s personalize your experience
                 </p>
               </div>
 
@@ -209,7 +209,7 @@ export default function OnboardingPage() {
                   />
                 </div>
                 <p className="text-xs text-gray-500">
-                  We'll help you track spending against this budget
+                  We&apos;ll help you track spending against this budget
                 </p>
               </div>
 

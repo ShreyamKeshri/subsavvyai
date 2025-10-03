@@ -4,13 +4,12 @@
  */
 
 import { createClient } from '@/lib/supabase/client'
-import type { Database } from '@/types/database'
 
 export type SignUpMethod = 'phone' | 'google' | 'email'
 
 export interface SignUpResult {
   success: boolean
-  user?: any
+  user?: unknown
   error?: string
   needsVerification?: boolean
   method: SignUpMethod
@@ -18,7 +17,7 @@ export interface SignUpResult {
 
 export interface LoginResult {
   success: boolean
-  user?: any
+  user?: unknown
   error?: string
   method: SignUpMethod
 }
@@ -51,8 +50,8 @@ export const authWithPhone = {
       }
 
       return { success: true }
-    } catch (error: any) {
-      return { success: false, error: error.message || 'Failed to send OTP' }
+    } catch (error: unknown) {
+      return { success: false, error: error instanceof Error ? error.message : 'Failed to send OTP' }
     }
   },
 
@@ -102,10 +101,10 @@ export const authWithPhone = {
         user: data.user,
         method: 'phone'
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        error: error.message || 'Failed to verify OTP',
+        error: error instanceof Error ? error.message : 'Failed to verify OTP',
         method: 'phone'
       }
     }
@@ -139,8 +138,8 @@ export const authWithGoogle = {
       }
 
       return { success: true }
-    } catch (error: any) {
-      return { success: false, error: error.message || 'Failed to sign in with Google' }
+    } catch (error: unknown) {
+      return { success: false, error: error instanceof Error ? error.message : 'Failed to sign in with Google' }
     }
   },
 
@@ -174,10 +173,10 @@ export const authWithGoogle = {
         user,
         method: 'google'
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        error: error.message || 'Failed to handle OAuth callback',
+        error: error instanceof Error ? error.message : 'Failed to handle OAuth callback',
         method: 'google'
       }
     }
@@ -237,10 +236,10 @@ export const authWithEmail = {
         needsVerification: !data.user.email_confirmed_at,
         method: 'email'
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        error: error.message || 'Failed to sign up',
+        error: error instanceof Error ? error.message : 'Failed to sign up',
         method: 'email'
       }
     }
@@ -271,10 +270,10 @@ export const authWithEmail = {
         user: data.user,
         method: 'email'
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        error: error.message || 'Failed to sign in',
+        error: error instanceof Error ? error.message : 'Failed to sign in',
         method: 'email'
       }
     }
@@ -296,8 +295,8 @@ export const authWithEmail = {
       }
 
       return { success: true }
-    } catch (error: any) {
-      return { success: false, error: error.message || 'Failed to send reset email' }
+    } catch (error: unknown) {
+      return { success: false, error: error instanceof Error ? error.message : 'Failed to send reset email' }
     }
   },
 
@@ -317,8 +316,8 @@ export const authWithEmail = {
       }
 
       return { success: true }
-    } catch (error: any) {
-      return { success: false, error: error.message || 'Failed to update password' }
+    } catch (error: unknown) {
+      return { success: false, error: error instanceof Error ? error.message : 'Failed to update password' }
     }
   }
 }
@@ -341,8 +340,8 @@ export const auth = {
       }
 
       return { success: true }
-    } catch (error: any) {
-      return { success: false, error: error.message || 'Failed to sign out' }
+    } catch (error: unknown) {
+      return { success: false, error: error instanceof Error ? error.message : 'Failed to sign out' }
     }
   },
 

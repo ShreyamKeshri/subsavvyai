@@ -70,8 +70,8 @@ export default function LoginPage() {
         // Success! Redirect to dashboard
         router.push('/dashboard')
       }
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setLoading(false)
     }
@@ -88,8 +88,8 @@ export default function LoginPage() {
         setLoading(false)
       }
       // Will redirect to Google, then back to callback
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong')
       setLoading(false)
     }
   }
@@ -121,8 +121,8 @@ export default function LoginPage() {
       }
 
       router.push('/dashboard')
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setLoading(false)
     }
@@ -371,7 +371,7 @@ export default function LoginPage() {
 
       {/* Sign Up Link */}
       <p className="text-center text-sm text-gray-500 mt-6">
-        Don't have an account?{' '}
+        Don&apos;t have an account?{' '}
         <Link href="/signup" className="text-indigo-600 hover:text-indigo-700 font-medium">
           Sign up
         </Link>

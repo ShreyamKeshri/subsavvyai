@@ -71,8 +71,8 @@ export default function SignUpPage() {
         // Success! Redirect to dashboard
         router.push('/dashboard')
       }
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setLoading(false)
     }
@@ -89,8 +89,8 @@ export default function SignUpPage() {
         setLoading(false)
       }
       // Will redirect to Google, then back to callback
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong')
       setLoading(false)
     }
   }
@@ -128,8 +128,8 @@ export default function SignUpPage() {
       }
 
       router.push('/dashboard')
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setLoading(false)
     }

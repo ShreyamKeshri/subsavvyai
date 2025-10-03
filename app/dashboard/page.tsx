@@ -76,7 +76,7 @@ export default function DashboardPage() {
             Welcome back, {user.user_metadata?.full_name || user.email?.split('@')[0] || 'there'}!
           </h2>
           <p className="text-gray-500">
-            Here's an overview of your subscription management dashboard
+            Here&apos;s an overview of your subscription management dashboard
           </p>
         </div>
 
