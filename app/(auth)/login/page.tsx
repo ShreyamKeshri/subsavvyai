@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * Sign Up Page - Neo-Minimalist Design
+ * Login Page - Neo-Minimalist Design
  * Multi-method authentication: Phone OTP (Primary), Google OAuth (Secondary), Email/Password (Tertiary)
  */
 
@@ -11,14 +11,14 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { authWithPhone, authWithGoogle, authWithEmail, validatePhoneNumber, validateEmail, validatePassword } from '@/lib/auth/auth-helpers'
+import { authWithPhone, authWithGoogle, authWithEmail, validatePhoneNumber, validateEmail } from '@/lib/auth/auth-helpers'
 import { Loader2, Mail as MailIcon } from 'lucide-react'
 
-type SignUpMethod = 'phone' | 'google' | 'email'
+type LoginMethod = 'phone' | 'google' | 'email'
 
-export default function SignUpPage() {
+export default function LoginPage() {
   const router = useRouter()
-  const [method, setMethod] = useState<SignUpMethod>('phone')
+  const [method, setMethod] = useState<LoginMethod>('phone')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -30,9 +30,8 @@ export default function SignUpPage() {
   // Email/Password state
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [fullName, setFullName] = useState('')
 
-  const handlePhoneSignUp = async () => {
+  const handlePhoneLogin = async () => {
     setError(null)
     setLoading(true)
 
@@ -80,7 +79,7 @@ export default function SignUpPage() {
     }
   }
 
-  const handleGoogleSignUp = async () => {
+  const handleGoogleLogin = async () => {
     setError(null)
     setLoading(true)
 
@@ -97,7 +96,7 @@ export default function SignUpPage() {
     }
   }
 
-  const handleEmailSignUp = async () => {
+  const handleEmailLogin = async () => {
     setError(null)
     setLoading(true)
 
@@ -110,23 +109,17 @@ export default function SignUpPage() {
         return
       }
 
-      const passwordValidation = validatePassword(password)
-      if (!passwordValidation.valid) {
-        setError(passwordValidation.message || 'Weak password')
+      if (!password) {
+        setError('Please enter your password')
         setLoading(false)
         return
       }
 
-      const result = await authWithEmail.signUp(email, password, fullName)
+      const result = await authWithEmail.signIn(email, password)
       if (!result.success) {
-        setError(result.error || 'Failed to sign up')
+        setError(result.error || 'Invalid credentials')
         setLoading(false)
         return
-      }
-
-      if (result.needsVerification) {
-        setError(null)
-        alert('Check your email to verify your account!')
       }
 
       router.push('/dashboard')
@@ -151,12 +144,12 @@ export default function SignUpPage() {
         {/* Title */}
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Welcome to Unsubscribr
+            Welcome back
           </h1>
           <p className="text-gray-500 text-sm">
-            {method === 'phone' && 'Enter your phone number to get started'}
-            {method === 'email' && 'Create your account with email'}
-            {method === 'google' && 'Sign up with Google'}
+            {method === 'phone' && 'Enter your phone number to continue'}
+            {method === 'email' && 'Sign in with your email'}
+            {method === 'google' && 'Sign in with Google'}
           </p>
         </div>
 
@@ -229,7 +222,7 @@ export default function SignUpPage() {
 
             {/* Continue Button */}
             <Button
-              onClick={handlePhoneSignUp}
+              onClick={handlePhoneLogin}
               disabled={loading || (!otpSent && phoneNumber.length !== 10) || (otpSent && otp.length !== 6)}
               className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-200 transition-all"
               size="lg"
@@ -250,20 +243,6 @@ export default function SignUpPage() {
         {method === 'email' && (
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-gray-900 font-medium">
-                Full Name
-              </Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="John Doe"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                className="h-12 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-indigo-500"
-              />
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="email" className="text-gray-900 font-medium">
                 Email
               </Label>
@@ -278,9 +257,17 @@ export default function SignUpPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-gray-900 font-medium">
-                Password
-              </Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password" className="text-gray-900 font-medium">
+                  Password
+                </Label>
+                <Link
+                  href="/auth/forgot-password"
+                  className="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
+                >
+                  Forgot?
+                </Link>
+              </div>
               <Input
                 id="password"
                 type="password"
@@ -289,13 +276,10 @@ export default function SignUpPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="h-12 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-indigo-500"
               />
-              <p className="text-xs text-gray-500">
-                At least 8 characters with uppercase, lowercase, and numbers
-              </p>
             </div>
 
             <Button
-              onClick={handleEmailSignUp}
+              onClick={handleEmailLogin}
               disabled={loading || !email || !password}
               className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-200 transition-all"
               size="lg"
@@ -303,10 +287,10 @@ export default function SignUpPage() {
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Creating account...
+                  Signing in...
                 </>
               ) : (
-                'Create Account'
+                'Sign In'
               )}
             </Button>
 
@@ -315,7 +299,7 @@ export default function SignUpPage() {
               onClick={() => setMethod('phone')}
               className="w-full text-sm text-gray-500 hover:text-gray-700 font-medium"
             >
-              ← Back to phone sign up
+              ← Back to phone login
             </button>
           </div>
         )}
@@ -338,7 +322,7 @@ export default function SignUpPage() {
             {/* Google OAuth Button */}
             <Button
               variant="outline"
-              onClick={handleGoogleSignUp}
+              onClick={handleGoogleLogin}
               disabled={loading}
               className="w-full h-12 border-gray-200 hover:bg-gray-50 rounded-xl font-medium transition-all"
               size="lg"
@@ -373,7 +357,7 @@ export default function SignUpPage() {
               onClick={() => setMethod('email')}
               className="w-full text-sm text-gray-500 hover:text-gray-700 font-medium mt-4"
             >
-              or sign up with email →
+              or sign in with email →
             </button>
           </>
         )}
@@ -391,11 +375,11 @@ export default function SignUpPage() {
         </p>
       </div>
 
-      {/* Login Link */}
+      {/* Sign Up Link */}
       <p className="text-center text-sm text-gray-500 mt-6">
-        Already have an account?{' '}
-        <Link href="/login" className="text-indigo-600 hover:text-indigo-700 font-medium">
-          Log in
+        Don't have an account?{' '}
+        <Link href="/signup" className="text-indigo-600 hover:text-indigo-700 font-medium">
+          Sign up
         </Link>
       </p>
     </div>
