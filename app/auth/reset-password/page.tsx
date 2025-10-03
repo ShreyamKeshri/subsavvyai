@@ -40,6 +40,7 @@ export default function ResetPasswordPage() {
 
     try {
       // Validate passwords match
+      // eslint-disable-next-line security/detect-possible-timing-attacks
       if (password !== confirmPassword) {
         setError('Passwords do not match')
         setLoading(false)
