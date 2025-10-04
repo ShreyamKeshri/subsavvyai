@@ -9,25 +9,31 @@ import { useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Mail, CheckCircle2, Loader2 } from 'lucide-react'
+import { Mail, CheckCircle2, Loader2, AlertCircle } from 'lucide-react'
+import { authWithEmail } from '@/lib/auth/auth-helpers'
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams()
   const email = searchParams.get('email') || 'your email'
   const [resending, setResending] = useState(false)
   const [resent, setResent] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleResendEmail = async () => {
     setResending(true)
     setResent(false)
+    setError(null)
 
     try {
-      // TODO: Implement resend verification email
-      // For now, just simulate
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      setResent(true)
+      const result = await authWithEmail.resendVerificationEmail(email)
+
+      if (result.success) {
+        setResent(true)
+      } else {
+        setError(result.error || 'Failed to resend email')
+      }
     } catch {
-      // Handle error
+      setError('Something went wrong. Please try again.')
     } finally {
       setResending(false)
     }
@@ -80,6 +86,12 @@ function VerifyEmailContent() {
 
             {/* Resend Email */}
             <div className="pt-4 border-t border-gray-200">
+              {error && (
+                <div className="flex items-center justify-center gap-2 text-sm text-red-600 mb-3">
+                  <AlertCircle className="w-4 h-4" />
+                  <span>{error}</span>
+                </div>
+              )}
               {resent ? (
                 <div className="flex items-center justify-center gap-2 text-sm text-green-600">
                   <CheckCircle2 className="w-4 h-4" />

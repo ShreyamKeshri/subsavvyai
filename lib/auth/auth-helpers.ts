@@ -280,6 +280,34 @@ export const authWithEmail = {
   },
 
   /**
+   * Resend verification email
+   */
+  async resendVerificationEmail(email: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const supabase = createClient()
+
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+        options: {
+          emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/callback`
+        }
+      })
+
+      if (error) {
+        return { success: false, error: error.message }
+      }
+
+      return { success: true }
+    } catch (error: unknown) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to resend verification email'
+      }
+    }
+  },
+
+  /**
    * Send password reset email
    */
   async resetPassword(email: string): Promise<{ success: boolean; error?: string }> {
