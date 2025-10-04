@@ -5,17 +5,22 @@
  * Main landing page after successful authentication
  */
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { auth } from '@/lib/auth/auth-helpers'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { Loader2, LogOut, Package, Bell, CreditCard, TrendingUp } from 'lucide-react'
+import { AddSubscriptionDialog } from '@/components/subscriptions/add-subscription-dialog'
+import { SubscriptionsList } from '@/components/subscriptions/subscriptions-list'
+import { getUserSubscriptions, type Subscription } from '@/lib/subscriptions/subscription-actions'
 
 export default function DashboardPage() {
   const router = useRouter()
   const { user, loading, isAuthenticated } = useAuth()
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
+  const [loadingSubscriptions, setLoadingSubscriptions] = useState(true)
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -23,10 +28,42 @@ export default function DashboardPage() {
     }
   }, [loading, isAuthenticated, router])
 
+  const fetchSubscriptions = async () => {
+    setLoadingSubscriptions(true)
+    const result = await getUserSubscriptions()
+    if (result.success && result.data) {
+      setSubscriptions(result.data)
+    }
+    setLoadingSubscriptions(false)
+  }
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchSubscriptions()
+    }
+  }, [isAuthenticated])
+
   const handleSignOut = async () => {
     await auth.signOut()
     router.push('/login')
   }
+
+  // Calculate stats
+  const activeSubscriptions = subscriptions.filter(s => s.status === 'active')
+  const totalMonthlySpend = activeSubscriptions.reduce((sum, sub) => {
+    const monthlyCost = sub.billing_cycle === 'monthly' ? sub.cost :
+                        sub.billing_cycle === 'quarterly' ? sub.cost / 3 :
+                        sub.billing_cycle === 'yearly' ? sub.cost / 12 : sub.cost
+    return sum + monthlyCost
+  }, 0)
+
+  const upcomingRenewals = activeSubscriptions.filter(sub => {
+    const nextDate = new Date(sub.next_billing_date)
+    const today = new Date()
+    const diffTime = nextDate.getTime() - today.getTime()
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    return diffDays <= 7 && diffDays >= 0
+  }).length
 
   if (loading) {
     return (
@@ -95,7 +132,11 @@ export default function DashboardPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-gray-900">0</p>
+              {loadingSubscriptions ? (
+                <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+              ) : (
+                <p className="text-3xl font-bold text-gray-900">{activeSubscriptions.length}</p>
+              )}
             </CardContent>
           </Card>
 
@@ -112,7 +153,11 @@ export default function DashboardPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-gray-900">₹0</p>
+              {loadingSubscriptions ? (
+                <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+              ) : (
+                <p className="text-3xl font-bold text-gray-900">₹{totalMonthlySpend.toFixed(2)}</p>
+              )}
             </CardContent>
           </Card>
 
@@ -129,37 +174,37 @@ export default function DashboardPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-gray-900">0</p>
+              {loadingSubscriptions ? (
+                <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+              ) : (
+                <p className="text-3xl font-bold text-gray-900">{upcomingRenewals}</p>
+              )}
             </CardContent>
           </Card>
         </div>
 
-        {/* Empty State */}
-        <Card>
-          <CardContent className="py-16">
-            <div className="text-center space-y-6">
-              <div className="flex justify-center">
-                <div className="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center">
-                  <Package className="w-10 h-10 text-indigo-600" />
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  No subscriptions yet
-                </h3>
-                <p className="text-gray-500 max-w-md mx-auto">
-                  Start by adding your first subscription to track renewals, manage payments, and optimize your spending
-                </p>
-              </div>
-
-              <Button className="h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-200 px-8">
-                <Package className="w-5 h-5 mr-2" />
-                Add Your First Subscription
-              </Button>
+        {/* Subscriptions Section */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="text-2xl font-bold text-gray-900">Your Subscriptions</h3>
+              <p className="text-gray-500 text-sm mt-1">Manage and track all your subscriptions in one place</p>
             </div>
-          </CardContent>
-        </Card>
+            <AddSubscriptionDialog onSuccess={fetchSubscriptions} />
+          </div>
+
+          {loadingSubscriptions ? (
+            <Card>
+              <CardContent className="py-16">
+                <div className="flex justify-center">
+                  <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <SubscriptionsList subscriptions={subscriptions} onUpdate={fetchSubscriptions} />
+          )}
+        </div>
 
         {/* Quick Actions */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">

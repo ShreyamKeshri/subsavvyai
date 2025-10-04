@@ -5,7 +5,7 @@
  * Password reset form for users who clicked the email link
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -14,7 +14,7 @@ import { Label } from '@/components/ui/label'
 import { authWithEmail, validatePassword } from '@/lib/auth/auth-helpers'
 import { Loader2, Mail as MailIcon, CheckCircle2 } from 'lucide-react'
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [password, setPassword] = useState('')
@@ -107,7 +107,7 @@ export default function ResetPasswordPage() {
                   </p>
                 </div>
 
-                <Link href="/auth/forgot-password">
+                <Link href="/forgot-password">
                   <Button className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-200 transition-all">
                     Request a new link
                   </Button>
@@ -223,5 +223,27 @@ export default function ResetPasswordPage() {
           )}
         </div>
     </div>
+  )
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={
+      <div className="w-full max-w-md mx-auto">
+        <div className="flex justify-center mb-8">
+          <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <MailIcon className="w-8 h-8 text-white" />
+          </div>
+        </div>
+        <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+          <div className="text-center space-y-6 py-4">
+            <Loader2 className="w-8 h-8 animate-spin mx-auto text-indigo-600" />
+            <p className="text-gray-500">Loading...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <ResetPasswordContent />
+    </Suspense>
   )
 }

@@ -1,188 +1,254 @@
-# Unsubscribr 🎯
+# Unsubscribr AI 🤖
 
-A web-based subscription management platform built for the Indian market. Track, manage, and cancel your recurring subscriptions all in one place.
+**India's first AI-powered subscription optimizer** - AI finds ₹10,000/year hidden in your subscriptions.
 
-## 🚀 Project Overview
+> **🚨 PIVOT IN PROGRESS:** We're evolving from a basic tracker to an AI optimizer. See [PIVOT_PLAN.md](./PIVOT_PLAN.md) for details.
 
-Unsubscribr helps Indian consumers discover, track, and manage all their recurring subscriptions - from OTT platforms to SaaS tools. Get visibility into your monthly spending, receive renewal reminders, and access guided cancellation flows.
+---
 
-**Target:** Save users ₹500-1000/month by helping them identify and eliminate unwanted subscriptions.
+## 🎯 What We Do
 
-## 🛠️ Tech Stack
+We don't just track subscriptions - **we optimize them using AI**.
 
-- **Framework:** Next.js 14 (App Router) + TypeScript
+### The Problem:
+- Indians waste ₹800-1500/month on overlapping OTT subscriptions
+- People pay for Premium plans but use Free-tier features
+- Telecom bundles offer better deals but nobody knows about them
+- Subscription prices increase and nobody notices
+
+### Our Solution:
+**AI-powered optimization** that actually saves you money:
+
+1. **Smart Downgrade Alerts** - "You use Spotify 4 hours/month. Downgrade to Free, save ₹1,428/year"
+2. **Bundle Optimizer** - "Switch to Vi bundle: Hotstar + Zee5 + SonyLIV for ₹999 instead of ₹2,198"
+3. **Content Overlap Detector** - "47 movies are on all 3 platforms you pay for. Cancel one."
+4. **Price Hike Alerts** - "Netflix increased 23%. Here are cheaper alternatives."
+
+---
+
+## 🚀 Tech Stack
+
+- **Framework:** Next.js 15.5.4 (App Router) + TypeScript
 - **Styling:** Tailwind CSS v4
-- **UI Components:** shadcn/ui
-- **Backend:** Next.js API Routes (Serverless)
+- **UI Components:** shadcn/ui + Radix UI
 - **Database:** Supabase (PostgreSQL)
-- **Authentication:** Supabase Auth (Phone OTP + OAuth)
+- **Authentication:** Supabase Auth (Email + Phone OTP + Google OAuth)
+- **AI/ML:** Custom optimization algorithms (future: OpenAI API)
 - **Notifications:** Firebase Cloud Messaging
-- **Payments:** Razorpay (India) + Stripe (future)
+- **Payments:** Razorpay (India)
 - **Charts:** Recharts
-- **Forms:** react-hook-form + Zod
+- **Forms:** react-hook-form + Zod validation
 - **Hosting:** Vercel
+
+---
 
 ## 📁 Project Structure
 
 ```
 unsubscribr/
-├── app/                    # Next.js 14 app directory
-│   ├── (auth)/            # Auth pages (login, signup)
-│   ├── (dashboard)/       # Protected dashboard pages
-│   ├── api/               # API routes
-│   └── globals.css        # Global styles
-├── components/            # React components
-│   ├── ui/               # Reusable UI components (shadcn)
-│   ├── auth/             # Authentication components
-│   ├── subscriptions/    # Subscription management
-│   ├── dashboard/        # Dashboard & analytics
-│   ├── notifications/    # Notification components
-│   ├── cancellation/     # Cancellation guides
-│   └── onboarding/       # Welcome flow
-├── lib/                   # Utilities and configurations
-│   ├── supabase/         # Supabase clients (browser, server, middleware)
-│   ├── firebase/         # Firebase config & messaging
-│   └── utils.ts          # Helper functions
-├── types/                 # TypeScript type definitions
-├── constants/             # App constants (Indian services list)
-├── hooks/                 # Custom React hooks
-└── public/               # Static assets
+├── app/                    # Next.js 15 app directory
+│   ├── (auth)/            # Auth pages (login, signup, verify-email)
+│   ├── (dashboard)/       # Protected dashboard
+│   └── api/               # API routes
+├── components/
+│   ├── ui/                # shadcn/ui components
+│   ├── subscriptions/     # Subscription CRUD components
+│   └── dashboard/         # Dashboard components
+├── lib/
+│   ├── supabase/          # Supabase clients
+│   ├── subscriptions/     # Subscription server actions
+│   └── auth/              # Authentication helpers
+├── supabase/
+│   ├── migrations/        # Database migrations
+│   └── seeds/             # Seed data (52 Indian services)
+└── docs/                  # Project documentation
 ```
+
+---
 
 ## 🚦 Getting Started
 
 ### Prerequisites
 
-- Node.js 18+ and npm
-- Supabase account and project
-- Firebase account and project (for notifications)
+- Node.js 18+
+- Supabase account
+- Firebase account (for push notifications)
 
 ### Installation
 
-1. Clone the repository:
 ```bash
+# Clone
 git clone https://github.com/ShreyamKeshri/unsubscribr.git
 cd unsubscribr
-```
 
-2. Install dependencies:
-```bash
+# Install
 npm install
-```
 
-3. Set up environment variables:
-```bash
+# Setup environment
 cp .env.example .env.local
-```
+# Add your Supabase and Firebase credentials
 
-4. Add your credentials to `.env.local`:
-```env
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+# Run migrations
+npm run db:push
 
-# Firebase
-NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.firebasestorage.app
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
-NEXT_PUBLIC_FIREBASE_VAPID_KEY=your_vapid_key
+# Seed database (52 Indian services)
+npm run db:seed
 
-# App
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-```
-
-5. Run the development server:
-```bash
+# Start dev server
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see the app.
+Open [http://localhost:3000](http://localhost:3000)
+
+---
 
 ## 📊 Development Progress
 
+### Current Status: **PIVOTING TO AI OPTIMIZER** 🚀
+
 | Phase | Status | Progress |
 |-------|--------|----------|
-| **Phase 1:** Project Setup & Architecture | ✅ Complete | 100% |
-| **Phase 2:** Database Design & Schema | ✅ Complete | 100% |
-| **Phase 3:** Authentication System | 🔄 In Progress | 90% |
-| **Phase 4:** Core Subscription Management | ⏳ Pending | 0% |
-| **Phase 5:** Dashboard & Analytics | ⏳ Pending | 0% |
-| **Phase 6:** Notifications System | ⏳ Pending | 0% |
-| **Phase 7:** Cancellation Guides | ⏳ Pending | 0% |
-| **Phase 8:** Polish & Testing | ⏳ Pending | 0% |
+| **Phase 1-3:** Foundation (Auth + DB + UI) | ✅ Complete | 100% |
+| **Phase 4:** Subscription CRUD | ✅ Complete | 100% |
+| **Phase 5:** Smart Downgrade Alerts (AI) | 🔄 In Progress | 0% |
+| **Phase 6:** India Bundle Optimizer (AI) | ⏳ Next | 0% |
+| **Phase 7:** Content Overlap Detector (AI) | ⏳ Planned | 0% |
+| **Phase 8:** Price Monitoring & Alerts | ⏳ Future | 0% |
 
-**Current Status:** Phase 3 - Authentication UI complete, Supabase provider setup pending
+**Overall Progress:** 40% (Foundation solid, AI features upcoming)
 
-See [PROGRESS.md](./PROGRESS.md) for detailed development tracking and milestones.
+---
 
-## 🎯 Key Features (MVP)
+## ✨ What's Built (Foundation)
 
-- **Manual Subscription Entry:** Add subscriptions with service name, cost, billing cycle, and date
-- **Dashboard:** View total monthly/yearly spending with upcoming renewals
-- **Renewal Reminders:** Push notifications 3 days and 1 day before renewal
-- **Cancellation Guides:** Step-by-step instructions for popular Indian services
-- **Analytics:** Spending breakdown by category with trend charts
-- **50+ Indian Services:** Pre-loaded list of popular subscriptions (OTT, Music, SaaS, etc.)
+### ✅ Completed Features:
 
-## 🇮🇳 Supported Indian Services
+1. **Authentication System**
+   - Email/Password with verification
+   - Phone OTP (India: +91)
+   - Google OAuth
+   - Proper verification flow (no more alerts!)
 
-The app includes 50+ popular Indian subscription services across categories:
+2. **Subscription Management**
+   - Add/Edit/Delete subscriptions
+   - Choose from 52 pre-seeded Indian services
+   - Custom service support
+   - Multi-currency (INR, USD, EUR, GBP)
+   - Multiple billing cycles (monthly, quarterly, yearly)
 
-- **OTT:** Netflix, Prime Video, Disney+ Hotstar, SonyLIV, ZEE5, Voot, and more
+3. **Dashboard**
+   - Real-time stats (active subs, monthly spend, upcoming renewals)
+   - Subscription table with actions
+   - Empty states and loading states
+   - Mobile responsive
+
+4. **Database**
+   - Normalized schema (4 migrations applied)
+   - Row Level Security (RLS)
+   - Auto-triggers for profile creation
+   - 52 Indian services seeded
+
+---
+
+## 🎯 AI Features (Coming Soon)
+
+See [PIVOT_PLAN.md](./PIVOT_PLAN.md) for detailed roadmap.
+
+### Week 1: Smart Downgrade Alerts
+- OAuth integration with Spotify, Netflix
+- Usage tracking
+- AI recommendation engine
+
+### Week 2: India Bundle Optimizer
+- Telecom bundles database (Jio, Airtel, Vi)
+- Matching algorithm
+- Savings calculator
+- **Soft launch to friends/family**
+
+### Week 3-4: Content Overlap Detector
+- Content catalog integration
+- AI matching algorithm
+- Overlap visualization
+- **Public launch on Product Hunt**
+
+---
+
+## 🇮🇳 Supported Indian Services (52+)
+
+We have pre-loaded data for:
+
+- **OTT:** Netflix, Prime Video, Hotstar, SonyLIV, ZEE5, Voot, etc.
 - **Music:** Spotify, Apple Music, JioSaavn, Gaana, YouTube Music
-- **Food Delivery:** Zomato Gold, Swiggy One, Dineout Passport
-- **SaaS:** Microsoft 365, Google Workspace, Adobe Creative Cloud, Canva Pro
+- **Food:** Zomato Gold, Swiggy One, Dineout Passport
+- **SaaS:** Microsoft 365, Google Workspace, Adobe, Canva Pro
 - **Fitness:** Cult.fit, HealthifyMe, Fitpass
 - **News:** Times Prime, The Hindu, Economic Times
-- **Gaming:** Xbox Game Pass, PlayStation Plus, Apple Arcade
+- **Gaming:** Xbox Game Pass, PlayStation Plus
 - **Education:** Coursera, Udemy, Unacademy, BYJU'S
 
-## 🔧 Available Scripts
+Full list in `supabase/seeds/001_indian_services.sql`
+
+---
+
+## 💰 Revenue Model (Planned)
+
+1. **Freemium SaaS**
+   - Free: Track 5 subscriptions, basic alerts
+   - Pro (₹99/mo): Unlimited + AI optimization + priority support
+
+2. **Affiliate Revenue**
+   - Telecom bundles: ₹500-1000/signup
+   - Alternative services: 10-20% commission
+
+3. **B2B SaaS**
+   - Corporate employee benefits
+   - ₹99/employee/year
+
+---
+
+## 🔧 Scripts
 
 ```bash
-# Development with Turbopack
-npm run dev
-
-# Build for production
-npm run build
-
-# Start production server
-npm start
-
-# Run linter
-npm run lint
-
-# Add shadcn component
-npx shadcn@latest add [component-name]
+npm run dev          # Dev server with Turbopack
+npm run build        # Production build
+npm start            # Start production server
+npm run lint         # ESLint
+npm run type-check   # TypeScript check
 ```
-
-## 🤝 Contributing
-
-This is a personal project by Shreyam Keshri. Contributions are welcome after MVP launch!
-
-## 📄 License
-
-This project is private and not yet licensed for public use.
-
-## 🙏 Acknowledgments
-
-- Built with [Next.js](https://nextjs.org)
-- UI components from [shadcn/ui](https://ui.shadcn.com)
-- Database and Auth by [Supabase](https://supabase.com)
-- Notifications by [Firebase](https://firebase.google.com)
 
 ---
 
 ## 📚 Documentation
 
-- **[PROGRESS.md](./PROGRESS.md)** - Development plan, progress tracking, and milestones
-- **[DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md)** - Complete database structure and RLS policies
-- **[PHASE_3_AUTH_SETUP.md](./PHASE_3_AUTH_SETUP.md)** - Authentication setup guide (Supabase providers)
+- **[PIVOT_PLAN.md](./PIVOT_PLAN.md)** - AI optimizer pivot strategy & roadmap
+- **[CLAUDE.md](./CLAUDE.md)** - AI assistant guidelines
+- **[BUGS.md](./BUGS.md)** - Known issues & fixes
+- **[PROGRESS.md](./PROGRESS.md)** - Detailed development log
 
 ---
 
-**Status:** 🚧 In Active Development | **Phase 3:** 90% Complete | **Overall:** 60%
+## 🤝 Contributing
+
+Personal project by **Shreyam Keshri**. Open to contributions after MVP launch!
+
+---
+
+## 🙏 Built With
+
+- [Next.js](https://nextjs.org) - React framework
+- [shadcn/ui](https://ui.shadcn.com) - UI components
+- [Supabase](https://supabase.com) - Database & Auth
+- [Firebase](https://firebase.google.com) - Push notifications
+- [Tailwind CSS](https://tailwindcss.com) - Styling
+
+---
+
+## 📄 License
+
+Private project - Not yet licensed for public use.
+
+---
+
+**Status:** 🚀 Pivoting to AI | **Branch:** `feature/ai-optimizer-pivot` | **Progress:** 40%
+
+**Next Milestone:** Smart Downgrade Alerts (Week 1) - Target: Oct 11, 2025

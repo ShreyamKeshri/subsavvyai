@@ -4,9 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Unsubscribr** is a subscription management platform for the Indian market. Built with Next.js 14, TypeScript, Tailwind CSS v4, Supabase, and Firebase.
+**Unsubscribr AI** is an AI-powered subscription optimizer for the Indian market. Built with Next.js 15.5.4, TypeScript, Tailwind CSS v4, Supabase, and Firebase.
 
-**Goal:** Help Indian users track and manage recurring subscriptions to save ₹500-1000/month.
+**Goal:** Use AI to help Indian users optimize subscriptions and save ₹10,000/year through intelligent recommendations.
+
+> **🚨 PIVOT IN PROGRESS:** We evolved from a basic tracker to an AI-powered optimizer. See PIVOT_PLAN.md for details.
 
 ## Development Commands
 
@@ -30,9 +32,10 @@ npx shadcn@latest add [component-name]
 ## Architecture
 
 ### Framework & Routing
-- **Next.js 14 App Router** with App Directory
+- **Next.js 15.5.4 App Router** with App Directory
 - Route groups: `(auth)` for auth pages, `(dashboard)` for protected pages
 - Server Components by default; Client Components marked with `'use client'`
+- **Turbopack** enabled for faster builds
 
 ### Authentication Flow
 Multi-method authentication via Supabase Auth:
@@ -55,8 +58,27 @@ Multi-method authentication via Supabase Auth:
 ### Database (Supabase/PostgreSQL)
 - **Complete schema in:** `DATABASE_SCHEMA.md`
 - Row-Level Security (RLS) enabled on all tables
-- Key tables: `profiles`, `subscriptions`, `services`, `payment_methods`, `notifications`
-- Service role key bypasses RLS (server-side only)
+- **Normalized schema with 4 migrations applied:**
+  - `001_initial_schema.sql` - Core tables
+  - `002_security_events.sql` - Audit logging
+  - `003_auto_create_profile.sql` - Auto-create profile trigger
+  - `004_proper_schema.sql` - User preferences & category preferences
+- **Key tables (Current):**
+  - `profiles` - User identity (name, avatar, phone, timezone, currency)
+  - `user_preferences` - App settings (budget, onboarding, theme, language)
+  - `user_category_preferences` - Subscription category interests
+  - `notification_preferences` - Email/SMS/push settings
+  - `services` - 52 Indian services pre-populated
+  - `subscriptions` - User subscriptions
+  - `payment_methods`, `payment_history` - Payment tracking
+  - `security_events` - Security audit log
+  - `user_analytics_cache` - Pre-calculated analytics
+- **New AI Optimizer Tables (Planned - see PIVOT_PLAN.md):**
+  - `service_usage` - OAuth-based usage tracking (Spotify, Netflix, etc.)
+  - `telecom_bundles` - Jio/Airtel/Vi bundle database
+  - `content_catalog` - OTT content for overlap detection
+  - `price_history` - Price monitoring for alerts
+  - `optimization_recommendations` - AI-generated savings recommendations
 
 **Supabase Clients:**
 ```typescript
@@ -127,31 +149,44 @@ unsubscribr/
 
 ## Development Phases
 
-**Current Status:** Phase 3 (90% complete) - Authentication System
+**Current Status:** Foundation Complete (40%) | AI Optimizer Pivot 🚀
 
-Detailed progress tracked in `PROGRESS.md`.
+### Completed (Foundation):
+- ✅ Phase 1-2: Project setup (Next.js 15.5.4, TypeScript, Tailwind v4, Supabase)
+- ✅ Phase 3: Authentication (Email/password, Google OAuth, onboarding flow)
+- ✅ Phase 4: Subscription CRUD (Add/edit/delete subscriptions, dashboard with real data)
 
-### Completed:
-- ✅ Phase 1: Project setup
-- ✅ Phase 2: Database design
-- ✅ Phase 3: Auth UI complete
-
-### Pending:
-- ⏳ Phase 4: Subscription management
-- ⏳ Phase 5: Dashboard & analytics
-- ⏳ Phase 6: Notifications
-- ⏳ Phase 7: Cancellation guides
+### AI Optimizer Roadmap (See PIVOT_PLAN.md):
+- 🔄 **Week 1 (Current):** Smart Downgrade Alerts
+  - OAuth integration (Spotify, Netflix)
+  - Usage tracking system
+  - AI recommendation engine
+- ⏳ **Week 2:** India Bundle Optimizer
+  - Telecom bundles database
+  - Bundle matching algorithm
+  - Affiliate integration
+  - **Soft launch to friends/family**
+- ⏳ **Week 3-4:** Content Overlap Detector
+  - JustWatch API integration
+  - Content matching algorithm
+  - Overlap visualization
+  - **Public launch on Product Hunt**
+- ⏳ **Month 2:** Price Monitoring & Alerts
 
 ## Git Workflow
 
-**Current Branch:** `feature/phase-3-authentication`
+**Current Branch:** `feature/ai-optimizer-pivot`
 **Main Branch:** `main`
 
 **Workflow:**
-1. Create feature branch for each phase: `feature/phase-{n}-{name}`
-2. Commit changes to feature branch
-3. Create PR when phase is complete
+1. Create feature branch for each major feature: `feature/{name}`
+2. Commit changes to feature branch with descriptive messages
+3. Create PR when feature is complete
 4. Merge to `main` after review
+
+**Recent Branches:**
+- `feature/subscription-crud` - Subscription management (merged)
+- `feature/ai-optimizer-pivot` - Current pivot work
 
 ## Environment Variables
 
@@ -176,9 +211,18 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 ### Sign Up Flow
 1. User enters credentials (email/password or Google OAuth)
 2. `lib/auth/auth-helpers.ts` handles authentication
-3. Profile created in `profiles` table
-4. Redirect to `/onboarding` for 3-step data collection
-5. Complete → redirect to `/dashboard`
+3. Database trigger auto-creates:
+   - `profiles` entry
+   - `user_preferences` entry (with onboarding_completed: false)
+   - `notification_preferences` entry (with defaults)
+4. Email confirmation sent (for email/password)
+5. After confirmation, callback route checks onboarding status
+6. Redirect to `/onboarding` for 3-step data collection:
+   - Step 1: Full name
+   - Step 2: Monthly budget + category preferences
+   - Step 3: Notification settings (email/SMS)
+7. Data saved to normalized tables (profiles, user_preferences, user_category_preferences, notification_preferences)
+8. Redirect to `/dashboard`
 
 ### Login Flow
 1. User authenticates via email/password or Google
@@ -258,10 +302,13 @@ Test routes to verify:
 
 ## Documentation Files
 
-- **README.md** - Project overview, setup, progress table
-- **PROGRESS.md** - Development plan and detailed progress tracking
+- **README.md** - Project overview, setup, AI optimizer features
+- **PIVOT_PLAN.md** - AI optimizer pivot strategy, roadmap, database schema
+- **CLAUDE.md** - AI assistant guidelines (this file)
+- **BUGS.md** - Known issues and fixes
 - **DATABASE_SCHEMA.md** - Complete database structure and RLS policies
 - **PHASE_3_AUTH_SETUP.md** - Supabase authentication provider setup guide
+- **Thoughts.md** - Developer notes and observations
 
 ## Important Notes
 
@@ -271,3 +318,5 @@ Test routes to verify:
 4. **Native Elements:** Use native `<button>` and `<input>` with full Tailwind classes for better control
 5. **Phone OTP:** Deferred to post-MVP due to SMS costs (requires MSG91/Twilio setup)
 6. **Supabase Auth Providers:** Email/Password is FREE and already enabled; Google OAuth is FREE but needs Google Cloud setup
+7. **AI Optimizer Focus:** We're building AI-powered optimization, not just a tracker. Every feature should provide actionable savings recommendations.
+8. **India-First Features:** Prioritize India-specific optimizations (telecom bundles, local OTT platforms, INR pricing)

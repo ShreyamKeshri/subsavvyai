@@ -40,11 +40,14 @@ export const phoneSchema = z.string().refine(
 )
 
 /**
- * Email validation
+ * Email validation (Zod v4+ compatible)
  */
 export const emailSchema = z
   .string()
-  .email('Please enter a valid email address')
+  .min(1, 'Email is required')
+  .refine((email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email), {
+    message: 'Please enter a valid email address'
+  })
   .transform((email) => email.toLowerCase().trim())
 
 /**
@@ -103,7 +106,9 @@ export const paymentMethodSchema = z.object({
   type: z.enum(['card', 'upi', 'netbanking', 'wallet', 'other']),
   last_four_digits: z.string().length(4, 'Must be exactly 4 digits').regex(/^\d{4}$/).optional(),
   card_brand: z.string().max(50).optional(),
-  upi_id: z.string().email('Invalid UPI ID').optional(),
+  upi_id: z.string().refine((id) => /^[^\s@]+@[^\s@]+$/.test(id), {
+    message: 'Invalid UPI ID'
+  }).optional(),
   provider_customer_id: z.string().max(255).optional(),
   provider_method_id: z.string().max(255).optional(),
   is_default: z.boolean().default(false)

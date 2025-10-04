@@ -12,7 +12,7 @@ import { useUser } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase/client'
 import { Loader2, CheckCircle2 } from 'lucide-react'
 
 type OnboardingStep = 'name' | 'preferences' | 'notifications' | 'complete'
@@ -35,15 +35,17 @@ export default function OnboardingPage() {
   const [emailNotifications, setEmailNotifications] = useState(true)
   const [smsNotifications, setSmsNotifications] = useState(true)
 
-  const supabase = createClientComponentClient()
+  const supabase = createClient()
 
   const categoryOptions = [
-    { id: 'streaming', label: 'Streaming (Netflix, Spotify, etc.)' },
-    { id: 'saas', label: 'SaaS & Productivity' },
-    { id: 'fitness', label: 'Fitness & Wellness' },
-    { id: 'news', label: 'News & Media' },
-    { id: 'gaming', label: 'Gaming' },
-    { id: 'education', label: 'Education & Learning' },
+    { id: 'OTT', label: 'Streaming (Netflix, Prime Video, etc.)' },
+    { id: 'Music', label: 'Music (Spotify, Apple Music, etc.)' },
+    { id: 'Food Delivery', label: 'Food Delivery (Zomato, Swiggy, etc.)' },
+    { id: 'SaaS', label: 'SaaS & Productivity' },
+    { id: 'Fitness', label: 'Fitness & Wellness' },
+    { id: 'News', label: 'News & Media' },
+    { id: 'Gaming', label: 'Gaming' },
+    { id: 'Education', label: 'Education & Learning' },
   ]
 
   const handleNameStep = async () => {
@@ -68,25 +70,79 @@ export default function OnboardingPage() {
     setError(null)
 
     try {
-      // Update profile with collected data
-      const { error: updateError } = await supabase
+      // 1. Update profile (just the name)
+      const { error: profileError } = await supabase
         .from('profiles')
         .update({
           full_name: fullName,
-          monthly_budget: monthlyBudget ? parseInt(monthlyBudget) : null,
-          preferred_categories: categories,
-          email_notifications: emailNotifications,
-          sms_notifications: smsNotifications,
-          onboarding_completed: true,
           updated_at: new Date().toISOString(),
         })
         .eq('id', user.id)
 
-      if (updateError) {
-        console.error('Profile update error:', updateError)
+      if (profileError) {
+        console.error('Profile update error:', profileError)
+        setError('Failed to save your profile')
+        setLoading(false)
+        return
+      }
+
+      // 2. Update user preferences (budget and onboarding completion)
+      const { error: preferencesError } = await supabase
+        .from('user_preferences')
+        .update({
+          monthly_budget: monthlyBudget ? parseInt(monthlyBudget) : null,
+          onboarding_completed: true,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('user_id', user.id)
+
+      if (preferencesError) {
+        console.error('Preferences update error:', preferencesError)
         setError('Failed to save your preferences')
         setLoading(false)
         return
+      }
+
+      // 3. Update notification preferences
+      const { error: notificationError } = await supabase
+        .from('notification_preferences')
+        .update({
+          email_enabled: emailNotifications,
+          push_enabled: smsNotifications, // Using push_enabled for SMS preference
+          updated_at: new Date().toISOString(),
+        })
+        .eq('user_id', user.id)
+
+      if (notificationError) {
+        console.error('Notification update error:', notificationError)
+        setError('Failed to save notification preferences')
+        setLoading(false)
+        return
+      }
+
+      // 4. Save category preferences (delete old ones and insert new)
+      if (categories.length > 0) {
+        // First delete existing category preferences
+        await supabase
+          .from('user_category_preferences')
+          .delete()
+          .eq('user_id', user.id)
+
+        // Then insert new ones - categories already in ENUM format from categoryOptions
+        const categoryPreferences = categories.map(category => ({
+          user_id: user.id,
+          category: category, // Already in correct ENUM format (e.g., 'OTT', 'Music', 'Food Delivery')
+          is_preferred: true,
+        }))
+
+        const { error: categoryError } = await supabase
+          .from('user_category_preferences')
+          .insert(categoryPreferences)
+
+        if (categoryError) {
+          console.error('Category preferences error:', categoryError)
+          // Don't fail the whole onboarding for category errors
+        }
       }
 
       // Show success state briefly

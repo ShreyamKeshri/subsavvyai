@@ -70,7 +70,7 @@ export async function logSecurityEvent(
   metadata: SecurityEventMetadata = {}
 ): Promise<void> {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
 
     // Store security event in database
     const { error } = await supabase.from('security_events').insert({
@@ -187,7 +187,7 @@ async function getRecentFailedLogins(
   minutes: number
 ): Promise<number> {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
     const cutoff = new Date(Date.now() - minutes * 60 * 1000).toISOString()
 
     const { count } = await supabase

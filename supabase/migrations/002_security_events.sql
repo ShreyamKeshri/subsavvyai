@@ -29,17 +29,6 @@ CREATE POLICY "Users can view own security events"
   ON public.security_events FOR SELECT
   USING (auth.uid() = user_id);
 
--- Admin policy (for future admin dashboard)
-CREATE POLICY "Admins can view all security events"
-  ON public.security_events FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid()
-      AND is_admin = true
-    )
-  );
-
 -- Automatic cleanup: Delete security events older than 90 days
 CREATE OR REPLACE FUNCTION cleanup_old_security_events()
 RETURNS void AS $$
