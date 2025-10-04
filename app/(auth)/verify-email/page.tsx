@@ -11,6 +11,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Mail, CheckCircle2, Loader2, AlertCircle } from 'lucide-react'
 import { authWithEmail } from '@/lib/auth/auth-helpers'
+import { branding } from '@/lib/config/branding'
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams()
@@ -78,7 +79,7 @@ function VerifyEmailContent() {
                 What to do next:
               </p>
               <ol className="text-sm text-gray-600 space-y-1 list-decimal list-inside">
-                <li>Open the email from Unsubscribr</li>
+                <li>Open the email from {branding.name}</li>
                 <li>Click the verification link</li>
                 <li>You&apos;ll be redirected to your dashboard</li>
               </ol>

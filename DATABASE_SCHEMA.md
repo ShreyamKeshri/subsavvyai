@@ -1,8 +1,8 @@
-# Unsubscribr - Database Schema Documentation
+# SubSavvyAI - Database Schema Documentation
 
 **Version:** 1.0
 **Database:** PostgreSQL (Supabase)
-**Last Updated:** October 3, 2025
+**Last Updated:** October 4, 2025
 
 ---
 
@@ -22,7 +22,7 @@
 
 ## Overview
 
-This document describes the complete database schema for Unsubscribr, a subscription management platform for the Indian market. The schema is designed for:
+This document describes the complete database schema for SubSavvyAI, a subscription management platform for the Indian market. The schema is designed for:
 
 - **Multi-tenancy:** Each user's data is isolated via Row-Level Security
 - **Scalability:** Optimized indexes, materialized views, and caching

@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { authWithPhone, authWithGoogle, authWithEmail, validatePhoneNumber, validateEmail, validatePassword } from '@/lib/auth/auth-helpers'
 import { Loader2, CheckCircle, TrendingDown, Bell, Wallet } from 'lucide-react'
+import { branding } from '@/lib/config/branding'
 
 type SignUpMethod = 'email' | 'phone' | 'google'
 
@@ -154,7 +155,7 @@ export default function SignUpPage() {
               <div className="w-10 h-10 bg-gradient-to-br from-emerald-600 to-green-600 rounded-xl flex items-center justify-center">
                 <Wallet className="w-5 h-5 text-white" />
               </div>
-              <span className="text-2xl font-bold text-gray-900">Unsubscribr</span>
+              <span className="text-2xl font-bold text-gray-900">{branding.name}</span>
             </div>
           </Link>
 
@@ -164,7 +165,7 @@ export default function SignUpPage() {
               Easily cancel unwanted subscriptions
             </h1>
             <p className="text-xl text-gray-700 mb-12">
-              80% of people save money by using Unsubscribr to find and cancel unwanted subscriptions!
+              80% of people save money by using {branding.name} to find and cancel unwanted subscriptions!
             </p>
 
             {/* Features */}
@@ -215,7 +216,7 @@ export default function SignUpPage() {
                 <div className="w-10 h-10 bg-gradient-to-br from-emerald-600 to-green-600 rounded-xl flex items-center justify-center">
                   <Wallet className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-2xl font-bold text-gray-900">Unsubscribr</span>
+                <span className="text-2xl font-bold text-gray-900">{branding.name}</span>
               </div>
             </Link>
           </div>
@@ -223,7 +224,7 @@ export default function SignUpPage() {
           {/* Title */}
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Create your Unsubscribr Account
+              Create your {branding.name} Account
             </h2>
             <p className="text-gray-600">
               This account will help you manage all your subscriptions!
@@ -299,7 +300,7 @@ export default function SignUpPage() {
                 <label htmlFor="terms" className="text-sm text-gray-600 leading-tight">
                   I agree to the{' '}
                   <Link href="/terms" className="text-gray-900 underline">
-                    Unsubscribr Terms of Service
+                    {branding.name} Terms of Service
                   </Link>
                   ,{' '}
                   <Link href="/terms" className="text-gray-900 underline">
@@ -448,7 +449,7 @@ export default function SignUpPage() {
 
           {/* Login Link */}
           <p className="text-center text-sm text-gray-600 mt-8">
-            Already have an Unsubscribr Account?{' '}
+            Already have a {branding.name} Account?{' '}
             <Link href="/login" className="text-gray-900 font-semibold underline">
               Log in
             </Link>

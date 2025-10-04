@@ -4,16 +4,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Unsubscribr AI** is an AI-powered subscription optimizer for the Indian market. Built with Next.js 15.5.4, TypeScript, Tailwind CSS v4, Supabase, and Firebase.
+**SubSavvyAI** (formerly Unsubscribr) is India's first AI-powered subscription optimizer. Built with Next.js 15.5.4, TypeScript, Tailwind CSS v4, Supabase, and Turbopack.
 
-**Goal:** Use AI to help Indian users optimize subscriptions and save ₹10,000/year through intelligent recommendations.
+**Goal:** Use AI to help Indian users optimize subscriptions and save ₹10,000+/year through intelligent recommendations.
 
-> **🚨 PIVOT IN PROGRESS:** We evolved from a basic tracker to an AI-powered optimizer. See PIVOT_PLAN.md for details.
+**Brand Identity:**
+- **Name:** SubSavvyAI
+- **Tagline:** "India's First AI-Powered Subscription Optimizer"
+- **Value Prop:** "AI finds ₹10,000/year hidden in your subscriptions"
+- **Logo:** `/public/logo-full.png` (full logo), `/public/logo-icon.png` (icon)
+- **Branding Config:** `lib/config/branding.ts`
+- **Theme Config:** `lib/config/theme.ts`
 
 ## Development Commands
 
 ```bash
-# Development server with Turbopack (runs on localhost:3000 or :3001)
+# Development server with Turbopack (runs on localhost:3000)
 npm run dev
 
 # Production build
@@ -25,6 +31,9 @@ npm start
 # Lint code
 npm run lint
 
+# Type check
+npm run type-check
+
 # Add shadcn/ui component
 npx shadcn@latest add [component-name]
 ```
@@ -33,160 +42,211 @@ npx shadcn@latest add [component-name]
 
 ### Framework & Routing
 - **Next.js 15.5.4 App Router** with App Directory
-- Route groups: `(auth)` for auth pages, `(dashboard)` for protected pages
+- Route groups: `(auth)` for auth pages
 - Server Components by default; Client Components marked with `'use client'`
-- **Turbopack** enabled for faster builds
+- **Turbopack** enabled for faster dev builds
+- Server Actions pattern for data mutations
 
 ### Authentication Flow
 Multi-method authentication via Supabase Auth:
-1. **Email/Password** (FREE) - Primary for MVP
-2. **Google OAuth** (FREE) - Secondary option
-3. **Phone OTP** (PAID, deferred) - SMS via MSG91/Twilio
+1. **Email/Password** - Primary method
+2. **Google OAuth** - Secondary option
+3. **Phone OTP** (deferred) - Future enhancement
 
 **Auth Architecture:**
-- `lib/auth/auth-helpers.ts` - Reusable auth functions (signUp, signIn, sendOTP, etc.)
-- `middleware.ts` - Route protection, redirects unauthenticated users to `/login`
+- `lib/auth/auth-helpers.ts` - Reusable auth functions
+- `middleware.ts` - Route protection & auth redirects
 - `lib/supabase/client.ts` - Browser-side Supabase client
-- `lib/supabase/server.ts` - Server-side Supabase client
-- `lib/supabase/middleware.ts` - Middleware Supabase client
+- `lib/supabase/server.ts` - Server-side Supabase client (cookies-based)
 
 **Protected Routes:**
 - `/dashboard`, `/onboarding` - Require authentication
-- `/login`, `/signup`, `/auth/*` - Public routes
+- `/login`, `/signup`, `/verify-email`, `/callback` - Public routes
 - Middleware redirects authenticated users from auth pages to `/dashboard`
 
 ### Database (Supabase/PostgreSQL)
-- **Complete schema in:** `DATABASE_SCHEMA.md`
-- Row-Level Security (RLS) enabled on all tables
-- **Normalized schema with 4 migrations applied:**
-  - `001_initial_schema.sql` - Core tables
-  - `002_security_events.sql` - Audit logging
-  - `003_auto_create_profile.sql` - Auto-create profile trigger
-  - `004_proper_schema.sql` - User preferences & category preferences
-- **Key tables (Current):**
+
+**Migrations Applied (5 total):**
+1. `001_initial_schema.sql` - Core tables, RLS policies, triggers, seed data (52 Indian services)
+2. `002_security_events.sql` - Security audit logging
+3. `003_auto_create_profile.sql` - Auto-create profile on signup
+4. `004_proper_schema.sql` - User preferences & category preferences
+5. `005_smart_downgrade_alerts.sql` - AI optimizer tables (oauth_tokens, service_usage, optimization_recommendations) + analytics fix
+
+**Key Tables:**
+- **User Management:**
   - `profiles` - User identity (name, avatar, phone, timezone, currency)
   - `user_preferences` - App settings (budget, onboarding, theme, language)
   - `user_category_preferences` - Subscription category interests
-  - `notification_preferences` - Email/SMS/push settings
-  - `services` - 52 Indian services pre-populated
-  - `subscriptions` - User subscriptions
+  - `notification_preferences` - Email/SMS/push notification settings
+
+- **Subscription Management:**
+  - `services` - 52 pre-populated Indian services (Netflix, Spotify, etc.)
+  - `subscriptions` - User subscriptions with billing tracking
   - `payment_methods`, `payment_history` - Payment tracking
+  - `user_analytics_cache` - Pre-calculated analytics (monthly/yearly spend, category breakdown)
+
+- **AI Optimizer (NEW):**
+  - `oauth_tokens` - Encrypted OAuth tokens for Spotify, Netflix APIs
+  - `service_usage` - Usage data from external APIs (listening hours, watch time)
+  - `optimization_recommendations` - AI-generated savings recommendations (downgrade, cancel, bundle, overlap alerts)
+
+- **Security & Analytics:**
   - `security_events` - Security audit log
-  - `user_analytics_cache` - Pre-calculated analytics
-- **New AI Optimizer Tables (Planned - see PIVOT_PLAN.md):**
-  - `service_usage` - OAuth-based usage tracking (Spotify, Netflix, etc.)
-  - `telecom_bundles` - Jio/Airtel/Vi bundle database
-  - `content_catalog` - OTT content for overlap detection
-  - `price_history` - Price monitoring for alerts
-  - `optimization_recommendations` - AI-generated savings recommendations
+  - `mv_popular_services` - Materialized view of trending services
+
+**Row-Level Security (RLS):**
+- All tables have RLS policies
+- Users can only access their own data via `auth.uid() = user_id`
+- Exception: `refresh_user_analytics()` function uses `SECURITY DEFINER` to bypass RLS for cache updates
+
+**Important Functions:**
+- `calculate_monthly_cost(cost, billing_cycle)` - Normalizes costs to monthly
+- `refresh_user_analytics(user_id)` - Recalculates analytics cache (SECURITY DEFINER, fixed nested aggregate error)
+- `trigger_refresh_user_analytics()` - Trigger function to auto-refresh analytics on subscription changes
 
 **Supabase Clients:**
 ```typescript
 // Browser (client components)
 import { createClient } from '@/lib/supabase/client'
 
-// Server (server components, API routes)
+// Server (server components, API routes, server actions)
 import { createClient } from '@/lib/supabase/server'
-
-// Middleware
-import { createServerClient } from '@supabase/ssr'
 ```
 
 ### Styling System
-- **Tailwind CSS v4** - Uses new `@import "tailwindcss"` syntax (not `@tailwind` directives)
-- **Neo-minimalist design** - Indigo accents (#4F46E5), gray-50 backgrounds
-- **Component style patterns:**
-  - Buttons: `h-12 rounded-xl shadow-lg bg-indigo-600 hover:bg-indigo-700`
-  - Inputs: `h-12 rounded-xl border-gray-200 focus:border-indigo-500`
-  - Cards: `rounded-xl shadow-xl bg-white p-8`
+- **Tailwind CSS v4** - Uses new `@import "tailwindcss"` syntax
+- **Design System:** Centralized in `lib/config/theme.ts`
+- **Component Library:** shadcn/ui with customization
+- **Toast Notifications:** Sonner (`import { toast } from 'sonner'`)
 
 **Important:** After modifying `app/globals.css`, restart dev server if styles don't update.
 
 ### TypeScript Configuration
 - Strict mode enabled
-- Path aliases configured:
+- Path aliases:
   - `@/*` → root
   - `@/components/*` → `./components/*`
   - `@/lib/*` → `./lib/*`
   - `@/types/*` → `./types/*`
   - `@/hooks/*` → `./hooks/*`
-
-### Error Handling Pattern
-Always use type-safe error handling:
-```typescript
-try {
-  // code
-} catch (err) {
-  // Use type guard instead of 'any'
-  const message = err instanceof Error ? err.message : 'Something went wrong'
-  setError(message)
-}
-```
+  - `@/app/*` → `./app/*`
 
 ## File Structure
 
 ```
 unsubscribr/
-├── app/                    # Next.js 14 app directory
-│   ├── (auth)/            # Auth route group (login, signup)
-│   ├── (dashboard)/       # Protected dashboard pages (future)
-│   ├── api/               # API routes
-│   │   └── test-db/       # Database connection test
-│   ├── auth/              # Auth callback handlers
-│   ├── onboarding/        # User onboarding flow
-│   └── dashboard/         # Protected landing page
-├── lib/                   # Utilities
-│   ├── auth/              # Auth helper functions
-│   ├── supabase/          # Supabase clients (browser, server, middleware)
-│   ├── firebase/          # Firebase config & messaging
-│   └── utils.ts           # Utility functions (cn, etc.)
-├── components/            # React components (future)
-│   └── ui/                # shadcn/ui components
-├── types/                 # TypeScript definitions (future)
-├── middleware.ts          # Next.js middleware for auth
-└── app/globals.css        # Global styles (Tailwind v4)
+├── app/                          # Next.js app directory
+│   ├── (auth)/                   # Auth routes (login, signup, verify-email)
+│   ├── api/                      # API routes
+│   │   ├── oauth/spotify/        # Spotify OAuth endpoints
+│   │   ├── usage/sync/           # Usage sync endpoint
+│   │   └── recommendations/      # Generate recommendations
+│   ├── dashboard/                # Main dashboard (protected)
+│   ├── onboarding/               # User onboarding flow
+│   ├── page.tsx                  # Landing page
+│   ├── layout.tsx                # Root layout (with Toaster)
+│   └── globals.css               # Global styles (Tailwind v4)
+├── lib/                          # Core utilities
+│   ├── auth/                     # Auth helpers
+│   ├── config/                   # Theme & branding
+│   │   ├── theme.ts              # Centralized theme config
+│   │   └── branding.ts           # SubSavvyAI branding
+│   ├── oauth/                    # OAuth integrations
+│   │   └── spotify.ts            # Spotify OAuth & usage fetch
+│   ├── recommendations/          # AI recommendation engine
+│   │   ├── recommendation-engine.ts  # Core AI logic
+│   │   └── recommendation-actions.ts # Server actions
+│   ├── subscriptions/            # Subscription CRUD
+│   │   └── subscription-actions.ts  # Server actions
+│   ├── supabase/                 # Supabase clients
+│   │   ├── client.ts             # Browser client
+│   │   ├── server.ts             # Server client
+│   │   └── middleware.ts         # Middleware client
+│   ├── usage/                    # Usage tracking
+│   │   └── usage-actions.ts      # Server actions
+│   └── validators.ts             # Zod schemas
+├── components/                   # React components
+│   ├── ui/                       # shadcn/ui components
+│   ├── subscriptions/            # Subscription components
+│   │   └── add-subscription-dialog.tsx
+│   └── recommendations/          # Recommendation components
+│       └── recommendations-list.tsx
+├── supabase/migrations/          # Database migrations (5 total)
+├── middleware.ts                 # Next.js middleware (auth + security)
+├── tsconfig.json                 # TypeScript config
+└── CLAUDE.md                     # This file
 ```
 
-## Development Phases
+## Current Status
 
-**Current Status:** Foundation Complete (40%) | AI Optimizer Pivot 🚀
+**Phase:** Smart Downgrade Alerts Implementation ✅ COMPLETE
 
-### Completed (Foundation):
-- ✅ Phase 1-2: Project setup (Next.js 15.5.4, TypeScript, Tailwind v4, Supabase)
-- ✅ Phase 3: Authentication (Email/password, Google OAuth, onboarding flow)
-- ✅ Phase 4: Subscription CRUD (Add/edit/delete subscriptions, dashboard with real data)
+**Completed:**
+- ✅ Database schema for AI optimizer (oauth_tokens, service_usage, optimization_recommendations)
+- ✅ Spotify OAuth integration (`lib/oauth/spotify.ts`)
+- ✅ Usage tracking system (`lib/usage/usage-actions.ts`)
+- ✅ AI recommendation engine (`lib/recommendations/recommendation-engine.ts`)
+- ✅ Dashboard integration with beautiful v0-inspired UI
+- ✅ SubSavvyAI rebranding (logo, theme, branding config)
+- ✅ Fixed nested aggregate error in analytics function
+- ✅ Fixed RLS policy for analytics cache
+- ✅ Subscription creation working
+- ✅ Form UX improvements (cost step, billing date clarity)
 
-### AI Optimizer Roadmap (See PIVOT_PLAN.md):
-- 🔄 **Week 1 (Current):** Smart Downgrade Alerts
-  - OAuth integration (Spotify, Netflix)
-  - Usage tracking system
-  - AI recommendation engine
-- ⏳ **Week 2:** India Bundle Optimizer
-  - Telecom bundles database
-  - Bundle matching algorithm
-  - Affiliate integration
-  - **Soft launch to friends/family**
-- ⏳ **Week 3-4:** Content Overlap Detector
-  - JustWatch API integration
-  - Content matching algorithm
-  - Overlap visualization
-  - **Public launch on Product Hunt**
-- ⏳ **Month 2:** Price Monitoring & Alerts
+**Known Issues:**
+- Migration 005 must be run in Supabase to enable AI features
+- PostgREST schema cache must be reloaded after migration: `NOTIFY pgrst, 'reload schema';`
 
-## Git Workflow
+## Key Implementation Patterns
 
-**Current Branch:** `feature/ai-optimizer-pivot`
-**Main Branch:** `main`
+### Server Actions Pattern
+```typescript
+'use server'
 
-**Workflow:**
-1. Create feature branch for each major feature: `feature/{name}`
-2. Commit changes to feature branch with descriptive messages
-3. Create PR when feature is complete
-4. Merge to `main` after review
+import { createClient } from '@/lib/supabase/server'
 
-**Recent Branches:**
-- `feature/subscription-crud` - Subscription management (merged)
-- `feature/ai-optimizer-pivot` - Current pivot work
+export async function myServerAction(data: MyInput) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { success: false, error: 'Not authenticated' }
+  }
+
+  // Perform database operation
+  const { data, error } = await supabase
+    .from('table_name')
+    .insert({ user_id: user.id, ...data })
+    .select()
+    .single()
+
+  if (error) {
+    return { success: false, error: error.message }
+  }
+
+  return { success: true, data }
+}
+```
+
+### Error Handling Pattern
+```typescript
+try {
+  // code
+} catch (err) {
+  const message = err instanceof Error ? err.message : 'Something went wrong'
+  toast.error(message)
+}
+```
+
+### Toast Notifications
+```typescript
+import { toast } from 'sonner'
+
+toast.success('Subscription added!')
+toast.error('Failed to add subscription')
+toast.info('Processing...')
+```
 
 ## Environment Variables
 
@@ -195,128 +255,91 @@ Required in `.env.local`:
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
-# Firebase (for push notifications)
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-# ... (see README.md for full list)
+# Spotify OAuth (for Smart Downgrade Alerts)
+SPOTIFY_CLIENT_ID=your_client_id
+SPOTIFY_CLIENT_SECRET=your_client_secret
+SPOTIFY_REDIRECT_URI=http://localhost:3000/api/oauth/spotify/callback
 
 # App
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
-## Authentication Implementation
+## Common Tasks
 
-### Sign Up Flow
-1. User enters credentials (email/password or Google OAuth)
-2. `lib/auth/auth-helpers.ts` handles authentication
-3. Database trigger auto-creates:
-   - `profiles` entry
-   - `user_preferences` entry (with onboarding_completed: false)
-   - `notification_preferences` entry (with defaults)
-4. Email confirmation sent (for email/password)
-5. After confirmation, callback route checks onboarding status
-6. Redirect to `/onboarding` for 3-step data collection:
-   - Step 1: Full name
-   - Step 2: Monthly budget + category preferences
-   - Step 3: Notification settings (email/SMS)
-7. Data saved to normalized tables (profiles, user_preferences, user_category_preferences, notification_preferences)
-8. Redirect to `/dashboard`
+### Adding a New Table
+1. Create migration file: `supabase/migrations/00X_description.sql`
+2. Define table with RLS policies
+3. Add TypeScript types in relevant file
+4. Create server actions in `lib/*/actions.ts`
+5. Update CLAUDE.md with new schema
 
-### Login Flow
-1. User authenticates via email/password or Google
-2. Session stored in httpOnly cookie
-3. Middleware validates session on protected routes
-4. Redirect to `/dashboard`
+### Creating a Server Action
+1. Create file in `lib/*/actions.ts` with `'use server'` directive
+2. Import `createClient` from `@/lib/supabase/server`
+3. Always check authentication
+4. Return `{ success, data?, error? }` format
+5. Use `revalidatePath()` if needed
 
-### Validation Functions
-Available in `lib/auth/auth-helpers.ts`:
-- `validateEmail()` - Email format validation
-- `validatePhoneNumber()` - Indian mobile number (10 digits, starts with 6-9)
-- `validatePassword()` - Min 8 chars, uppercase, lowercase, numbers
+### Adding a Component
+1. Use shadcn/ui: `npx shadcn@latest add [component]`
+2. Or create in `components/`
+3. Use theme config: `import { theme } from '@/lib/config/theme'`
+4. Follow naming convention: `kebab-case.tsx`
 
-## Design System
+## Debugging Tips
 
-### Colors
-- Primary: Indigo-600 (#4F46E5)
-- Background: Gray-50
-- Text: Gray-900
-- Borders: Gray-200
-- Hover: Indigo-700
+### Database Issues
+- Check Supabase logs in dashboard
+- Verify RLS policies allow the operation
+- Check if migration was applied
+- Reload PostgREST schema: `NOTIFY pgrst, 'reload schema';`
 
-### Component Standards
-- Button height: `h-12`
-- Input height: `h-12`
-- Border radius: `rounded-xl`
-- Shadow: `shadow-lg` or `shadow-xl`
+### Authentication Issues
+- Check middleware logs
+- Verify Supabase auth settings
+- Check cookie settings (httpOnly, secure)
+- Test with `createClient()` in browser console
 
-### Responsive Design
-Mobile-first approach. All pages must be responsive.
-
-## Key Concepts
-
-### Supabase Row-Level Security (RLS)
-All database tables have RLS policies. Users can only access their own data via `auth.uid() = user_id`.
-
-### Server vs Client Components
-- Use Server Components by default (faster, no JS to client)
-- Use Client Components only when needed (`'use client'`):
-  - Event handlers (onClick, onChange)
-  - React hooks (useState, useEffect)
-  - Browser APIs
-
-### Protected Routes
-Middleware (`middleware.ts`) automatically:
-- Redirects unauthenticated users to `/login?redirectTo={pathname}`
-- Redirects authenticated users from `/login` or `/signup` to `/dashboard`
-
-## Common Patterns
-
-### Fetching User Data
-```typescript
-// Server Component
-import { createClient } from '@/lib/supabase/server'
-
-const supabase = createClient()
-const { data: { user } } = await supabase.auth.getUser()
-```
-
-### Client-Side Auth State
-```typescript
-// Client Component
-'use client'
-import { createClient } from '@/lib/supabase/client'
-
-const supabase = createClient()
-const { data: { session } } = await supabase.auth.getSession()
-```
-
-## Testing Authentication
-
-Test routes to verify:
-- `/login` - Accessible when not logged in
-- `/signup` - Accessible when not logged in
-- `/dashboard` - Redirects to `/login` if not authenticated
-- `/onboarding` - Redirects to `/login` if not authenticated
-
-## Documentation Files
-
-- **README.md** - Project overview, setup, AI optimizer features
-- **PIVOT_PLAN.md** - AI optimizer pivot strategy, roadmap, database schema
-- **CLAUDE.md** - AI assistant guidelines (this file)
-- **BUGS.md** - Known issues and fixes
-- **DATABASE_SCHEMA.md** - Complete database structure and RLS policies
-- **PHASE_3_AUTH_SETUP.md** - Supabase authentication provider setup guide
-- **Thoughts.md** - Developer notes and observations
+### Styling Issues
+- Restart dev server after `globals.css` changes
+- Check Tailwind IntelliSense suggestions
+- Verify `@import "tailwindcss"` (not `@tailwind`)
 
 ## Important Notes
 
-1. **Tailwind CSS v4 Syntax:** Use `@import "tailwindcss"` in globals.css, NOT `@tailwind` directives
-2. **TypeScript Errors:** Never use `any` type. Use `unknown` with type guards
-3. **JSX Entities:** Use `&apos;` instead of `'` in JSX text
-4. **Native Elements:** Use native `<button>` and `<input>` with full Tailwind classes for better control
-5. **Phone OTP:** Deferred to post-MVP due to SMS costs (requires MSG91/Twilio setup)
-6. **Supabase Auth Providers:** Email/Password is FREE and already enabled; Google OAuth is FREE but needs Google Cloud setup
-7. **AI Optimizer Focus:** We're building AI-powered optimization, not just a tracker. Every feature should provide actionable savings recommendations.
-8. **India-First Features:** Prioritize India-specific optimizations (telecom bundles, local OTT platforms, INR pricing)
+1. **Brand Name:** SubSavvyAI (not Unsubscribr) - update all references
+2. **Logo Location:** `/public/logo-full.png` and `/public/logo-icon.png`
+3. **Branding:** Use `branding` from `@/lib/config/branding`
+4. **Theme:** Use `theme` from `@/lib/config/theme`
+5. **Toast:** Always use Sonner for user feedback
+6. **Server Actions:** All mutations should be server actions
+7. **TypeScript:** Never use `any`, prefer `unknown` with type guards
+8. **RLS:** All tables must have RLS enabled
+9. **Migration 005:** Contains analytics fix - must be applied
+10. **Subscription Form:** "Last/Current Billing Date" calculates next billing automatically
+
+## Next Steps
+
+1. **Week 2:** India Bundle Optimizer
+   - Telecom bundles database (Jio, Airtel, Vi)
+   - Bundle matching algorithm
+   - Affiliate integration
+
+2. **Week 3-4:** Content Overlap Detector
+   - JustWatch API integration
+   - Content catalog database
+   - Overlap visualization
+
+3. **Month 2:** Price Monitoring & Alerts
+   - Price history tracking
+   - Price change notifications
+   - Competitor comparison
+
+## Documentation Files
+
+- **README.md** - Project overview, setup instructions
+- **CLAUDE.md** - AI assistant guidelines (this file)
+- **PIVOT_PLAN.md** - AI optimizer pivot strategy
+- **DATABASE_SCHEMA.md** - Complete database structure
+- **Thoughts.md** - Developer notes

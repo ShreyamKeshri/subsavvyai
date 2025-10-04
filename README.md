@@ -1,4 +1,4 @@
-# Unsubscribr AI 🤖
+# SubSavvyAI 🤖
 
 **India's first AI-powered subscription optimizer** - AI finds ₹10,000/year hidden in your subscriptions.
 
@@ -45,7 +45,7 @@ We don't just track subscriptions - **we optimize them using AI**.
 ## 📁 Project Structure
 
 ```
-unsubscribr/
+subsavvyai/
 ├── app/                    # Next.js 15 app directory
 │   ├── (auth)/            # Auth pages (login, signup, verify-email)
 │   ├── (dashboard)/       # Protected dashboard
@@ -78,8 +78,8 @@ unsubscribr/
 
 ```bash
 # Clone
-git clone https://github.com/ShreyamKeshri/unsubscribr.git
-cd unsubscribr
+git clone https://github.com/ShreyamKeshri/subsavvyai.git
+cd subsavvyai
 
 # Install
 npm install

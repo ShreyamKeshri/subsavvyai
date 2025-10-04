@@ -2,7 +2,7 @@
 
 ## 🔒 Security Measures
 
-Unsubscribr implements production-grade security measures to protect user data and financial information.
+SubSavvyAI implements production-grade security measures to protect user data and financial information.
 
 ### Authentication & Authorization
 - ✅ Multi-method authentication (Email/Password, Google OAuth, Phone OTP)

@@ -360,8 +360,8 @@ While we think of the final name:
 - **Trimly** (trim expenses)
 - **Stackwise** (subscription stack optimization)
 
-**For now:** Keep "Unsubscribr" but rebrand as:
-> "Unsubscribr AI - India's first AI-powered subscription optimizer"
+**For now:** Keep "SubSavvyAI" but rebrand as:
+> "SubSavvyAI AI - India's first AI-powered subscription optimizer"
 
 ---
 
