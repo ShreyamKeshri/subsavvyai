@@ -247,7 +247,7 @@ export async function getServices(): Promise<{ success: boolean; data?: Array<{ 
 /**
  * Calculate next billing date based on billing cycle
  */
-export function calculateNextBillingDate(startDate: string, cycle: BillingCycle): string {
+export async function calculateNextBillingDate(startDate: string, cycle: BillingCycle): Promise<string> {
   const date = new Date(startDate)
 
   switch (cycle) {

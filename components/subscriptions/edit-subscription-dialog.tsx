@@ -91,7 +91,7 @@ export function EditSubscriptionDialog({
         currency: data.currency,
         billing_cycle: data.billing_cycle as BillingCycle,
         billing_date: data.billing_date,
-        next_billing_date: calculateNextBillingDate(data.billing_date, data.billing_cycle as BillingCycle),
+        next_billing_date: await calculateNextBillingDate(data.billing_date, data.billing_cycle as BillingCycle),
         status: data.status as SubscriptionStatus,
         notes: data.notes
       }
