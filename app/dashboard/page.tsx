@@ -1,26 +1,49 @@
 'use client'
 
 /**
- * Dashboard Page - Neo-Minimalist Design
- * Main landing page after successful authentication
+ * Dashboard Page - V0 Design with Backend Integration
+ * Combines v0's beautiful UI with our AI recommendation engine
  */
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { auth } from '@/lib/auth/auth-helpers'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
-import { Loader2, LogOut, Package, Bell, CreditCard, TrendingUp } from 'lucide-react'
-import { AddSubscriptionDialog } from '@/components/subscriptions/add-subscription-dialog'
-import { SubscriptionsList } from '@/components/subscriptions/subscriptions-list'
+import { Badge } from '@/components/ui/badge'
+import { Progress } from '@/components/ui/progress'
+import {
+  Sparkles,
+  TrendingUp,
+  Calendar,
+  CreditCard,
+  ArrowUpRight,
+  ArrowDownRight,
+  Check,
+  X,
+  Loader2,
+  BarChart3,
+  Shield,
+  Zap,
+  Settings,
+  Package,
+} from 'lucide-react'
 import { getUserSubscriptions, type Subscription } from '@/lib/subscriptions/subscription-actions'
+import { getPendingRecommendations, acceptRecommendation, dismissRecommendation, type OptimizationRecommendation } from '@/lib/recommendations/recommendation-actions'
+import { AddSubscriptionDialog } from '@/components/subscriptions/add-subscription-dialog'
+import { branding } from '@/lib/config/branding'
+import { toast } from 'sonner'
+import Image from 'next/image'
 
 export default function DashboardPage() {
   const router = useRouter()
   const { user, loading, isAuthenticated } = useAuth()
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
+  const [recommendations, setRecommendations] = useState<OptimizationRecommendation[]>([])
+  const [totalSavings, setTotalSavings] = useState<{ monthly: number; annual: number } | null>(null)
   const [loadingSubscriptions, setLoadingSubscriptions] = useState(true)
+  const [loadingRecommendations, setLoadingRecommendations] = useState(true)
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -37,15 +60,85 @@ export default function DashboardPage() {
     setLoadingSubscriptions(false)
   }
 
+  const fetchRecommendations = async () => {
+    setLoadingRecommendations(true)
+    const result = await getPendingRecommendations()
+    if (result.success && result.data) {
+      setRecommendations(result.data)
+      setTotalSavings(result.totalSavings || null)
+    }
+    setLoadingRecommendations(false)
+  }
+
   useEffect(() => {
     if (isAuthenticated) {
       fetchSubscriptions()
+      fetchRecommendations()
     }
   }, [isAuthenticated])
 
   const handleSignOut = async () => {
     await auth.signOut()
     router.push('/login')
+  }
+
+  const handleAcceptRecommendation = async (id: string) => {
+    const rec = recommendations.find((r) => r.id === id)
+    if (rec) {
+      const result = await acceptRecommendation(id)
+      if (result.success) {
+        toast.success(`Accepted: ${rec.title}`, {
+          description: `You'll save ₹${rec.monthly_savings}/month`,
+        })
+        fetchRecommendations()
+      }
+    }
+  }
+
+  const handleDismissRecommendation = async (id: string) => {
+    const result = await dismissRecommendation(id)
+    if (result.success) {
+      toast.info('Recommendation dismissed')
+      fetchRecommendations()
+    }
+  }
+
+  const getRecommendationColor = (type: string) => {
+    switch (type) {
+      case 'downgrade':
+        return 'border-l-blue-500'
+      case 'cancel':
+        return 'border-l-red-500'
+      case 'bundle':
+        return 'border-l-purple-500'
+      default:
+        return 'border-l-gray-300'
+    }
+  }
+
+  const getRecommendationBadge = (type: string) => {
+    switch (type) {
+      case 'downgrade':
+        return (
+          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+            Downgrade
+          </Badge>
+        )
+      case 'cancel':
+        return (
+          <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+            Cancel
+          </Badge>
+        )
+      case 'bundle':
+        return (
+          <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+            Bundle
+          </Badge>
+        )
+      default:
+        return null
+    }
   }
 
   // Calculate stats
@@ -65,7 +158,7 @@ export default function DashboardPage() {
     return diffDays <= 7 && diffDays >= 0
   }).length
 
-  if (loading) {
+  if (loading || loadingSubscriptions) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
@@ -80,116 +173,209 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
-                <Package className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">Unsubscribr</h1>
-                <p className="text-xs text-gray-500">Manage your subscriptions</p>
-              </div>
+      <header className="border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Image src="/logo.png" alt={branding.name} width={40} height={40} className="rounded-xl" />
+            <div>
+              <h1 className="text-xl font-bold text-gray-900">{branding.name}</h1>
+              <p className="text-xs text-gray-500 hidden sm:block">{branding.taglines.ai}</p>
             </div>
-
-            <Button
-              variant="outline"
-              onClick={handleSignOut}
-              className="h-10 border-gray-200 hover:bg-gray-50 rounded-xl font-medium"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm">
+              <Settings className="w-4 h-4 mr-2" />
+              Settings
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleSignOut}>
               Sign Out
             </Button>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome back, {user.user_metadata?.full_name || user.email?.split('@')[0] || 'there'}!
-          </h2>
-          <p className="text-gray-500">
-            Here&apos;s an overview of your subscription management dashboard
-          </p>
-        </div>
+      <main className="container mx-auto px-4 py-8 space-y-8">
+        {/* Hero Stats Section */}
+        <section className="space-y-4">
+          {/* Large Savings Card */}
+          {totalSavings && totalSavings.annual > 0 && (
+            <Card className="bg-gradient-to-br from-indigo-600 to-purple-600 text-white border-0 shadow-xl">
+              <CardContent className="p-8">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Sparkles className="h-5 w-5" />
+                      <span className="text-sm font-medium opacity-90">AI-Powered Insights</span>
+                    </div>
+                    <h2 className="text-4xl md:text-5xl font-extrabold mb-2">
+                      Save up to ₹{totalSavings.annual.toFixed(0)}/year
+                    </h2>
+                    <p className="text-sm opacity-90">Based on your usage patterns and AI recommendations</p>
+                  </div>
+                  <div className="hidden md:block">
+                    <BarChart3 className="h-16 w-16 opacity-20" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                  <Package className="w-5 h-5 text-indigo-600" />
+          {/* 3 Stat Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="border-l-4 border-l-indigo-600">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-gray-600">Active Subscriptions</span>
+                  <CreditCard className="h-5 w-5 text-indigo-600" />
                 </div>
-                <div>
-                  <CardTitle>Active Subscriptions</CardTitle>
-                  <CardDescription>Total subscriptions</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {loadingSubscriptions ? (
-                <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
-              ) : (
-                <p className="text-3xl font-bold text-gray-900">{activeSubscriptions.length}</p>
-              )}
-            </CardContent>
-          </Card>
+                <p className="text-4xl font-extrabold text-gray-900">{activeSubscriptions.length}</p>
+                <p className="text-xs text-gray-500 mt-1">₹{totalMonthlySpend.toFixed(0)}/month total</p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                  <CreditCard className="w-5 h-5 text-green-600" />
+            <Card className="border-l-4 border-l-green-600">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-gray-600">Monthly Spending</span>
+                  <TrendingUp className="h-5 w-5 text-green-600" />
                 </div>
-                <div>
-                  <CardTitle>Monthly Spending</CardTitle>
-                  <CardDescription>Current month</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {loadingSubscriptions ? (
-                <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
-              ) : (
-                <p className="text-3xl font-bold text-gray-900">₹{totalMonthlySpend.toFixed(2)}</p>
-              )}
-            </CardContent>
-          </Card>
+                <p className="text-4xl font-extrabold text-gray-900">₹{totalMonthlySpend.toFixed(0)}</p>
+                <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
+                  <ArrowDownRight className="h-3 w-3" />
+                  Track your spending
+                </p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                  <Bell className="w-5 h-5 text-orange-600" />
+            <Card className="border-l-4 border-l-orange-500">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-gray-600">Upcoming Renewals</span>
+                  <Calendar className="h-5 w-5 text-orange-500" />
                 </div>
-                <div>
-                  <CardTitle>Upcoming Renewals</CardTitle>
-                  <CardDescription>Next 7 days</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {loadingSubscriptions ? (
-                <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
-              ) : (
-                <p className="text-3xl font-bold text-gray-900">{upcomingRenewals}</p>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+                <p className="text-4xl font-extrabold text-gray-900">{upcomingRenewals}</p>
+                <p className="text-xs text-gray-500 mt-1">In next 7 days</p>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        {/* AI Recommendations Section */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold flex items-center gap-2">
+                <Zap className="h-6 w-6 text-indigo-600" />
+                AI-Powered Savings Opportunities
+              </h2>
+              <p className="text-sm text-gray-600 mt-1">Based on your usage patterns and spending behavior</p>
+            </div>
+            {totalSavings && totalSavings.monthly > 0 && (
+              <Badge variant="secondary" className="text-lg px-4 py-2 bg-green-100 text-green-700">
+                ₹{totalSavings.monthly.toFixed(0)}/mo potential savings
+              </Badge>
+            )}
+          </div>
+
+          {loadingRecommendations ? (
+            <Card>
+              <CardContent className="p-12 text-center">
+                <Loader2 className="h-8 w-8 animate-spin text-indigo-600 mx-auto" />
+              </CardContent>
+            </Card>
+          ) : recommendations.length === 0 ? (
+            <Card>
+              <CardContent className="p-12 text-center">
+                <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">All optimized!</h3>
+                <p className="text-sm text-gray-600">
+                  No recommendations at the moment. Connect services and sync usage to get AI-powered insights.
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {recommendations.map((rec) => (
+                <Card
+                  key={rec.id}
+                  className={`border-l-4 ${getRecommendationColor(rec.type)} hover:shadow-lg transition-shadow`}
+                >
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <CardTitle className="text-lg">{rec.title}</CardTitle>
+                      </div>
+                      {getRecommendationBadge(rec.type)}
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-sm text-gray-600">{rec.description}</p>
+
+                    {/* Savings Highlight */}
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-green-700">Monthly Savings</span>
+                        <span className="text-2xl font-bold text-green-700 flex items-center gap-1">
+                          <ArrowUpRight className="h-5 w-5" />₹{rec.monthly_savings.toFixed(0)}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-600">Annual Savings</span>
+                        <span className="text-sm font-semibold text-green-700">₹{rec.annual_savings.toFixed(0)}</span>
+                      </div>
+                    </div>
+
+                    {/* Cost Comparison */}
+                    <div className="flex items-center justify-between text-sm">
+                      <div>
+                        <p className="text-xs text-gray-500 mb-1">Current</p>
+                        <p className="font-semibold">₹{rec.current_cost}</p>
+                      </div>
+                      <ArrowDownRight className="h-5 w-5 text-gray-400" />
+                      <div>
+                        <p className="text-xs text-gray-500 mb-1">Optimized</p>
+                        <p className="font-semibold text-green-600">₹{rec.optimized_cost}</p>
+                      </div>
+                    </div>
+
+                    {/* Confidence Bar */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-gray-600">AI Confidence</span>
+                        <span className="font-medium">{Math.round(rec.confidence_score * 100)}%</span>
+                      </div>
+                      <Progress value={rec.confidence_score * 100} className="h-2" />
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-2 pt-2">
+                      <Button
+                        className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                        onClick={() => handleAcceptRecommendation(rec.id)}
+                      >
+                        <Check className="h-4 w-4 mr-2" />
+                        Accept
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => handleDismissRecommendation(rec.id)}
+                      >
+                        <X className="h-4 w-4 mr-2" />
+                        Dismiss
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </section>
 
         {/* Subscriptions Section */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900">Your Subscriptions</h3>
-              <p className="text-gray-500 text-sm mt-1">Manage and track all your subscriptions in one place</p>
-            </div>
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold">Your Subscriptions</h2>
             <AddSubscriptionDialog onSuccess={fetchSubscriptions} />
           </div>
 
@@ -201,39 +387,45 @@ export default function DashboardPage() {
                 </div>
               </CardContent>
             </Card>
+          ) : subscriptions.length === 0 ? (
+            <Card>
+              <CardContent className="p-12 text-center">
+                <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No subscriptions yet</h3>
+                <p className="text-sm text-gray-600 mb-6">
+                  Add your first subscription to start tracking and optimizing
+                </p>
+                <AddSubscriptionDialog onSuccess={fetchSubscriptions} />
+              </CardContent>
+            </Card>
           ) : (
-            <SubscriptionsList subscriptions={subscriptions} onUpdate={fetchSubscriptions} />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {subscriptions.map((sub) => (
+                <Card key={sub.id} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h3 className="font-semibold">{sub.service?.name || sub.custom_service_name}</h3>
+                        <p className="text-2xl font-bold text-gray-900 mt-1">₹{sub.cost}</p>
+                        <p className="text-xs text-gray-500">{sub.billing_cycle}</p>
+                      </div>
+                      <Badge variant={sub.status === 'active' ? 'default' : 'secondary'}>
+                        {sub.status}
+                      </Badge>
+                    </div>
+
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Next billing</span>
+                        <span className="font-medium">{new Date(sub.next_billing_date).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           )}
-        </div>
-
-        {/* Quick Actions */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Track Spending</CardTitle>
-              <CardDescription>Monitor your monthly subscription costs</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-3 text-gray-500">
-                <TrendingUp className="w-5 h-5" />
-                <p className="text-sm">View detailed spending analytics and insights</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Set Reminders</CardTitle>
-              <CardDescription>Never miss a renewal date</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-3 text-gray-500">
-                <Bell className="w-5 h-5" />
-                <p className="text-sm">Get notified via SMS and email before renewals</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        </section>
       </main>
     </div>
   )

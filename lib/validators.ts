@@ -157,6 +157,60 @@ export const passwordResetSchema = z.object({
 })
 
 /**
+ * OAuth token validation schema
+ */
+export const oauthTokenSchema = z.object({
+  provider: z.enum(['spotify', 'netflix', 'youtube', 'prime_video']),
+  access_token: z.string().min(1, 'Access token is required'),
+  refresh_token: z.string().optional(),
+  token_type: z.string().default('Bearer'),
+  expires_in: z.number().positive('Expires in must be positive'),
+  scope: z.string().optional()
+})
+
+/**
+ * Service usage validation schema
+ */
+export const serviceUsageSchema = z.object({
+  subscription_id: uuidSchema.optional(),
+  service_id: uuidSchema,
+  usage_hours: z.number().nonnegative().optional(),
+  usage_sessions: z.number().int().nonnegative().optional(),
+  usage_count: z.number().int().nonnegative().optional(),
+  usage_data: z.record(z.string(), z.any()).optional(),
+  period_start: z.coerce.date(),
+  period_end: z.coerce.date()
+}).refine(
+  (data) => data.period_end >= data.period_start,
+  { message: 'Period end must be after period start' }
+)
+
+/**
+ * Optimization recommendation validation schema
+ */
+export const optimizationRecommendationSchema = z.object({
+  subscription_id: uuidSchema.optional(),
+  type: z.enum(['downgrade', 'upgrade', 'cancel', 'bundle', 'overlap', 'price_alert']),
+  title: z.string().min(1).max(200),
+  description: z.string().min(1).max(1000),
+  current_cost: z.number().nonnegative(),
+  optimized_cost: z.number().nonnegative(),
+  monthly_savings: z.number(),
+  annual_savings: z.number(),
+  confidence_score: z.number().min(0).max(1).default(0.5),
+  details: z.record(z.string(), z.any()).optional(),
+  expires_at: z.coerce.date().optional()
+})
+
+/**
+ * Update recommendation status schema
+ */
+export const updateRecommendationStatusSchema = z.object({
+  recommendation_id: uuidSchema,
+  status: z.enum(['accepted', 'dismissed'])
+})
+
+/**
  * Safe parse helper with detailed error messages
  */
 export function validateInput<T>(

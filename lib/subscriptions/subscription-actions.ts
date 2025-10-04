@@ -120,11 +120,21 @@ export async function createSubscription(
         notes: input.notes || null,
         status: 'active'
       })
-      .select(`
-        *,
-        service:services(id, name, category, logo_url)
-      `)
+      .select()
       .single()
+
+    // If insert succeeded and has a service_id, fetch the service separately
+    if (data && data.service_id) {
+      const { data: service } = await supabase
+        .from('services')
+        .select('id, name, category, logo_url')
+        .eq('id', data.service_id)
+        .single()
+
+      if (service) {
+        data.service = service
+      }
+    }
 
     if (error) {
       console.error('Error creating subscription:', error)

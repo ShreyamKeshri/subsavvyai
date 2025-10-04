@@ -213,7 +213,8 @@ export function AddSubscriptionDialog({ onSuccess }: { onSuccess?: () => void })
               <Input
                 id="cost"
                 type="number"
-                step="0.01"
+                step="1"
+                min="0"
                 placeholder="0.00"
                 {...form.register('cost')}
               />
@@ -261,12 +262,15 @@ export function AddSubscriptionDialog({ onSuccess }: { onSuccess?: () => void })
 
           {/* Billing Date */}
           <div className="space-y-2">
-            <Label htmlFor="billing_date">Next Billing Date</Label>
+            <Label htmlFor="billing_date">Last/Current Billing Date</Label>
             <Input
               id="billing_date"
               type="date"
               {...form.register('billing_date')}
             />
+            <p className="text-xs text-gray-500">
+              Enter the date you were last charged (or will be charged if it&apos;s a new subscription). The next renewal will be calculated automatically.
+            </p>
             {form.formState.errors.billing_date && (
               <p className="text-sm text-destructive">{form.formState.errors.billing_date.message}</p>
             )}
