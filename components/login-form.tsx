@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Mail } from "lucide-react"
 import { toast } from "sonner"
+import { branding } from "@/lib/config/branding"
 
 const phoneSchema = z.object({
   countryCode: z.string(),
@@ -107,7 +108,7 @@ export function LoginForm() {
             <Mail className="w-6 h-6 text-white" />
           </div>
         </div>
-        <CardTitle className="text-2xl font-bold text-balance">Welcome to Unsubscribr</CardTitle>
+        <CardTitle className="text-2xl font-bold text-balance">Welcome to {branding.name}</CardTitle>
         <CardDescription className="text-base text-pretty">
           {step === "phone" ? "Enter your phone number to get started" : "Enter the 6-digit code sent to your phone"}
         </CardDescription>

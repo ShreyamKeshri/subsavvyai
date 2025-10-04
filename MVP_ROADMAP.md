@@ -1,4 +1,4 @@
-# MVP Roadmap - Unsubscribr
+# MVP Roadmap - SubSavvyAI
 **Goal: Ship in 2-3 weeks and validate the idea with real users**
 
 ---

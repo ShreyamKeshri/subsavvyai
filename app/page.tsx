@@ -19,6 +19,7 @@ import {
   Menu,
 } from "lucide-react"
 import Link from "next/link"
+import { branding } from "@/lib/config/branding"
 
 export default function LandingPage() {
   return (
@@ -26,7 +27,7 @@ export default function LandingPage() {
       {/* Header/Navigation */}
       <header className="border-b border-gray-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="text-2xl font-bold text-gray-900">Unsubscribr</div>
+          <div className="text-2xl font-bold text-gray-900">{branding.name}</div>
           <nav className="hidden md:flex items-center gap-6">
             <Link href="#features" className="text-gray-600 hover:text-gray-900 transition-colors">
               Features
@@ -58,7 +59,7 @@ export default function LandingPage() {
               Track Every Subscription. Save Thousands Every Year.
             </h1>
             <p className="text-lg lg:text-xl text-gray-600 leading-relaxed">
-              Unsubscribr finds all your subscriptions, shows exactly what you&apos;re spending, and helps you cancel the
+              {branding.name} finds all your subscriptions, shows exactly what you&apos;re spending, and helps you cancel the
               ones you don&apos;t need.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
@@ -354,8 +355,8 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div className="space-y-4">
-              <div className="text-2xl font-bold">Unsubscribr</div>
-              <p className="text-gray-400 text-sm">Take control of your subscriptions</p>
+              <div className="text-2xl font-bold">{branding.name}</div>
+              <p className="text-gray-400 text-sm">{branding.tagline}</p>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Product</h4>
@@ -414,7 +415,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
-            <p>&copy; 2025 Unsubscribr. All rights reserved.</p>
+            <p>&copy; 2025 {branding.name}. All rights reserved.</p>
           </div>
         </div>
       </footer>

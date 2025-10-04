@@ -1,6 +1,6 @@
 # Supabase Database Migration Guide
 
-This directory contains SQL migration files and seed data for the Unsubscribr database.
+This directory contains SQL migration files and seed data for the SubSavvyAI database.
 
 ## Directory Structure
 
@@ -83,15 +83,14 @@ psql $DATABASE_URL -f supabase/seeds/001_indian_services.sql
 ### Option 3: Using Direct PostgreSQL Connection
 
 ```bash
-# Get connection string from Supabase Dashboard > Settings > Database
-# Format: postgresql://postgres:[PASSWORD]@[HOST]:5432/postgres
+# Get your connection string from Supabase Dashboard > Settings > Database
 
 # Run migration
-psql "postgresql://postgres:yourpassword@db.xxx.supabase.co:5432/postgres" \
+psql "<YOUR_SUPABASE_CONNECTION_STRING>" \
   -f supabase/migrations/001_initial_schema.sql
 
 # Run seed
-psql "postgresql://postgres:yourpassword@db.xxx.supabase.co:5432/postgres" \
+psql "<YOUR_SUPABASE_CONNECTION_STRING>" \
   -f supabase/seeds/001_indian_services.sql
 ```
 

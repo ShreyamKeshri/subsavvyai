@@ -1,4 +1,4 @@
-# Unsubscribr AI - Design System
+# SubSavvyAI - Design System
 
 ## Overview
 This design system is fully configurable. All colors, spacing, and design tokens are centralized in `lib/config/theme.ts`. Change values there to update the entire app.
