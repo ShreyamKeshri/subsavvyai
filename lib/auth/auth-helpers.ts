@@ -7,6 +7,19 @@ import { createClient } from '@/lib/supabase/client'
 
 export type SignUpMethod = 'phone' | 'google' | 'email'
 
+/**
+ * Send welcome email asynchronously (non-blocking)
+ */
+async function sendWelcomeEmailAsync(email: string, firstName: string) {
+  try {
+    const { sendWelcomeEmail } = await import('@/lib/email/email-service')
+    await sendWelcomeEmail(email, firstName)
+  } catch (error) {
+    // Log but don't throw - email sending shouldn't block signup
+    console.error('Error sending welcome email:', error)
+  }
+}
+
 export interface SignUpResult {
   success: boolean
   user?: unknown
@@ -162,11 +175,20 @@ export const authWithGoogle = {
 
       // Extract profile data from OAuth
       const metadata = user.user_metadata || {}
+      const fullName = metadata.full_name || metadata.name
 
       await createOrUpdateProfile(user.id, {
-        full_name: metadata.full_name || metadata.name,
+        full_name: fullName,
         avatar_url: metadata.avatar_url || metadata.picture,
       })
+
+      // Send welcome email for new Google OAuth users (non-blocking)
+      if (fullName && user.email) {
+        const firstName = fullName.split(' ')[0]
+        sendWelcomeEmailAsync(user.email, firstName).catch(error => {
+          console.error('Failed to send welcome email:', error)
+        })
+      }
 
       return {
         success: true,
@@ -229,6 +251,14 @@ export const authWithEmail = {
       await createOrUpdateProfile(data.user.id, {
         full_name: fullName
       })
+
+      // Send welcome email (non-blocking, don't wait for it)
+      if (fullName && data.user.email) {
+        const firstName = fullName.split(' ')[0]
+        sendWelcomeEmailAsync(data.user.email, firstName).catch(error => {
+          console.error('Failed to send welcome email:', error)
+        })
+      }
 
       return {
         success: true,
