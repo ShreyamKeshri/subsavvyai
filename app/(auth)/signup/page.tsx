@@ -175,7 +175,7 @@ export default function SignUpPage() {
                   <CheckCircle className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Effortlessly track your spending</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">Track spending effortlessly</h3>
                 </div>
               </div>
 
@@ -184,7 +184,7 @@ export default function SignUpPage() {
                   <TrendingDown className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Easily lower bills</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">Lower bills easily</h3>
                 </div>
               </div>
 
@@ -199,11 +199,6 @@ export default function SignUpPage() {
             </div>
           </div>
         </div>
-
-        {/* Footer */}
-        <p className="text-sm text-gray-600">
-          Made with ❤️ in India
-        </p>
       </div>
 
       {/* Right Panel - Sign Up Form */}
@@ -428,7 +423,10 @@ export default function SignUpPage() {
 
             {method === 'email' && (
               <Button
-                onClick={() => setMethod('phone')}
+                onClick={() => {
+                  setMethod('phone')
+                  setError(null)
+                }}
                 variant="outline"
                 className="w-full h-12 border-gray-300 hover:bg-gray-50"
               >
@@ -438,7 +436,10 @@ export default function SignUpPage() {
 
             {method === 'phone' && (
               <Button
-                onClick={() => setMethod('email')}
+                onClick={() => {
+                  setMethod('email')
+                  setError(null)
+                }}
                 variant="outline"
                 className="w-full h-12 border-gray-300 hover:bg-gray-50"
               >

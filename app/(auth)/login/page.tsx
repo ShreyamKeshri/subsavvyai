@@ -16,7 +16,7 @@ type LoginMethod = 'phone' | 'google' | 'email'
 
 export default function LoginPage() {
   const router = useRouter()
-  const [method, setMethod] = useState<LoginMethod>('phone')
+  const [method, setMethod] = useState<LoginMethod>('email')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -145,8 +145,8 @@ export default function LoginPage() {
             Welcome back
           </h1>
           <p className="text-gray-500 text-sm">
-            {method === 'phone' && 'Enter your phone number to continue'}
             {method === 'email' && 'Sign in with your email'}
+            {method === 'phone' && 'Enter your phone number to continue'}
             {method === 'google' && 'Sign in with Google'}
           </p>
         </div>
@@ -155,6 +155,62 @@ export default function LoginPage() {
         {error && (
           <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
             {error}
+          </div>
+        )}
+
+        {/* Email/Password Form */}
+        {method === 'email' && (
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-gray-900 font-medium">
+                Email
+              </Label>
+              <input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full h-12 px-4 border border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all text-gray-900"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password" className="text-gray-900 font-medium">
+                  Password
+                </Label>
+                <Link
+                  href="/forgot-password"
+                  className="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
+                >
+                  Forgot Password?
+                </Link>
+              </div>
+              <input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full h-12 px-4 border border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all text-gray-900"
+              />
+            </div>
+
+            <button
+              onClick={handleEmailLogin}
+              disabled={loading || !email || !password}
+              className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                'Sign In'
+              )}
+            </button>
           </div>
         )}
 
@@ -236,72 +292,8 @@ export default function LoginPage() {
           </div>
         )}
 
-        {/* Email/Password Form */}
+        {/* Show divider and alternative methods only on email method */}
         {method === 'email' && (
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-gray-900 font-medium">
-                Email
-              </Label>
-              <input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="h-12 px-4 border border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all text-gray-900"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-gray-900 font-medium">
-                  Password
-                </Label>
-                <Link
-                  href="/forgot-password"
-                  className="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
-                >
-                  Forgot?
-                </Link>
-              </div>
-              <input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="h-12 px-4 border border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all text-gray-900"
-              />
-            </div>
-
-            <button
-              onClick={handleEmailLogin}
-              disabled={loading || !email || !password}
-              className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  Signing in...
-                </>
-              ) : (
-                'Sign In'
-              )}
-            </button>
-
-            {/* Back to Phone */}
-            <button
-              onClick={() => setMethod('phone')}
-              className="w-full text-sm text-gray-500 hover:text-gray-700 font-medium"
-            >
-              ← Back to phone login
-            </button>
-          </div>
-        )}
-
-        {/* Show divider and Google button only on phone method */}
-        {method === 'phone' && (
           <>
             {/* Divider */}
             <div className="relative my-8">
@@ -346,12 +338,43 @@ export default function LoginPage() {
               Continue with Google
             </button>
 
-            {/* Email Link */}
+            {/* Phone Link */}
             <button
-              onClick={() => setMethod('email')}
+              onClick={() => {
+                setMethod('phone')
+                setError(null)
+              }}
               className="w-full text-sm text-gray-500 hover:text-gray-700 font-medium mt-4"
             >
-              or sign in with email →
+              or sign in with phone →
+            </button>
+          </>
+        )}
+
+        {/* Alternative options for Phone method */}
+        {method === 'phone' && (
+          <>
+            {/* Divider */}
+            <div className="relative my-8">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-200"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-white text-gray-500 uppercase tracking-wider text-xs font-medium">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+
+            {/* Email Link */}
+            <button
+              onClick={() => {
+                setMethod('email')
+                setError(null)
+              }}
+              className="w-full text-sm text-gray-500 hover:text-gray-700 font-medium"
+            >
+              ← Back to email login
             </button>
           </>
         )}

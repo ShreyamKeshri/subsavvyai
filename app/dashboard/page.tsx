@@ -36,6 +36,7 @@ import { AddSubscriptionDialog } from '@/components/subscriptions/add-subscripti
 import { branding } from '@/lib/config/branding'
 import { toast } from 'sonner'
 import Image from 'next/image'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -177,13 +178,14 @@ export default function DashboardPage() {
       <header className="border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Image src="/logo.png" alt={branding.name} width={40} height={40} className="rounded-xl" />
+            <Image src="/logo-icon.png" alt={branding.name} width={48} height={48} className="rounded-xl" />
             <div>
               <h1 className="text-xl font-bold text-gray-900">{branding.name}</h1>
               <p className="text-xs text-gray-500 hidden sm:block">{branding.taglines.ai}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Link href="/dashboard/settings">
               <Button variant="outline" size="sm">
                 <Settings className="w-4 h-4 mr-2" />

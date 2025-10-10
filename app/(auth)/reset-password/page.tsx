@@ -25,13 +25,20 @@ function ResetPasswordContent() {
   const [tokenError, setTokenError] = useState(false)
 
   useEffect(() => {
-    // Check if we have the required tokens from the email link
-    const accessToken = searchParams.get('access_token')
-    const refreshToken = searchParams.get('refresh_token')
+    // Check if this is a password recovery flow
+    // Supabase automatically handles the token exchange from the email link
+    // We just need to verify the user is authenticated
+    const checkSession = async () => {
+      const supabase = (await import('@/lib/supabase/client')).createClient()
+      const { data: { session } } = await supabase.auth.getSession()
 
-    if (!accessToken || !refreshToken) {
-      setTokenError(true)
+      // If no session, tokens are invalid/expired
+      if (!session) {
+        setTokenError(true)
+      }
     }
+
+    checkSession()
   }, [searchParams])
 
   const handleResetPassword = async () => {
