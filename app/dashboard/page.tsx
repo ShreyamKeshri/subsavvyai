@@ -7,6 +7,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
 import { auth } from '@/lib/auth/auth-helpers'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -183,10 +184,12 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
-              <Settings className="w-4 h-4 mr-2" />
-              Settings
-            </Button>
+            <Link href="/dashboard/settings">
+              <Button variant="outline" size="sm">
+                <Settings className="w-4 h-4 mr-2" />
+                Settings
+              </Button>
+            </Link>
             <Button variant="outline" size="sm" onClick={handleSignOut}>
               Sign Out
             </Button>
