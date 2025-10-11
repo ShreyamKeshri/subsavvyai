@@ -33,6 +33,7 @@ import {
 import { getUserSubscriptions, type Subscription } from '@/lib/subscriptions/subscription-actions'
 import { getPendingRecommendations, acceptRecommendation, dismissRecommendation, type OptimizationRecommendation } from '@/lib/recommendations/recommendation-actions'
 import { AddSubscriptionDialog } from '@/components/subscriptions/add-subscription-dialog'
+import { BundleRecommendationsList } from '@/components/bundles/bundle-recommendations-list'
 import { branding } from '@/lib/config/branding'
 import { toast } from 'sonner'
 import Image from 'next/image'
@@ -376,6 +377,13 @@ export default function DashboardPage() {
             </div>
           )}
         </section>
+
+        {/* Bundle Optimizer Section */}
+        {activeSubscriptions.length >= 2 && (
+          <section className="space-y-4">
+            <BundleRecommendationsList />
+          </section>
+        )}
 
         {/* Subscriptions Section */}
         <section className="space-y-4">

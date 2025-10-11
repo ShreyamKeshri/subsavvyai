@@ -435,9 +435,333 @@ npm run dev
 
 ---
 
-## 4. Settings Page
+## 4. India Bundle Optimizer
 
-### 4.1 Profile Settings
+### 4.1 Prerequisites
+
+**Steps:**
+1. Ensure database migration 006 has been run in Supabase
+2. Log in to dashboard
+3. Add at least 2-3 OTT subscriptions (e.g., Netflix, Hotstar, Zee5)
+
+**Expected Results:**
+- ✅ Bundle Optimizer section appears on dashboard
+- ✅ Section only shows if user has 2+ active subscriptions
+
+**Check:**
+- [ ] Migration 006 ran successfully
+- [ ] 20 telecom bundles imported to database
+- [ ] Bundle Optimizer section visible on dashboard
+
+### 4.2 Generate Bundle Recommendations
+
+**Steps:**
+1. On dashboard, scroll to "Bundle Optimizer" section
+2. Click "Find Bundles for Me" button
+3. Wait for AI analysis to complete
+
+**Expected Results:**
+- ✅ Loading state shows: "Analyzing..."
+- ✅ Success toast: "Found X bundles that could save you money!"
+- ✅ Bundle recommendation cards appear
+- ✅ Shows total potential savings at top
+
+**Check:**
+- [ ] Generate button works
+- [ ] Loading state displays
+- [ ] Recommendations appear after generation
+- [ ] Savings calculation displayed
+
+### 4.3 View Bundle Details
+
+**Steps:**
+1. Look at a bundle recommendation card
+2. Click "View Full Details" to expand
+3. Review all information
+
+**Expected Results:**
+- ✅ Card shows:
+  - Provider name and emoji (🔵 Jio, 🔴 Airtel, 🟣 Vi)
+  - Plan name and type
+  - Monthly & yearly savings highlighted in green
+  - Current cost vs bundle cost comparison
+  - Matched services with checkmarks
+  - Match percentage and confidence score
+- ✅ When expanded shows:
+  - Data benefits (e.g., "Unlimited @100Mbps")
+  - Additional benefits list
+  - Reasoning for recommendation
+  - Notes (if any)
+
+**Check:**
+- [ ] All card details visible
+- [ ] Expand/collapse works smoothly
+- [ ] Provider branding correct
+- [ ] Savings calculations accurate
+- [ ] Matched services highlighted correctly
+
+### 4.4 Service Name Matching
+
+**Test different service name variants:**
+
+**Steps:**
+1. Add subscriptions with variations:
+   - "Netflix" subscription
+   - "Disney+ Hotstar" subscription
+   - "Amazon Prime Video" subscription
+2. Generate bundle recommendations
+3. Check if bundles correctly match these services
+
+**Expected Results:**
+- ✅ Bundles with "Netflix" match your Netflix subscription
+- ✅ Bundles with "Hotstar" or "Disney+ Hotstar" match your Hotstar subscription
+- ✅ Bundles with "Prime Video" or "Amazon Prime" match your Prime subscription
+- ✅ Service name normalization works correctly
+
+**Check:**
+- [ ] Service matching works across name variants
+- [ ] All user subscriptions correctly identified
+- [ ] Match percentage calculated correctly
+
+### 4.5 Savings Calculation
+
+**Test with specific example:**
+
+**Steps:**
+1. Add these subscriptions:
+   - Netflix Premium: ₹649/month
+   - Hotstar Premium: ₹1,499/year (₹125/month)
+   - Zee5 Premium: ₹699/year (₹58/month)
+   - **Total:** ₹832/month
+2. Generate recommendations
+3. Check recommended bundle (e.g., JioFiber 599)
+
+**Expected Results:**
+- ✅ Current monthly cost: ₹832
+- ✅ Bundle monthly cost: ₹599
+- ✅ Monthly savings: ₹233
+- ✅ Annual savings: ₹2,796
+- ✅ Match: 100% (all 3 services covered)
+
+**Check:**
+- [ ] Current cost correctly sums user subscriptions
+- [ ] Bundle cost matches database
+- [ ] Savings = Current - Bundle cost
+- [ ] Annual savings = Monthly savings × 12
+- [ ] Calculations accurate
+
+### 4.6 Confidence Scoring
+
+**Test different scenarios:**
+
+**Scenario 1: Perfect Match (High Confidence)**
+- User has: Netflix, Hotstar, Zee5
+- Bundle includes: All 3 + 11 more OTTs
+- Expected confidence: 85%+
+
+**Scenario 2: Partial Match (Medium Confidence)**
+- User has: Netflix, Spotify, Apple Music
+- Bundle includes: Netflix, Hotstar, Prime (only 1 match)
+- Expected confidence: 50-70%
+
+**Check:**
+- [ ] Confidence score between 0-100%
+- [ ] Higher match % = higher confidence
+- [ ] Higher savings = higher confidence
+- [ ] Score displayed correctly on card
+
+### 4.7 Click Through to Provider
+
+**Steps:**
+1. On a bundle card, click "Switch to This Bundle"
+2. Check if provider website opens
+
+**Expected Results:**
+- ✅ Opens provider URL in new tab
+- ✅ Console log: "User [id] clicked bundle [bundle-id]"
+- ✅ Recommendation marked as "viewed" in database
+- ✅ Click tracked in `bundle_recommendations` table
+
+**Check:**
+- [ ] Link opens in new tab
+- [ ] Correct provider URL
+- [ ] Click tracking works
+- [ ] Status updated to "viewed"
+
+### 4.8 Dismiss Recommendation
+
+**Steps:**
+1. On a bundle card, click the "X" button
+2. Confirm dismissal (if prompted)
+
+**Expected Results:**
+- ✅ Card disappears from view
+- ✅ Success toast: "Recommendation dismissed"
+- ✅ Status changed to "dismissed" in database
+- ✅ Recommendation doesn't show again on refresh
+
+**Check:**
+- [ ] Dismiss button works
+- [ ] Card removed from UI
+- [ ] Database status updated
+- [ ] Doesn't reappear on page refresh
+
+### 4.9 Refresh Recommendations
+
+**Steps:**
+1. View current recommendations
+2. Click "Refresh" button (top right)
+3. Wait for regeneration
+
+**Expected Results:**
+- ✅ Loading state: "Refreshing..."
+- ✅ Recommendations regenerated
+- ✅ May show same or different bundles based on current subscriptions
+- ✅ Previous dismissed recommendations don't reappear
+
+**Check:**
+- [ ] Refresh button works
+- [ ] Loading indicator shows
+- [ ] New recommendations fetched
+- [ ] Dismissed ones stay dismissed
+
+### 4.10 Empty State
+
+**Test with insufficient subscriptions:**
+
+**Steps:**
+1. Delete subscriptions until only 1 remains
+2. Reload dashboard
+
+**Expected Results:**
+- ✅ Bundle Optimizer section hidden
+- ✅ Only shows when 2+ active subscriptions exist
+
+**Test with no matching bundles:**
+
+**Steps:**
+1. Add 2 non-OTT subscriptions (e.g., Gym membership, Magazine)
+2. Try generating recommendations
+
+**Expected Results:**
+- ✅ Empty state shows
+- ✅ Message: "No bundle recommendations found. Add more subscriptions to see recommendations."
+- ✅ Friendly explanation displayed
+
+**Check:**
+- [ ] Section hides when < 2 subscriptions
+- [ ] Empty state displays when no matches
+- [ ] Clear messaging for users
+
+### 4.11 Mobile Responsiveness
+
+**Test on mobile devices or responsive mode:**
+
+**Steps:**
+1. Open dashboard on mobile (or resize to 375px width)
+2. View Bundle Optimizer section
+3. Generate and view recommendations
+
+**Expected Results:**
+- ✅ Bundle cards stack vertically
+- ✅ Buttons remain tappable (44px minimum)
+- ✅ Text readable (not too small)
+- ✅ No horizontal scrolling
+- ✅ Savings amounts clearly visible
+
+**Check:**
+- [ ] Mobile layout works
+- [ ] Cards responsive
+- [ ] Buttons large enough to tap
+- [ ] Text legible
+
+### 4.12 Multiple Bundle Providers
+
+**Test variety:**
+
+**Steps:**
+1. Generate recommendations
+2. Check if different providers shown (Jio, Airtel, Vi)
+
+**Expected Results:**
+- ✅ Shows bundles from multiple providers
+- ✅ Each provider has distinct emoji/branding
+- ✅ Sorted by savings (highest first)
+- ✅ Maximum 5 recommendations shown
+
+**Check:**
+- [ ] Multiple providers represented
+- [ ] Jio = 🔵, Airtel = 🔴, Vi = 🟣
+- [ ] Sorted by savings amount
+- [ ] Reasonable number of recommendations (not overwhelming)
+
+### 4.13 Database Verification
+
+**Check Supabase tables:**
+
+**Steps:**
+1. Go to Supabase dashboard
+2. Check `telecom_bundles` table:
+   ```sql
+   SELECT provider, COUNT(*) as count
+   FROM telecom_bundles
+   GROUP BY provider;
+   ```
+3. Check `bundle_recommendations` table:
+   ```sql
+   SELECT * FROM bundle_recommendations
+   WHERE user_id = 'your-user-id'
+   ORDER BY created_at DESC;
+   ```
+
+**Expected Results:**
+- ✅ `telecom_bundles`: 20 rows (6 Jio + 9 Airtel + 2 Vi + 3 Vi plans)
+- ✅ `bundle_recommendations`: Shows your generated recommendations
+- ✅ All fields populated correctly:
+  - `matched_subscription_ids` (UUID array)
+  - `current_monthly_cost`, `bundle_monthly_cost`
+  - `monthly_savings`, `annual_savings` (computed)
+  - `match_percentage`, `confidence_score`
+  - `reasoning` (text)
+  - `status` (pending/viewed/accepted/dismissed)
+
+**Check:**
+- [ ] 20 bundles imported
+- [ ] RLS policies work (can only see own recommendations)
+- [ ] Generated columns computed correctly
+- [ ] Indexes created (check pg_indexes)
+
+### 4.14 Edge Cases
+
+**Test unusual scenarios:**
+
+**Scenario 1: Very high current spend**
+- Add 10 subscriptions totaling ₹5,000/month
+- Generate recommendations
+- Check if any bundles save money (probably not)
+- Expected: No recommendations or low-confidence ones
+
+**Scenario 2: Very low current spend**
+- Add 2 cheap subscriptions totaling ₹200/month
+- Generate recommendations
+- Expected: Most bundles cost more than current spend
+- Should show "upgrade" recommendations
+
+**Scenario 3: Rapid regeneration**
+- Click "Generate" button 5 times rapidly
+- Expected: Handles gracefully, no duplicates
+
+**Check:**
+- [ ] High spend scenario handled
+- [ ] Low spend scenario handled
+- [ ] Rapid clicks don't create duplicates
+- [ ] Loading states prevent multiple requests
+
+---
+
+## 5. Settings Page
+
+### 5.1 Profile Settings
 
 **Steps:**
 1. Navigate to `/settings` or `/dashboard/settings`
@@ -461,7 +785,7 @@ npm run dev
 - [ ] Changes reflected in dashboard header
 - [ ] Validation works (e.g., invalid phone rejected)
 
-### 4.2 Preferences
+### 5.2 Preferences
 
 **Steps:**
 1. Go to "Preferences" tab
@@ -484,7 +808,7 @@ npm run dev
 - [ ] Can modify and save
 - [ ] Budget alerts work
 
-### 4.3 Notification Preferences
+### 5.3 Notification Preferences
 
 **Steps:**
 1. Go to "Notifications" tab
@@ -509,7 +833,7 @@ npm run dev
 - [ ] Changes saved to database
 - [ ] Preferences respected (test by checking notification_preferences table)
 
-### 4.4 Category Preferences
+### 5.4 Category Preferences
 
 **Steps:**
 1. Go to "Categories" or "Interests" section
@@ -535,7 +859,7 @@ npm run dev
 - [ ] Can select multiple
 - [ ] Saved to `user_category_preferences` table
 
-### 4.5 Connected Accounts
+### 5.5 Connected Accounts
 
 **Steps:**
 1. Go to "Connected Accounts" or "Integrations"
@@ -563,7 +887,7 @@ npm run dev
 - [ ] Can disconnect
 - [ ] Status updated correctly
 
-### 4.6 Security Settings
+### 5.6 Security Settings
 
 **Steps:**
 1. Go to "Security" tab
@@ -588,7 +912,7 @@ npm run dev
 - [ ] New password requirements enforced
 - [ ] Can log in with new password
 
-### 4.7 Danger Zone (Delete Account)
+### 5.7 Danger Zone (Delete Account)
 
 **Steps:**
 1. Scroll to "Danger Zone"
@@ -613,9 +937,9 @@ npm run dev
 
 ---
 
-## 5. Email System
+## 6. Email System
 
-### 5.1 Welcome Email (Already tested in Auth)
+### 6.1 Welcome Email (Already tested in Auth)
 
 **Steps:**
 - Sign up with new account
@@ -628,7 +952,7 @@ npm run dev
 - [ ] Footer links work
 - [ ] No "Made with ❤️ in India" text
 
-### 5.2 Verification Email (Already tested in Auth)
+### 6.2 Verification Email (Already tested in Auth)
 
 **Steps:**
 - Sign up with email/password
@@ -640,7 +964,7 @@ npm run dev
 - [ ] Link works only once (second click shows error)
 - [ ] Branding consistent
 
-### 5.3 Password Reset Email (Already tested in Auth)
+### 6.3 Password Reset Email (Already tested in Auth)
 
 **Steps:**
 - Request password reset
@@ -652,7 +976,7 @@ npm run dev
 - [ ] Warning for non-requesters visible
 - [ ] Link expires after 30 minutes (optional test)
 
-### 5.4 Email Rendering Across Clients
+### 6.4 Email Rendering Across Clients
 
 **Test in multiple email clients:**
 1. Gmail (Web)
@@ -669,9 +993,9 @@ npm run dev
 
 ---
 
-## 6. Middleware & Route Protection
+## 7. Middleware & Route Protection
 
-### 6.1 Protected Routes (Logged Out)
+### 7.1 Protected Routes (Logged Out)
 
 **Steps:**
 1. Log out completely
@@ -689,7 +1013,7 @@ npm run dev
 - [ ] Redirected to login
 - [ ] Return URL preserved
 
-### 6.2 Public Routes (Logged In)
+### 7.2 Public Routes (Logged In)
 
 **Steps:**
 1. Log in
@@ -706,7 +1030,7 @@ npm run dev
 - [ ] Cannot access auth pages when logged in
 - [ ] Redirected to dashboard
 
-### 6.3 Middleware Security Headers
+### 7.3 Middleware Security Headers
 
 **Steps:**
 1. Open browser DevTools
@@ -726,9 +1050,9 @@ npm run dev
 
 ---
 
-## 7. Database & Data Persistence
+## 8. Database & Data Persistence
 
-### 7.1 User Profile Creation
+### 8.1 User Profile Creation
 
 **Steps:**
 1. Sign up with new account
@@ -746,7 +1070,7 @@ npm run dev
 - [ ] ID matches auth.users
 - [ ] Timestamps set correctly
 
-### 7.2 Subscription CRUD
+### 8.2 Subscription CRUD
 
 **Steps:**
 1. Add subscription
@@ -765,7 +1089,7 @@ npm run dev
 - [ ] Foreign keys intact (user_id, service_id)
 - [ ] Timestamps update on edit
 
-### 7.3 Analytics Cache
+### 8.3 Analytics Cache
 
 **Steps:**
 1. Add/edit/delete subscriptions
@@ -784,7 +1108,7 @@ npm run dev
 - [ ] Calculations accurate
 - [ ] Category breakdown correct
 
-### 7.4 RLS Policies
+### 8.4 RLS Policies
 
 **Test:**
 1. Try accessing another user's data via API/SQL
@@ -805,9 +1129,9 @@ npm run dev
 
 ---
 
-## 8. Error Handling & Edge Cases
+## 9. Error Handling & Edge Cases
 
-### 8.1 Network Errors
+### 9.1 Network Errors
 
 **Test:**
 1. Disconnect internet
@@ -823,7 +1147,7 @@ npm run dev
 - [ ] Graceful error handling
 - [ ] User notified clearly
 
-### 8.2 Invalid Input
+### 9.2 Invalid Input
 
 **Test:**
 1. Try adding subscription with:
@@ -841,7 +1165,7 @@ npm run dev
 - [ ] Server-side validation works
 - [ ] No invalid data saved
 
-### 8.3 Session Expiry
+### 9.3 Session Expiry
 
 **Test:**
 1. Log in
@@ -857,7 +1181,7 @@ npm run dev
 - [ ] Expired session detected
 - [ ] Redirected gracefully
 
-### 8.4 Duplicate Subscriptions
+### 9.4 Duplicate Subscriptions
 
 **Test:**
 1. Add Netflix subscription
@@ -873,9 +1197,9 @@ npm run dev
 
 ---
 
-## 9. Performance
+## 10. Performance
 
-### 9.1 Page Load Times
+### 10.1 Page Load Times
 
 **Test:**
 1. Open DevTools → Performance tab
@@ -892,7 +1216,7 @@ npm run dev
 - [ ] No unnecessary re-renders
 - [ ] Images optimized
 
-### 9.2 Database Query Performance
+### 10.2 Database Query Performance
 
 **Test:**
 1. Add 50+ subscriptions (bulk insert via SQL if needed)
@@ -911,9 +1235,9 @@ npm run dev
 
 ---
 
-## 10. UI/UX & Responsiveness
+## 11. UI/UX & Responsiveness
 
-### 10.1 Desktop View (1920x1080)
+### 11.1 Desktop View (1920x1080)
 
 **Check:**
 - [ ] Layout looks professional
@@ -921,7 +1245,7 @@ npm run dev
 - [ ] Proper spacing and alignment
 - [ ] Logo and branding visible
 
-### 10.2 Tablet View (768x1024)
+### 11.2 Tablet View (768x1024)
 
 **Check:**
 - [ ] Layout adapts properly
@@ -929,7 +1253,7 @@ npm run dev
 - [ ] Forms usable
 - [ ] Cards stack correctly
 
-### 10.3 Mobile View (375x667)
+### 11.3 Mobile View (375x667)
 
 **Check:**
 - [ ] Mobile-friendly navigation (hamburger menu?)
@@ -937,7 +1261,7 @@ npm run dev
 - [ ] Buttons large enough to tap
 - [ ] Text readable (not too small)
 
-### 10.4 Dark Mode (if implemented)
+### 11.4 Dark Mode (if implemented)
 
 **Test:**
 1. Toggle dark mode
@@ -950,9 +1274,9 @@ npm run dev
 
 ---
 
-## 11. Accessibility
+## 12. Accessibility
 
-### 11.1 Keyboard Navigation
+### 12.1 Keyboard Navigation
 
 **Test:**
 1. Use only keyboard (Tab, Enter, Esc)
@@ -968,7 +1292,7 @@ npm run dev
 - [ ] Can submit forms with Enter
 - [ ] Can close dialogs with Esc
 
-### 11.2 Screen Reader (Optional)
+### 12.2 Screen Reader (Optional)
 
 **Test with NVDA/JAWS/VoiceOver:**
 1. Navigate dashboard
@@ -982,16 +1306,16 @@ npm run dev
 
 ---
 
-## 12. Production Readiness
+## 13. Production Readiness
 
-### 12.1 Environment Variables
+### 13.1 Environment Variables
 
 **Check `.env.local`:**
 - [ ] All required variables set
 - [ ] No sensitive data in git
 - [ ] `.env.example` up to date
 
-### 12.2 Build & Deploy
+### 13.2 Build & Deploy
 
 **Test:**
 ```bash
@@ -1007,7 +1331,7 @@ npm start
 - [ ] No console warnings
 - [ ] Production build runs
 
-### 12.3 Error Boundaries
+### 13.3 Error Boundaries
 
 **Test:**
 1. Force an error (e.g., throw new Error in component)
@@ -1044,6 +1368,15 @@ npm start
 - [ ] Generate recommendations
 - [ ] Implement recommendations
 - [ ] Dismiss recommendations
+
+### Bundle Optimizer ✅
+- [ ] Generate bundle recommendations
+- [ ] View bundle details
+- [ ] Service name matching works
+- [ ] Savings calculations accurate
+- [ ] Click through to provider
+- [ ] Dismiss recommendations
+- [ ] Database verification
 
 ### Settings ✅
 - [ ] Edit profile
