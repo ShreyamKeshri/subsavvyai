@@ -32,7 +32,7 @@ We recommend:
 
 ### What I Need From You
 
-Please research and provide a **comprehensive, structured database** of all current (January 2025) telecom bundles in India from the following providers:
+Please research and provide a **comprehensive, structured database** of all current (October 2025) telecom bundles in India from the following providers:
 
 **Telecom Providers to Research:**
 1. **Jio** (Reliance Jio)
@@ -69,7 +69,7 @@ For each bundle, I need the following data in a structured format:
   "target_audience": "Who this plan is best for (families, individuals, content lovers)",
   "official_url": "Link to official plan page",
   "is_currently_active": true/false,
-  "last_verified": "January 2025"
+  "last_verified": "October 2025"
 }
 ```
 
@@ -136,7 +136,7 @@ Please provide the data in **TWO formats**:
 
 Also answer these strategic questions:
 
-1. **Bundle Trends**: What's the average number of OTT services per bundle in 2025?
+1. **Bundle Trends**: What's the average number of OTT services per bundle in October 2025?
 2. **Best Value**: Which bundle offers the most OTT services for the lowest price?
 3. **Netflix Plans**: Which bundles include Netflix Premium vs Mobile?
 4. **Hotstar Plans**: Which bundles include Hotstar Premium (with Premier League)?
@@ -144,14 +144,14 @@ Also answer these strategic questions:
 6. **Postpaid vs Prepaid**: Which has better OTT bundles?
 7. **Family Plans**: Which bundles are best for families (4+ members)?
 8. **Student Plans**: Are there any student-specific bundles with OTT services?
-9. **Promotional Offers**: Any limited-time offers running in January 2025?
+9. **Promotional Offers**: Any limited-time offers running in October 2025?
 10. **Affiliate Programs**: Do these telecom providers have affiliate programs for referrals?
 
 ### Verification Requirements
 
 For each piece of data, please:
 - ✅ Verify from official source (link the source)
-- ✅ Check that the plan is currently active (January 2025)
+- ✅ Check that the plan is currently active (October 2025)
 - ✅ Note if pricing varies by region
 - ✅ Indicate if it's a promotional/limited-time offer
 
@@ -189,7 +189,7 @@ For each piece of data, please:
   "target_audience": "Premium users, families with multiple streaming needs",
   "official_url": "https://www.airtel.in/black/",
   "is_currently_active": true,
-  "last_verified": "January 2025",
+  "last_verified": "October 2025",
   "notes": "Best value for Netflix Premium users. Effective OTT cost: ₹275/service/month"
 }
 ```
@@ -218,9 +218,9 @@ Please provide:
 
 ### Timeline
 
-This is for a production app launching in January 2025, so please prioritize:
+This is for a production app launching in January 2026, so please prioritize:
 - **Accuracy** > Comprehensiveness
-- **Current data** (Jan 2025) over historical data
+- **Current data** (October 2025) over historical data
 - **Official sources** over third-party blogs
 
 ---
