@@ -44,9 +44,6 @@ export function EmailLayout({ preview, children }: EmailLayoutProps) {
             <Text style={footerText}>
               © {new Date().getFullYear()} SubSavvyAI. All rights reserved.
             </Text>
-            <Text style={footerText}>
-              Made with ❤️ in India
-            </Text>
             <Text style={footerLinks}>
               <Link href={`${appUrl}/help`} style={link}>
                 Help Center
