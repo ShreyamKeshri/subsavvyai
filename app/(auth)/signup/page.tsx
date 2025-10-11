@@ -16,6 +16,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { authWithPhone, authWithGoogle, authWithEmail, validatePhoneNumber, validateEmail, validatePassword } from '@/lib/auth/auth-helpers'
 import { Loader2, CheckCircle, TrendingDown, Bell, Wallet } from 'lucide-react'
 import { branding } from '@/lib/config/branding'
+import { trackUserSignup } from '@/lib/analytics/events'
 
 type SignUpMethod = 'email' | 'phone' | 'google'
 
@@ -71,6 +72,12 @@ export default function SignUpPage() {
         return
       }
 
+      // Track signup event
+      const user = result.user as { id: string } | undefined
+      if (user?.id) {
+        trackUserSignup(user.id, 'email')
+      }
+
       if (result.needsVerification) {
         router.push(`/verify-email?email=${encodeURIComponent(email)}`)
       } else {
@@ -117,6 +124,12 @@ export default function SignUpPage() {
           setError(result.error || 'Invalid OTP')
           setLoading(false)
           return
+        }
+
+        // Track signup event
+        const user = result.user as { id: string } | undefined
+        if (user?.id) {
+          trackUserSignup(user.id, 'phone')
         }
 
         router.push('/dashboard')

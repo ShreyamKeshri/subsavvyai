@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { exchangeCodeForToken, storeSpotifyTokens, getSpotifyProfile } from '@/lib/oauth/spotify'
+import { trackServerEvent } from '@/lib/analytics/server-events'
 
 /**
  * Spotify OAuth Callback Handler
@@ -58,6 +59,11 @@ export async function GET(request: NextRequest) {
 
     // Store OAuth tokens
     await storeSpotifyTokens(user.id, service.id, tokenData)
+
+    // Track Spotify connection event
+    await trackServerEvent(user.id, 'spotify_connected', {
+      userId: user.id,
+    })
 
     // Redirect to dashboard with success message
     return NextResponse.redirect(

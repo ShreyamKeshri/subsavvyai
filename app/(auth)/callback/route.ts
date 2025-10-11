@@ -9,6 +9,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { trackServerEvent, identifyUser } from '@/lib/analytics/server-events'
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
@@ -73,8 +74,9 @@ export async function GET(request: NextRequest) {
           .eq('id', user.id)
           .single()
 
-        // If profile doesn't exist, create it
-        if (profileError || !profile) {
+        // If profile doesn't exist, create it (this is a new signup)
+        const isNewSignup = profileError || !profile
+        if (isNewSignup) {
           const metadata = user.user_metadata || {}
           await supabase
             .from('profiles')
@@ -84,6 +86,22 @@ export async function GET(request: NextRequest) {
               avatar_url: metadata.avatar_url || metadata.picture || null,
               phone_number: user.phone || null,
             })
+
+          // Track signup event for Google OAuth (new user)
+          await identifyUser(user.id, {
+            email: user.email,
+            name: metadata.full_name || metadata.name,
+          })
+          await trackServerEvent(user.id, 'user_signup', {
+            method: 'google',
+            userId: user.id,
+          })
+        } else {
+          // Track login event for returning Google OAuth user
+          await trackServerEvent(user.id, 'user_login', {
+            method: 'google',
+            userId: user.id,
+          })
         }
 
         // Check onboarding status from user_preferences table
