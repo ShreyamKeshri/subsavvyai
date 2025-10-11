@@ -2,6 +2,7 @@ import './globals.css'
 import { Toaster } from 'sonner'
 import { branding } from '@/lib/config/branding'
 import { PHProvider } from '@/lib/analytics/posthog-provider'
+import { ThemeProvider } from 'next-themes'
 
 export const metadata = {
   title: branding.meta.title,
@@ -11,28 +12,18 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  const theme = localStorage.getItem('theme') ||
-                    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-                  if (theme === 'dark') {
-                    document.documentElement.classList.add('dark');
-                  }
-                } catch (e) {}
-              })();
-            `,
-          }}
-        />
-      </head>
       <body>
-        <PHProvider>
-          {children}
-          <Toaster position="top-right" richColors />
-        </PHProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange={false}
+        >
+          <PHProvider>
+            {children}
+            <Toaster position="top-right" richColors />
+          </PHProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

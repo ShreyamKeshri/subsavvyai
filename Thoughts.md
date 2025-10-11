@@ -1,4 +1,4 @@
-1. Dark Theme is not working properly. Need to fix
+1. ✅ FIXED: Dark Theme - Implemented using next-themes with Light/Dark/System support
 2. ✅ FIXED: Edit and Delete Subscription now working in dashboard
 3. Need to work on Spotify Auth
 4. ✅ FIXED: Settings page error - changed user_id to id in profiles table queries
