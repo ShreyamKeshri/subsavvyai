@@ -336,10 +336,111 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
    - Price change notifications
    - Competitor comparison
 
-## Documentation Files
+## Documentation Management
 
-- **README.md** - Project overview, setup instructions
-- **CLAUDE.md** - AI assistant guidelines (this file)
-- **PIVOT_PLAN.md** - AI optimizer pivot strategy
-- **DATABASE_SCHEMA.md** - Complete database structure
-- **Thoughts.md** - Developer notes
+### Core Documentation Files (MUST MAINTAIN)
+
+SubSavvyAI maintains only **8 essential markdown files** in the repository. These must be actively maintained and kept up-to-date:
+
+1. **BUGS.md** - Known Issues Tracker
+   - Bug descriptions with reproduction steps
+   - Current status and priority
+   - Workarounds (if any)
+   - Update when bugs are found or fixed
+
+2. **DATABASE_SCHEMA.md** - Database Documentation
+   - Complete schema for all tables
+   - Column descriptions and types
+   - Relationships and foreign keys
+   - RLS policies
+   - Sample data examples
+   - Update after every migration
+
+3. **EMAIL_TEMPLATES.md** - Email Template Repository
+   - All email templates (HTML + text versions)
+   - Template variables and usage
+   - Update when email designs change
+   - Reference for code implementation
+
+4. **MVP_ROADMAP.md** - Project Plan & Timeline
+   - MVP feature list and priorities
+   - Week-by-week implementation plan
+   - Decision-making framework
+   - **Should merge PIVOT_PLAN.md into this file**
+   - All decisions must align with this plan
+   - Update after completing major features
+
+5. **PROGRESS.md** - Development Progress Tracker
+   - Weekly progress updates
+   - Completed features
+   - Current sprint status
+   - Blockers and next steps
+   - Target: MVP launch by January 2026
+   - Update after completing each feature
+
+6. **SECURITY.md** - Security Documentation
+   - Security measures implemented
+   - Authentication & authorization patterns
+   - Data encryption details
+   - Known vulnerabilities and mitigations
+   - Recommended improvements
+   - Update when security changes are made
+
+7. **TESTING_GUIDE.md** - Comprehensive Test Plan
+   - Test cases for all features
+   - Manual testing procedures
+   - Expected results and validation
+   - Edge cases and error scenarios
+   - Update after implementing new features
+
+8. **Thoughts.md** - Developer Scratchpad
+   - Observations and ideas
+   - Potential new features
+   - Architecture considerations
+   - Technical debt notes
+   - User's personal notes
+   - Review regularly and incorporate into plans
+
+### Temporary Documentation (DELETE AFTER USE)
+
+When working on specific features or tasks, you may create temporary markdown files for guidance:
+- Research documents (e.g., `TELECOM_BUNDLES_RESEARCH.md`)
+- Implementation guides (e.g., `BUNDLE_OPTIMIZER_IMPLEMENTATION.md`)
+- Analysis documents (e.g., `BUNDLE_OPTIMIZER_ANALYSIS.md`)
+
+**IMPORTANT:** These temporary files MUST be deleted before raising a PR. They serve only to guide the current activity and should not clutter the repository long-term.
+
+### Documentation Update Workflow
+
+**Before Raising Any PR:**
+1. ✅ Update relevant core documentation files
+2. ✅ Merge changes from temporary docs into core files
+3. ✅ Delete all temporary markdown files
+4. ✅ Verify all 8 core files are current
+5. ✅ Ensure PROGRESS.md reflects completed work
+
+**After Completing a Feature:**
+1. Update **PROGRESS.md** with completion status
+2. Update **DATABASE_SCHEMA.md** if schema changed
+3. Update **TESTING_GUIDE.md** with new test cases
+4. Update **MVP_ROADMAP.md** if plans changed
+5. Add any bugs found to **BUGS.md**
+6. Remove temporary docs created during implementation
+
+### Core Files Summary
+
+```
+SubSavvyAI Root/
+├── BUGS.md              [Known issues tracker]
+├── DATABASE_SCHEMA.md   [Complete schema documentation]
+├── EMAIL_TEMPLATES.md   [Email template repository]
+├── MVP_ROADMAP.md       [Project plan & timeline]
+├── PROGRESS.md          [Development progress]
+├── SECURITY.md          [Security documentation]
+├── TESTING_GUIDE.md     [Comprehensive test plan]
+├── Thoughts.md          [Developer scratchpad]
+├── CLAUDE.md            [This file - AI guidelines]
+└── README.md            [Project overview - not actively maintained]
+```
+
+**Rule:** Only these files should exist in the repository root. Any other `.md` files are temporary and must be removed before merging.
