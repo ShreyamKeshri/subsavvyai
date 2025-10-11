@@ -30,10 +30,11 @@ import {
   Settings,
   Package,
 } from 'lucide-react'
-import { getUserSubscriptions, type Subscription } from '@/lib/subscriptions/subscription-actions'
+import { getUserSubscriptions, deleteSubscription, type Subscription } from '@/lib/subscriptions/subscription-actions'
 import { getPendingRecommendations, acceptRecommendation, dismissRecommendation, type OptimizationRecommendation } from '@/lib/recommendations/recommendation-actions'
 import { getConnectedServices } from '@/lib/usage/usage-actions'
 import { AddSubscriptionDialog } from '@/components/subscriptions/add-subscription-dialog'
+import { EditSubscriptionDialog } from '@/components/subscriptions/edit-subscription-dialog'
 import { BundleRecommendationsList } from '@/components/bundles/bundle-recommendations-list'
 import { branding } from '@/lib/config/branding'
 import { toast } from 'sonner'
@@ -49,6 +50,8 @@ export default function DashboardPage() {
   const [connectedServices, setConnectedServices] = useState<string[]>([])
   const [loadingSubscriptions, setLoadingSubscriptions] = useState(true)
   const [loadingRecommendations, setLoadingRecommendations] = useState(true)
+  const [editingSubscription, setEditingSubscription] = useState<Subscription | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -113,6 +116,29 @@ export default function DashboardPage() {
     if (result.success) {
       toast.info('Recommendation dismissed')
       fetchRecommendations()
+    }
+  }
+
+  const handleDeleteSubscription = async (subscriptionId: string, serviceName: string) => {
+    if (!confirm(`Are you sure you want to delete ${serviceName}?`)) {
+      return
+    }
+
+    setDeletingId(subscriptionId)
+
+    try {
+      const result = await deleteSubscription(subscriptionId)
+
+      if (result.success) {
+        toast.success('Subscription deleted successfully')
+        fetchSubscriptions()
+      } else {
+        toast.error(result.error || 'Failed to delete subscription')
+      }
+    } catch {
+      toast.error('Something went wrong')
+    } finally {
+      setDeletingId(null)
     }
   }
 
@@ -535,10 +561,8 @@ export default function DashboardPage() {
                           variant="outline"
                           size="sm"
                           className="flex-1 text-xs"
-                          onClick={() => {
-                            // TODO: Add edit functionality
-                            toast.info('Edit subscription coming soon!')
-                          }}
+                          onClick={() => setEditingSubscription(sub)}
+                          disabled={deletingId === sub.id}
                         >
                           Edit
                         </Button>
@@ -546,12 +570,10 @@ export default function DashboardPage() {
                           variant="ghost"
                           size="sm"
                           className="flex-1 text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
-                          onClick={() => {
-                            // TODO: Add delete confirmation
-                            toast.info('Delete confirmation coming soon!')
-                          }}
+                          onClick={() => handleDeleteSubscription(sub.id, sub.service?.name || sub.custom_service_name || 'subscription')}
+                          disabled={deletingId === sub.id}
                         >
-                          Delete
+                          {deletingId === sub.id ? 'Deleting...' : 'Delete'}
                         </Button>
                       </div>
                     </CardContent>
@@ -562,6 +584,19 @@ export default function DashboardPage() {
           )}
         </section>
       </main>
+
+      {/* Edit Subscription Dialog */}
+      {editingSubscription && (
+        <EditSubscriptionDialog
+          subscription={editingSubscription}
+          open={!!editingSubscription}
+          onOpenChange={(open) => !open && setEditingSubscription(null)}
+          onSuccess={() => {
+            setEditingSubscription(null)
+            fetchSubscriptions()
+          }}
+        />
+      )}
     </div>
   )
 }
