@@ -38,18 +38,20 @@
 
 ---
 
-### Day 1 - Friday, Oct 11 (4 hours)
+### Day 1 - Friday, Oct 11 (4 hours) ✅ COMPLETE
 
 **Focus:** Dashboard UX & "Savings First" Approach
 
 | Task | Details | Time | Priority | Status |
 |------|---------|------|----------|--------|
-| Add "Total Potential Savings" hero metric | Large, prominent card at top showing ₹X/year savings across all recommendations | 1h | 🔥 High | [ ] |
-| Create "Connect Spotify" CTA card | If not connected, show card with "Find ₹1,400/year in Spotify savings" | 1h | 🔥 High | [ ] |
-| Create "Find Bundle Savings" CTA card | Show "3 subscriptions found - Check bundles" with estimated savings preview | 1h | 🔥 High | [ ] |
-| Improve subscription cards | Show monthly cost prominently, add quick edit/delete actions | 1h | 🔥 High | [ ] |
+| Add "Total Potential Savings" hero metric | Large, prominent card at top showing ₹X/year savings across all recommendations | 1h | 🔥 High | [x] |
+| Create "Connect Spotify" CTA card | If not connected, show card with "Find ₹1,400/year in Spotify savings" | 1h | 🔥 High | [x] |
+| Create "Find Bundle Savings" CTA card | Show "3 subscriptions found - Check bundles" with estimated savings preview | 1h | 🔥 High | [x] |
+| Improve subscription cards | Show monthly cost prominently, add quick edit/delete actions | 1h | 🔥 High | [x] |
 
-**End of Day Goal:** Dashboard clearly shows "you can save ₹X" immediately
+**End of Day Goal:** ✅ Dashboard clearly shows "you can save ₹X" immediately
+
+**PR:** #12 - https://github.com/ShreyamKeshri/subsavvyai/pull/12
 
 ---
 
@@ -146,7 +148,7 @@
 
 ### ✅ Week 1 Deliverables Checklist
 
-- [ ] Dashboard shows savings prominently with clear CTAs
+- [x] Dashboard shows savings prominently with clear CTAs (Day 1 ✅)
 - [ ] Analytics tracking all key events (PostHog + Sentry)
 - [ ] Landing page optimized for conversion
 - [ ] All critical bugs fixed
@@ -155,7 +157,8 @@
 - [ ] Beta testing started (20-30 invites sent)
 - [ ] Mobile/browser compatibility verified
 
-**Week 1 Time Spent:** ~27 hours
+**Week 1 Progress:** 1/7 days complete (14%)
+**Week 1 Time Spent:** 4/27 hours (15%)
 
 ---
 
