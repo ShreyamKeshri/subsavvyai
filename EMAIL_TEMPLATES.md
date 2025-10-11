@@ -1,6 +1,30 @@
-Email Templates.
+# Email Templates
 
-1. Welcome Email
+**Last Updated:** October 11, 2025
+
+This file contains all email templates used in SubSavvyAI. Email system uses **Resend** for delivery and **React Email** for templates.
+
+## Setup
+
+### Environment Variables Required:
+```env
+RESEND_API_KEY=re_your_actual_api_key_here
+RESEND_FROM_EMAIL=SubSavvyAI <onboarding@subsavvyai.com>
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+### Testing Emails:
+```bash
+npm run email:dev  # Preview at http://localhost:3001
+```
+
+### Resend Free Tier Limits:
+- 100 emails/day
+- 3,000 emails/month
+
+---
+
+## 1. Welcome Email
 
 Subject: Welcome to SubSavvyAI — Let’s get you saving smarter!
 
