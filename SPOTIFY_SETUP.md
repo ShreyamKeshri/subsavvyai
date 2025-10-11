@@ -22,8 +22,10 @@ Spotify OAuth enables the **Smart Downgrade Alerts** feature - SubSavvyAI's uniq
 3. Fill in the details:
    - **App name**: SubSavvyAI (or your preferred name)
    - **App description**: AI-powered subscription optimizer that analyzes Spotify usage to provide smart downgrade recommendations
-   - **Redirect URI**: `http://localhost:3000/api/oauth/spotify/callback`
+   - **Redirect URI**: `http://127.0.0.1:3000/api/oauth/spotify/callback`
    - **Which API/SDKs are you planning to use?**: Check **Web API**
+
+   **Important**: Spotify requires explicit loopback addresses (127.0.0.1 or [::1]) for local development. `localhost` is NOT allowed.
 4. Accept Spotify's Terms of Service
 5. Click **"Save"**
 
@@ -40,12 +42,17 @@ Spotify OAuth enables the **Smart Downgrade Alerts** feature - SubSavvyAI's uniq
 2. Add the following variables:
 
 ```env
+# App URL (IMPORTANT: Use 127.0.0.1, NOT localhost for Spotify OAuth)
+NEXT_PUBLIC_APP_URL=http://127.0.0.1:3000
+
 # Spotify OAuth
 SPOTIFY_CLIENT_ID=your_client_id_here
 SPOTIFY_CLIENT_SECRET=your_client_secret_here
 ```
 
 3. Replace `your_client_id_here` and `your_client_secret_here` with the values from Step 2
+
+**Critical**: Make sure `NEXT_PUBLIC_APP_URL` uses `127.0.0.1` (not `localhost`) to match Spotify's redirect URI requirements.
 
 ## Step 4: Update Redirect URI for Production
 
@@ -66,7 +73,7 @@ When deploying to production (e.g., Vercel):
    npm run dev
    ```
 
-2. Go to `http://localhost:3000/dashboard`
+2. Go to `http://127.0.0.1:3000/dashboard` (or `http://localhost:3000/dashboard` - both work for accessing the app)
 
 3. Look for the "Connect Spotify" button
 
@@ -99,7 +106,8 @@ The app requests these Spotify API scopes:
 - Restart your development server after adding env variables
 
 ### Error: "Invalid redirect URI"
-- Check that your redirect URI in Spotify app settings exactly matches: `http://localhost:3000/api/oauth/spotify/callback`
+- Check that your redirect URI in Spotify app settings exactly matches: `http://127.0.0.1:3000/api/oauth/spotify/callback`
+- Must use `127.0.0.1` (loopback address), NOT `localhost` - Spotify no longer allows localhost
 - No trailing slash, must be exact match
 
 ### Error: "Invalid client credentials"
