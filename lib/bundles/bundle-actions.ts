@@ -7,6 +7,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { trackServerEvent } from '@/lib/analytics/server-events'
 import {
   findBundleMatches,
   shouldShowBundleRecommendations,
@@ -101,6 +102,14 @@ export async function generateBundleRecommendations(): Promise<{
         console.error('Error upserting recommendation:', upsertError)
       }
     }
+
+    // Track bundle recommendations generated event
+    const totalSavings = matches.reduce((sum, match) => sum + (match.annual_savings || 0), 0)
+    await trackServerEvent(user.id, 'bundle_recommendation_generated', {
+      userId: user.id,
+      bundlesFound: matches.length,
+      totalSavings,
+    })
 
     revalidatePath('/dashboard')
 
@@ -319,16 +328,39 @@ export async function trackBundleClick(
       return { success: false, error: 'Not authenticated' }
     }
 
-    // If recommendation exists, mark as viewed
+    // Get bundle details for tracking
+    const { data: bundle } = await supabase
+      .from('telecom_bundles')
+      .select('*')
+      .eq('id', bundleId)
+      .single()
+
+    // Get recommendation details if exists
+    let estimatedSavings = 0
     if (recommendationId) {
       await markRecommendationAsViewed(recommendationId)
+
+      const { data: recommendation } = await supabase
+        .from('bundle_recommendations')
+        .select('annual_savings')
+        .eq('id', recommendationId)
+        .single()
+
+      if (recommendation) {
+        estimatedSavings = recommendation.annual_savings
+      }
     }
 
-    // TODO: Add analytics tracking here
-    // Could create a separate `bundle_clicks` table for tracking
-    if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
-      console.log(`User ${user.id} clicked bundle ${bundleId}`)
+    // Track affiliate click event (REVENUE-CRITICAL)
+    if (bundle) {
+      await trackServerEvent(user.id, 'affiliate_clicked', {
+        bundleId: bundle.id,
+        bundleName: bundle.plan_name,
+        provider: bundle.provider,
+        cost: bundle.monthly_price,
+        estimatedSavings,
+        affiliateUrl: bundle.official_url,
+      })
     }
 
     return { success: true }

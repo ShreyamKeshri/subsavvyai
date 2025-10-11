@@ -7,6 +7,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { trackServerEvent } from '@/lib/analytics/server-events'
 
 export type BillingCycle = 'monthly' | 'quarterly' | 'yearly' | 'custom'
 export type SubscriptionStatus = 'active' | 'cancellation_initiated' | 'cancelled' | 'paused' | 'expired'
@@ -141,6 +142,15 @@ export async function createSubscription(
       return { success: false, error: error.message }
     }
 
+    // Track subscription added event
+    await trackServerEvent(user.id, 'subscription_added', {
+      subscriptionId: data.id,
+      serviceName: data.service?.name || data.custom_service_name || 'Unknown',
+      cost: data.cost,
+      billingCycle: data.billing_cycle,
+      isCustom: !data.service_id,
+    })
+
     // Revalidate dashboard to show updated data
     revalidatePath('/dashboard')
 
@@ -218,6 +228,11 @@ export async function deleteSubscription(
       console.error('Error deleting subscription:', error)
       return { success: false, error: error.message }
     }
+
+    // Track subscription deleted event
+    await trackServerEvent(user.id, 'subscription_deleted', {
+      subscriptionId,
+    })
 
     // Revalidate dashboard
     revalidatePath('/dashboard')

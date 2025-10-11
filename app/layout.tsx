@@ -1,6 +1,7 @@
 import './globals.css'
 import { Toaster } from 'sonner'
 import { branding } from '@/lib/config/branding'
+import { PHProvider } from '@/lib/analytics/posthog-provider'
 
 export const metadata = {
   title: branding.meta.title,
@@ -28,8 +29,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        {children}
-        <Toaster position="top-right" richColors />
+        <PHProvider>
+          {children}
+          <Toaster position="top-right" richColors />
+        </PHProvider>
       </body>
     </html>
   )
