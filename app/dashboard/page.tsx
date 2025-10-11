@@ -32,6 +32,7 @@ import {
 } from 'lucide-react'
 import { getUserSubscriptions, type Subscription } from '@/lib/subscriptions/subscription-actions'
 import { getPendingRecommendations, acceptRecommendation, dismissRecommendation, type OptimizationRecommendation } from '@/lib/recommendations/recommendation-actions'
+import { getConnectedServices } from '@/lib/usage/usage-actions'
 import { AddSubscriptionDialog } from '@/components/subscriptions/add-subscription-dialog'
 import { BundleRecommendationsList } from '@/components/bundles/bundle-recommendations-list'
 import { branding } from '@/lib/config/branding'
@@ -45,6 +46,7 @@ export default function DashboardPage() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
   const [recommendations, setRecommendations] = useState<OptimizationRecommendation[]>([])
   const [totalSavings, setTotalSavings] = useState<{ monthly: number; annual: number } | null>(null)
+  const [connectedServices, setConnectedServices] = useState<string[]>([])
   const [loadingSubscriptions, setLoadingSubscriptions] = useState(true)
   const [loadingRecommendations, setLoadingRecommendations] = useState(true)
 
@@ -73,10 +75,18 @@ export default function DashboardPage() {
     setLoadingRecommendations(false)
   }
 
+  const fetchConnectedServices = async () => {
+    const result = await getConnectedServices()
+    if (result.success && result.data) {
+      setConnectedServices(result.data)
+    }
+  }
+
   useEffect(() => {
     if (isAuthenticated) {
       fetchSubscriptions()
       fetchRecommendations()
+      fetchConnectedServices()
     }
   }, [isAuthenticated])
 
@@ -203,28 +213,41 @@ export default function DashboardPage() {
       <main className="container mx-auto px-4 py-8 space-y-8">
         {/* Hero Stats Section */}
         <section className="space-y-4">
-          {/* Large Savings Card */}
-          {totalSavings && totalSavings.annual > 0 && (
-            <Card className="bg-gradient-to-br from-indigo-600 to-purple-600 text-white border-0 shadow-xl">
-              <CardContent className="p-8">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Sparkles className="h-5 w-5" />
-                      <span className="text-sm font-medium opacity-90">AI-Powered Insights</span>
-                    </div>
-                    <h2 className="text-4xl md:text-5xl font-extrabold mb-2">
-                      Save up to ₹{totalSavings.annual.toFixed(0)}/year
-                    </h2>
-                    <p className="text-sm opacity-90">Based on your usage patterns and AI recommendations</p>
+          {/* Total Potential Savings Hero Card - ALWAYS SHOW */}
+          <Card className="bg-gradient-to-br from-indigo-600 to-purple-600 text-white border-0 shadow-xl">
+            <CardContent className="p-8">
+              <div className="flex items-start justify-between">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Sparkles className="h-5 w-5" />
+                    <span className="text-sm font-medium opacity-90">Total Potential Savings</span>
                   </div>
-                  <div className="hidden md:block">
-                    <BarChart3 className="h-16 w-16 opacity-20" />
-                  </div>
+                  {totalSavings && totalSavings.annual > 0 ? (
+                    <>
+                      <h2 className="text-4xl md:text-5xl font-extrabold mb-2">
+                        ₹{totalSavings.annual.toFixed(0)}/year
+                      </h2>
+                      <p className="text-sm opacity-90">
+                        Save ₹{totalSavings.monthly.toFixed(0)}/month with our AI recommendations
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <h2 className="text-4xl md:text-5xl font-extrabold mb-2">
+                        Find Your Savings
+                      </h2>
+                      <p className="text-sm opacity-90">
+                        Connect services below to discover how much you can save
+                      </p>
+                    </>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
-          )}
+                <div className="hidden md:block">
+                  <BarChart3 className="h-16 w-16 opacity-20" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* 3 Stat Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -264,6 +287,66 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Action CTAs - Connect Services & Find Savings */}
+          {(!connectedServices.length || activeSubscriptions.length < 2) && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Connect Spotify CTA */}
+              {connectedServices.length === 0 && (
+                <Card className="border-2 border-dashed border-indigo-300 bg-indigo-50/50 hover:border-indigo-400 transition-colors">
+                  <CardContent className="p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="bg-indigo-100 p-3 rounded-lg">
+                        <Sparkles className="h-6 w-6 text-indigo-600" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg mb-1">Connect Spotify</h3>
+                        <p className="text-sm text-gray-600 mb-3">
+                          See if you&apos;re overpaying. Find up to ₹1,428/year in savings based on your listening habits.
+                        </p>
+                        <Button
+                          className="bg-indigo-600 hover:bg-indigo-700"
+                          onClick={() => router.push('/api/oauth/spotify')}
+                        >
+                          <Package className="h-4 w-4 mr-2" />
+                          Connect Now
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Find Bundle Savings CTA */}
+              {activeSubscriptions.length >= 2 && (
+                <Card className="border-2 border-dashed border-green-300 bg-green-50/50 hover:border-green-400 transition-colors">
+                  <CardContent className="p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="bg-green-100 p-3 rounded-lg">
+                        <TrendingUp className="h-6 w-6 text-green-600" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg mb-1">Find Bundle Savings</h3>
+                        <p className="text-sm text-gray-600 mb-3">
+                          You have {activeSubscriptions.length} subscriptions. Check if bundling can save you money!
+                        </p>
+                        <Button
+                          className="bg-green-600 hover:bg-green-700"
+                          onClick={() => {
+                            const bundleSection = document.getElementById('bundle-section')
+                            bundleSection?.scrollIntoView({ behavior: 'smooth' })
+                          }}
+                        >
+                          <Package className="h-4 w-4 mr-2" />
+                          Check Bundles
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          )}
         </section>
 
         {/* AI Recommendations Section */}
@@ -380,7 +463,7 @@ export default function DashboardPage() {
 
         {/* Bundle Optimizer Section */}
         {activeSubscriptions.length >= 2 && (
-          <section className="space-y-4">
+          <section id="bundle-section" className="space-y-4">
             <BundleRecommendationsList />
           </section>
         )}
@@ -413,29 +496,68 @@ export default function DashboardPage() {
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {subscriptions.map((sub) => (
-                <Card key={sub.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div>
-                        <h3 className="font-semibold">{sub.service?.name || sub.custom_service_name}</h3>
-                        <p className="text-2xl font-bold text-gray-900 mt-1">₹{sub.cost}</p>
-                        <p className="text-xs text-gray-500">{sub.billing_cycle}</p>
-                      </div>
-                      <Badge variant={sub.status === 'active' ? 'default' : 'secondary'}>
-                        {sub.status}
-                      </Badge>
-                    </div>
+              {subscriptions.map((sub) => {
+                const monthlyCost = sub.billing_cycle === 'monthly' ? sub.cost :
+                                    sub.billing_cycle === 'quarterly' ? sub.cost / 3 :
+                                    sub.billing_cycle === 'yearly' ? sub.cost / 12 : sub.cost
 
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-600">Next billing</span>
-                        <span className="font-medium">{new Date(sub.next_billing_date).toLocaleDateString()}</span>
+                return (
+                  <Card key={sub.id} className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-lg">{sub.service?.name || sub.custom_service_name}</h3>
+                          <div className="mt-2">
+                            <p className="text-3xl font-extrabold text-gray-900">₹{monthlyCost.toFixed(0)}</p>
+                            <p className="text-xs text-gray-500">/month</p>
+                          </div>
+                          {sub.billing_cycle !== 'monthly' && (
+                            <p className="text-xs text-gray-500 mt-1">
+                              ₹{sub.cost} billed {sub.billing_cycle}
+                            </p>
+                          )}
+                        </div>
+                        <Badge variant={sub.status === 'active' ? 'default' : 'secondary'}>
+                          {sub.status}
+                        </Badge>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+
+                      <div className="space-y-2 text-sm mb-4">
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-600">Next billing</span>
+                          <span className="font-medium">{new Date(sub.next_billing_date).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+
+                      {/* Quick Actions */}
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 text-xs"
+                          onClick={() => {
+                            // TODO: Add edit functionality
+                            toast.info('Edit subscription coming soon!')
+                          }}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="flex-1 text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
+                          onClick={() => {
+                            // TODO: Add delete confirmation
+                            toast.info('Delete confirmation coming soon!')
+                          }}
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )
+              })}
             </div>
           )}
         </section>
