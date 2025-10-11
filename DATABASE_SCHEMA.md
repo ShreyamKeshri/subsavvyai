@@ -1,8 +1,8 @@
 # SubSavvyAI - Database Schema Documentation
 
-**Version:** 1.0
+**Version:** 1.1
 **Database:** PostgreSQL (Supabase)
-**Last Updated:** October 4, 2025
+**Last Updated:** October 11, 2025
 
 ---
 
@@ -917,11 +917,123 @@ ORDER BY idx_scan ASC;
 
 ---
 
+## Bundle Optimizer Tables (Migration 006)
+
+### 10. `telecom_bundles`
+
+Stores Indian telecom bundles (Jio, Airtel, Vi) that include OTT services.
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| id | UUID | PRIMARY KEY | Bundle ID |
+| provider | TEXT | NOT NULL, CHECK IN ('Jio', 'Airtel', 'Vi', 'BSNL') | Telecom provider |
+| plan_name | TEXT | NOT NULL | Bundle plan name |
+| plan_type | TEXT | NOT NULL, CHECK IN ('fiber', 'prepaid', 'postpaid', 'mobile') | Plan type |
+| monthly_price | NUMERIC | NOT NULL, CHECK > 0 | Monthly cost |
+| billing_cycle | TEXT | NOT NULL | Billing cycle ('monthly', '28 days', '84 days', 'yearly') |
+| total_price | NUMERIC | NOT NULL, CHECK > 0 | Total price for billing cycle |
+| included_ott_services | TEXT[] | NOT NULL, DEFAULT '{}' | Array of OTT service names |
+| ott_service_count | INTEGER | GENERATED ALWAYS AS (array_length(included_ott_services, 1)) STORED | Count of OTT services |
+| ott_plan_details | JSONB | NOT NULL, DEFAULT '{}' | Detailed OTT plan info |
+| data_benefits | TEXT | | Data benefits (e.g., "Unlimited @100Mbps") |
+| validity | TEXT | | Validity period (e.g., "30 days") |
+| other_benefits | TEXT[] | DEFAULT '{}' | Additional benefits array |
+| target_audience | TEXT | | Target audience description |
+| official_url | TEXT | | Provider plan URL |
+| is_currently_active | BOOLEAN | DEFAULT true | Whether bundle is active |
+| last_verified | DATE | DEFAULT CURRENT_DATE | Last verification date |
+| notes | TEXT | | Additional notes |
+| value_score | NUMERIC | GENERATED ALWAYS AS (CASE WHEN monthly_price > 0 THEN CAST(array_length(included_ott_services, 1) AS NUMERIC) / (monthly_price / 1000.0) ELSE 0 END) STORED | Value score (OTTs per ₹1000) |
+| created_at | TIMESTAMPTZ | DEFAULT NOW() | Record creation timestamp |
+| updated_at | TIMESTAMPTZ | DEFAULT NOW() | Last update timestamp |
+
+**OTT Plan Details JSONB Structure:**
+```json
+{
+  "Netflix": "Premium (4K, 4 screens)",
+  "Disney+ Hotstar": "Premium",
+  "Amazon Prime Video": "Yes",
+  "Zee5": "Premium"
+}
+```
+
+**Relationships:**
+- 1:N with `bundle_recommendations` (id → bundle_recommendations.bundle_id)
+
+**Indexes:**
+- Primary key on `id`
+- Index on `provider`
+- Index on `monthly_price`
+- Index on `plan_type`
+- Partial index on `is_currently_active` where is_currently_active = true
+- Index on `value_score DESC`
+- Index on `ott_service_count DESC`
+- GIN index on `included_ott_services` (for array searches)
+
+**Constraints:**
+- Unique constraint on `(provider, plan_name)`
+
+**Sample Data:**
+20 bundles pre-populated:
+- 6 Jio plans (JioFiber 30Mbps to 300Mbps)
+- 9 Airtel plans (Prepaid + Fiber)
+- 2 Vi plans (REDX Postpaid)
+- 3 Vi plans (Fiber/Mobile)
+
+---
+
+### 11. `bundle_recommendations`
+
+Stores AI-generated bundle recommendations for users based on their subscriptions.
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| id | UUID | PRIMARY KEY | Recommendation ID |
+| user_id | UUID | NOT NULL, FK to auth.users(id) | User ID |
+| bundle_id | UUID | NOT NULL, FK to telecom_bundles(id) | Recommended bundle |
+| matched_subscription_ids | UUID[] | NOT NULL, DEFAULT '{}' | UUIDs of matched subscriptions |
+| matched_subscription_count | INTEGER | GENERATED ALWAYS AS (array_length(matched_subscription_ids, 1)) STORED | Count of matched subscriptions |
+| current_monthly_cost | NUMERIC | NOT NULL, CHECK >= 0 | Current cost of matched subscriptions |
+| bundle_monthly_cost | NUMERIC | NOT NULL, CHECK >= 0 | Bundle monthly cost |
+| monthly_savings | NUMERIC | GENERATED ALWAYS AS (current_monthly_cost - bundle_monthly_cost) STORED | Monthly savings |
+| annual_savings | NUMERIC | GENERATED ALWAYS AS ((current_monthly_cost - bundle_monthly_cost) * 12) STORED | Annual savings |
+| match_percentage | NUMERIC | CHECK >= 0 AND <= 100 | Percentage of user's subscriptions matched |
+| recommendation_type | TEXT | NOT NULL, DEFAULT 'bundle', CHECK IN ('bundle', 'upgrade', 'switch') | Recommendation type |
+| confidence_score | NUMERIC | DEFAULT 0.75, CHECK >= 0 AND <= 1 | AI confidence score (0-1) |
+| reasoning | TEXT | | Human-readable reasoning |
+| status | TEXT | DEFAULT 'pending', CHECK IN ('pending', 'viewed', 'accepted', 'dismissed', 'expired') | Recommendation status |
+| viewed_at | TIMESTAMPTZ | | When user viewed recommendation |
+| status_updated_at | TIMESTAMPTZ | | When status last changed |
+| created_at | TIMESTAMPTZ | DEFAULT NOW() | Record creation timestamp |
+| updated_at | TIMESTAMPTZ | DEFAULT NOW() | Last update timestamp |
+
+**Relationships:**
+- N:1 with `auth.users` (user_id → auth.users.id)
+- N:1 with `telecom_bundles` (bundle_id → telecom_bundles.id)
+
+**Indexes:**
+- Primary key on `id`
+- Index on `user_id`
+- Index on `bundle_id`
+- Index on `status`
+- Index on `annual_savings DESC`
+- Composite index on `(user_id, status)`
+
+**Constraints:**
+- Unique constraint on `(user_id, bundle_id)` - One recommendation per bundle per user
+
+**RLS Policies:**
+- Users can view/insert/update/delete own recommendations only
+- Enforced via `auth.uid() = user_id`
+
+---
+
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.0 | Oct 3, 2025 | Initial schema design |
+| 1.1 | Oct 11, 2025 | Added Bundle Optimizer tables (migration 006) |
 
 ---
 
