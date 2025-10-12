@@ -8,7 +8,9 @@ import { createClient } from '@/lib/supabase/server'
 // Spotify API Configuration
 const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID!
 const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET!
-const SPOTIFY_REDIRECT_URI = process.env.NEXT_PUBLIC_APP_URL + '/api/oauth/spotify/callback'
+// Spotify requires explicit loopback address (127.0.0.1), not localhost
+// Use dedicated env var to avoid conflicts with other OAuth providers
+const SPOTIFY_REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI || 'http://127.0.0.1:3000/api/oauth/spotify/callback'
 
 export const SPOTIFY_SCOPES = [
   'user-read-recently-played',
