@@ -1028,17 +1028,67 @@ Stores AI-generated bundle recommendations for users based on their subscription
 
 ---
 
+---
+
+## Manual Usage Tracking (Migration 007)
+
+### 12. `service_usage` - Extended for Manual Tracking
+
+The `service_usage` table (from migration 005) has been extended to support **manual usage tracking** for services without OAuth APIs.
+
+**New Columns Added:**
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| usage_frequency | TEXT | CHECK IN ('daily', 'weekly', 'monthly', 'rarely', 'never') | User-reported usage frequency |
+| last_used_date | DATE | | User-reported last use date |
+| is_manual | BOOLEAN | DEFAULT FALSE, NOT NULL | TRUE if manually reported, FALSE if from OAuth API |
+| manual_usage_note | TEXT | | Optional user notes about usage |
+
+**Estimated Hours Conversion:**
+- `daily` → 60 hours/month (~2 hours/day)
+- `weekly` → 20 hours/month (~5 hours/week)
+- `monthly` → 5 hours/month
+- `rarely` → 2 hours/month
+- `never` → 0 hours/month
+
+**New Indexes:**
+- `idx_service_usage_is_manual` on `is_manual`
+- `idx_service_usage_last_used` on `last_used_date` where `is_manual = TRUE`
+
+**New RLS Policies:**
+- Users can insert their own manual usage (`is_manual = TRUE`)
+- Users can update their own manual usage
+- Enforced via `auth.uid() = user_id`
+
+**Trigger:**
+- `update_service_usage_updated_at()` - Auto-updates `updated_at` timestamp on changes
+
+**Use Cases:**
+1. **Netflix, Hotstar, Prime Video** - No public APIs, users self-report usage
+2. **YouTube Premium** - API doesn't distinguish Premium users
+3. **Any custom subscription** - User reports how often they use it
+
+**Benefits:**
+- Works for **all services**, not just OAuth-enabled ones
+- Simple UX: 5-option frequency scale
+- AI recommendations use same logic for OAuth + manual data
+- Context-aware: only asks about user's active subscriptions
+
+---
+
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.0 | Oct 3, 2025 | Initial schema design |
 | 1.1 | Oct 11, 2025 | Added Bundle Optimizer tables (migration 006) |
+| 1.2 | Oct 11, 2025 | Extended service_usage for manual tracking (migration 007) |
 
 ---
 
 **Next Steps:**
-1. Execute migration SQL in Supabase
-2. Seed Indian services data
-3. Generate TypeScript types
-4. Build API routes and UI components
+1. Execute migration 007 SQL in Supabase
+2. Reload PostgREST schema: `NOTIFY pgrst, 'reload schema';`
+3. Test manual usage tracking in dashboard
+4. Integrate usage survey into subscription workflow

@@ -1,144 +1,195 @@
 # Known Bugs & Issues
 
-## Priority: High
+**Last Updated:** October 12, 2025
 
-### 1. Email Signup - Alert UX Issue
-**File:** `app/(auth)/signup/page.tsx:127`
+## ✅ Recently Fixed (Day 2 - Oct 12, 2025)
 
-**Problem:**
-- Uses browser `alert()` to show "Check your email to verify your account"
-- Poor UX, not mobile-friendly
-
-**Solution:**
-- Create a new page `/verify-email` with proper UI
-- Show success message with email icon
-- Display user's email address
-- Add "Resend verification email" button
-- Add "Back to login" link
-
-**Implementation:**
-```tsx
-// After successful signup, redirect to:
-router.push(`/verify-email?email=${encodeURIComponent(email)}`)
-```
-
----
-
-### 2. Email Signup - Incorrect Redirect Flow
-**File:** `app/(auth)/signup/page.tsx:130`
+### 1. ✅ FIXED: RESEND_API_KEY Blocking Signup Flow
+**Fixed in:** `lib/email/email-service.ts`
 
 **Problem:**
-- Redirects to `/dashboard` immediately even when email needs verification
-- User sees `/login?redirectTo=%2Fdashboard` which is confusing
-- Should not redirect to dashboard until email is verified
+- Module-level initialization threw error if RESEND_API_KEY not set
+- Blocked entire signup flow even though email is optional
 
-**Solution:**
-```tsx
-// Replace lines 125-130 with:
-if (result.needsVerification) {
-  setError(null)
-  // Show success state or redirect to verify-email page
-  router.push(`/verify-email?email=${encodeURIComponent(email)}`)
-} else {
-  // Already verified (shouldn't happen for new signups)
-  router.push('/dashboard')
-}
-```
+**Solution Applied:**
+- Changed to lazy initialization with `getResendClient()` function
+- Graceful fallback if API key not configured
+- Signup flow no longer blocked
 
 ---
 
-### 3. Email Verification - Emails Not Being Sent
-**File:** `lib/auth/auth-helpers.ts:208`
-
-**Possible Causes:**
-1. **Environment Variable Missing:**
-   - `NEXT_PUBLIC_APP_URL` might not be set in `.env.local`
-   - Check: Should be `http://localhost:3000` for dev
-
-2. **Supabase Email Settings:**
-   - Supabase may not have SMTP configured
-   - For development, need to enable "Confirm email" in Supabase dashboard
-   - Go to: Authentication → Email Templates → Confirm signup
-
-3. **Email Template Not Configured:**
-   - Default Supabase email might be disabled
-   - Check Supabase dashboard → Authentication → Email Templates
-
-**To Debug:**
-```bash
-# Check if env var is set
-echo $NEXT_PUBLIC_APP_URL
-
-# Check .env.local
-cat .env.local | grep NEXT_PUBLIC_APP_URL
-```
-
-**To Fix:**
-1. Add to `.env.local`:
-   ```
-   NEXT_PUBLIC_APP_URL=http://localhost:3000
-   ```
-
-2. In Supabase Dashboard:
-   - Go to Authentication → Settings
-   - Ensure "Enable email confirmations" is ON
-   - Check "Email Templates" → "Confirm signup" is enabled
-
-3. For production:
-   - Configure custom SMTP in Supabase (Settings → Auth → SMTP Settings)
-   - Use SendGrid, AWS SES, or other email provider
-
----
-
-### 4. Email Verification - Callback Not Working
-**File:** `app/callback/page.tsx` (or route)
+### 2. ✅ FIXED: Settings Page Database Errors
+**Fixed in:** `lib/settings/settings-actions.ts`
 
 **Problem:**
-- After clicking verify link in email, user sees `/login?redirectTo=%2Fdashboard`
-- Should see dashboard directly or login page without the redirect param
+- "column profiles.user_id does not exist" error
+- Incorrect column reference: `user_id` should be `id`
+- Currency column name mismatch
 
-**Root Cause:**
-- Email redirect goes to `/callback` with auth tokens
-- Callback handler might not be processing the tokens correctly
-- Or callback handler doesn't exist
-
-**Solution:**
-Check if `app/callback/page.tsx` or `app/callback/route.ts` exists and handles:
-```tsx
-// Should extract auth tokens from URL
-// Should exchange code for session
-// Should redirect to dashboard or onboarding
-```
-
-**Expected Flow:**
-1. User clicks link in email → `http://localhost:3000/callback?token_hash=xxx&type=signup`
-2. Callback page extracts token, verifies it with Supabase
-3. If valid, creates session
-4. Redirects to `/onboarding` (new users) or `/dashboard` (returning users)
+**Solution Applied:**
+- Changed `.eq('user_id', user.id)` → `.eq('id', user.id)`
+- Fixed currency column reference
+- Settings page now loads and updates correctly
 
 ---
 
-## Testing Checklist
+### 3. ✅ FIXED: Edit/Delete Subscription Placeholders
+**Fixed in:** `app/dashboard/page.tsx`
 
-After fixing:
-- [ ] Signup with email shows proper "Check your email" page (not alert)
-- [ ] Verification email is actually sent to user's inbox
-- [ ] Clicking verify link in email redirects to dashboard
-- [ ] User can resend verification email if needed
-- [ ] User sees helpful error messages if link expired
+**Problem:**
+- Edit and Delete buttons showed "Coming soon" toast
+- Functionality existed but wasn't wired up
 
----
-
-## Related Files to Update
-
-1. `app/(auth)/signup/page.tsx` - Remove alert, fix redirect
-2. `app/(auth)/verify-email/page.tsx` - Create this new page
-3. `app/callback/page.tsx` - Ensure proper token handling
-4. `.env.local` - Add NEXT_PUBLIC_APP_URL
-5. Supabase Dashboard - Enable email confirmations
+**Solution Applied:**
+- Connected existing EditSubscriptionDialog component
+- Added delete handler with confirmation
+- Added state management for editing/deleting
+- Full CRUD operations now working
 
 ---
 
-**Created:** 2025-10-04
-**Status:** To be fixed later
-**Priority:** High (blocks email signup flow)
+### 4. ✅ FIXED: Dark Theme Not Working
+**Fixed in:** `app/layout.tsx`, `components/ui/theme-toggle.tsx`
+
+**Problem:**
+- Manual dark mode script not reliable
+- No UI toggle for theme switching
+- Flash of wrong theme on page load
+
+**Solution Applied:**
+- Implemented next-themes with ThemeProvider
+- Created enhanced ThemeToggle with Light/Dark/System dropdown
+- Zero-flash dark mode with localStorage persistence
+- Respects system preference
+
+---
+
+### 5. ✅ FIXED: Spotify OAuth Documentation Missing
+**Fixed in:** Created `SPOTIFY_SETUP.md`
+
+**Problem:**
+- No setup guide for Spotify OAuth
+- Redirect URI security requirement unclear (127.0.0.1 vs localhost)
+
+**Solution Applied:**
+- Comprehensive setup guide with step-by-step instructions
+- Fixed redirect URI to use 127.0.0.1 (Spotify requirement)
+- Updated .env.example with correct values
+- Troubleshooting section added
+
+---
+
+## Priority: Medium
+
+### 1. Onboarding Flow Needs Refinement
+**Status:** Deferred (not blocking MVP)
+
+**Issue:**
+- User's name already captured during signup
+- Onboarding asks for name again
+- Redundant step
+
+**Proposed Solution:**
+- Skip name collection in onboarding if already have it
+- Focus onboarding on preferences:
+  - Budget setting
+  - Category interests
+  - Notification preferences
+  - Quick tour of features
+
+---
+
+### 2. Theme Preference Not Synced to Database
+**Status:** Low priority (localStorage works)
+
+**Issue:**
+- Theme stored in localStorage only
+- Not synced to `user_preferences` table
+- Won't sync across devices
+
+**Proposed Solution:**
+- Add `theme` column to `user_preferences` table
+- Update theme on change via server action
+- Load theme from database on login
+- Fall back to localStorage if not logged in
+
+---
+
+### 3. Email Templates Need Branding Update
+**Status:** Tracked in EMAIL_TEMPLATES.md
+
+**Issue:**
+- Welcome email uses basic template
+- Needs SubSavvyAI branding improvements
+- Could use better formatting
+
+**Proposed Solution:**
+- Update email templates with new design
+- Add logo and brand colors
+- Improve mobile responsiveness
+- See EMAIL_TEMPLATES.md for details
+
+---
+
+## Priority: Low
+
+### 1. SMS Provider Not Configured
+**Status:** Feature deferred to Month 2
+
+**Issue:**
+- Phone OTP authentication not set up
+- No SMS provider configured (Twilio, MessageBird, etc.)
+
+**Note:**
+- Email and Google OAuth sufficient for MVP
+- Will implement in Month 2 if needed
+
+---
+
+### 2. Migration 007 Not Yet Applied
+**Status:** Pending Supabase execution
+
+**Issue:**
+- Migration 007 (manual usage tracking) created but not run in Supabase
+- Usage survey dialog exists but can't save data until migration runs
+
+**Action Required:**
+1. Run migration 007 in Supabase SQL Editor
+2. Reload PostgREST schema: `NOTIFY pgrst, 'reload schema';`
+3. Test manual usage tracking end-to-end
+
+---
+
+## Testing Status
+
+### Completed Testing:
+- [x] RESEND_API_KEY fix verified
+- [x] Settings page loading correctly
+- [x] Edit/Delete subscription working
+- [x] Dark mode toggle functional
+- [x] Spotify OAuth documented
+
+### Pending Testing:
+- [ ] Run migration 007 in Supabase
+- [ ] Test manual usage tracking flow
+- [ ] Test AI recommendations with manual data
+- [ ] Verify hybrid system (OAuth + Manual)
+
+---
+
+## Bug Reporting
+
+If you find a new bug, add it here with:
+- **Title:** Short description
+- **File:** Affected file(s)
+- **Problem:** What's broken
+- **Steps to Reproduce:** How to see the bug
+- **Proposed Solution:** How to fix (if known)
+- **Priority:** High/Medium/Low
+- **Status:** New/In Progress/Fixed
+
+---
+
+**Next Review:** After Day 3 (Landing page optimization)
+**Critical Bugs:** 0 (All resolved! 🎉)
+**Total Open Issues:** 5 (2 medium, 3 low priority)

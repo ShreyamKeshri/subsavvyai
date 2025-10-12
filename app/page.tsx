@@ -93,7 +93,7 @@ export default function LandingPage() {
                   <h3 className="font-semibold text-gray-900 text-lg">Your Subscriptions</h3>
                   <div className="text-right">
                     <div className="text-sm text-gray-600">Monthly Total</div>
-                    <div className="text-3xl font-bold text-green-600">₹2,847</div>
+                    <div className="text-3xl font-bold text-green-600">₹1,067</div>
                   </div>
                 </div>
                 {[
@@ -135,18 +135,18 @@ export default function LandingPage() {
             {[
               {
                 icon: AlertCircle,
-                title: "Forgot you signed up",
-                description: "Free trials that auto-renewed months ago",
+                title: "Forgotten free trials",
+                description: "Free trials that quietly turned into paid plans months ago",
               },
               {
                 icon: CreditCard,
-                title: "Free trials auto-renewed",
-                description: "Charges you didn't expect or notice",
+                title: "Unexpected charges",
+                description: "Auto-renewals and hidden fees you never noticed",
               },
               {
                 icon: XCircle,
-                title: "Subscriptions you never use",
-                description: "Paying for services you forgot about",
+                title: "Unused subscriptions",
+                description: "Services you're still paying for but never actually use",
               },
             ].map((item, i) => (
               <Card key={i} className="p-8 text-center space-y-4 border-gray-200 bg-white hover:shadow-lg transition">
