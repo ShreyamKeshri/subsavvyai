@@ -83,7 +83,7 @@
 
 ### MVP Launch Checklist Progress:
 
-- **Week 1 (Polish MVP):** 14% complete (Day 1/7)
+- **Week 1 (Polish MVP):** 29% complete (Day 2/7 complete)
 - **Week 2 (Beta Testing):** 0% complete
 - **Week 3 (Launch):** 0% complete
 
@@ -91,11 +91,11 @@
 
 ## ✅ Completed This Week (Oct 7-12)
 
-### 1. **MVP Launch Day 2: Analytics + Bug Fixes + Manual Usage Tracking** 🎉
+### 1. **MVP Launch Day 2: Analytics + Bug Fixes + Manual Usage Tracking + MVP Alignment** 🎉
 
 **Date:** October 12, 2025
-**PR:** #14 (pending)
-**Time:** 6 hours
+**PR:** #14 ✅ MERGED
+**Time:** 8 hours
 
 **Implemented:**
 
@@ -127,15 +127,24 @@
 - ✅ Frequency-to-hours conversion (daily→60, weekly→20, etc.)
 - ✅ Hybrid system: OAuth (Spotify) + Manual (Netflix, Hotstar, etc.)
 
+**MVP Roadmap Alignment:**
+- ✅ Updated landing page hero: "AI Finds ₹10,000/Year Hidden in Your Subscriptions"
+- ✅ Replaced "How It Works" with actual MVP features
+- ✅ Updated features grid to show only MVP features (removed Gmail Auto-Scan, Renewal Reminders, Cancellation Guides)
+- ✅ Commented out post-MVP recommendation types ('overlap', 'price_alert') in TypeScript
+- ✅ Added clear POST-MVP labels for future features
+
 **Impact:**
 
 - All critical bugs from Thoughts.md resolved
 - Analytics tracking enables data-driven decisions
 - Dark mode improves user experience
 - Manual tracking covers services without OAuth APIs
+- Landing page now accurately represents MVP feature set
+- No misleading "coming soon" features for beta testers
 - Ready for user testing and data collection
 
-**Next:** Day 3 - Landing page optimization
+**Next:** Day 3 - Landing page optimization (images, pricing, mobile)
 
 ### 2. **MVP Launch Day 1: Savings-First Dashboard UX** 🎉
 
@@ -251,10 +260,13 @@
 
 **Focus:** Landing Page Optimization
 
-- [ ] Update hero copy ("AI finds ₹10,000/year")
-- [ ] Add social proof section (template for testimonials)
-- [ ] Add "How It Works" (3-step visual)
-- [ ] Mobile optimization
+- [x] Update hero copy ("AI finds ₹10,000/year") ✅ Done in Day 2
+- [x] Update "How It Works" with MVP features ✅ Done in Day 2
+- [x] Update features grid with MVP features ✅ Done in Day 2
+- [ ] Fix `<img>` tags → Next.js `<Image>` components
+- [ ] Add missing pricing section (#pricing link exists but no section)
+- [ ] Mobile optimization & responsiveness
+- [ ] Performance optimization (lazy loading, etc.)
 
 ### Day 4 - Monday, Oct 14 (4 hours):
 
@@ -425,13 +437,14 @@
 
 ## 🎉 Wins This Week
 
-1. **MVP Launch Sprint Day 2 Complete!** 🚀 - Analytics infrastructure operational
-2. **Analytics Tracking Live** - PostHog + Sentry fully integrated
-3. **Revenue Tracking Ready** - Affiliate click tracking with savings data
-4. **Day 1 Complete** - Savings-first dashboard UX implemented
-5. **MVP Launch Plan** - Executing 3-week day-by-day plan
-6. **PR #12 & #13 raised** - Two days of improvements
-7. **Progress:** 70% complete overall, 90% MVP features complete
+1. **MVP Launch Sprint Day 2 Complete!** 🚀 - Analytics + Bug Fixes + MVP Alignment
+2. **PR #14 Merged** - All Day 2 work successfully integrated to main
+3. **Analytics Tracking Live** - PostHog + Sentry fully integrated with 13 event types
+4. **All Critical Bugs Fixed** - 5 major bugs from Thoughts.md resolved
+5. **MVP Roadmap Alignment** - Landing page now shows only MVP features
+6. **Manual Usage Tracking** - Hybrid system (OAuth + Manual) operational
+7. **Dark Mode Complete** - Dashboard & Settings fully styled for dark theme
+8. **Progress:** 70% complete overall, 90% MVP features complete
 
 ---
 
