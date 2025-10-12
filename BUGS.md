@@ -1,6 +1,6 @@
 # Known Bugs & Issues
 
-**Last Updated:** October 12, 2025
+**Last Updated:** October 13, 2025
 
 ## ✅ Recently Fixed (Day 2 - Oct 12, 2025)
 
@@ -76,6 +76,88 @@
 - Fixed redirect URI to use 127.0.0.1 (Spotify requirement)
 - Updated .env.example with correct values
 - Troubleshooting section added
+
+---
+
+## 🐛 Active Issues (Day 3 - Oct 13, 2025)
+
+### 1. 🔴 HIGH: Spotify OAuth `service_not_found` Error
+**Status:** In Progress (Day 3)
+**File:** `app/api/oauth/spotify/callback/route.ts`
+
+**Problem:**
+- After successful Spotify OAuth, redirects to dashboard with error: `oauth_error=service_not_found`
+- Callback route can't find "Spotify" service in database
+- OAuth flow completes but fails at final step
+
+**Steps to Reproduce:**
+1. Click "Connect Spotify" on dashboard
+2. Authorize app on Spotify
+3. Get redirected back to dashboard
+4. URL shows: `http://localhost:3000/dashboard?oauth_error=service_not_found`
+
+**Proposed Solution:**
+- Check how service lookup is done in callback route
+- Verify "Spotify" exists in `services` table with correct name/slug
+- May need to seed Spotify service if missing
+- Check case sensitivity in service name matching
+
+**Priority:** HIGH (blocks Spotify OAuth feature)
+
+---
+
+### 2. 🔴 HIGH: Google OAuth Login Not Working
+**Status:** Should be fixed (needs testing)
+**Files:** `lib/auth/auth-helpers.ts`, `.env.local`
+
+**Problem:**
+- Google OAuth was broken after changing `NEXT_PUBLIC_APP_URL` to 127.0.0.1
+- Google Cloud Console expects `localhost` redirect URI
+
+**Solution Applied (Day 3):**
+- Created separate `SPOTIFY_REDIRECT_URI` env variable
+- Reverted `NEXT_PUBLIC_APP_URL` back to `localhost`
+- Google OAuth should now work again
+
+**Next Action:** Test Google login after restarting dev server
+
+---
+
+### 3. 🟡 MEDIUM: Signup Page Issues
+**Status:** Not yet investigated
+**File:** `app/(auth)/signup/page.tsx`
+
+**Problem:**
+- User reported "Sign Up page need to be fixed"
+- Specific issue not yet identified
+
+**Next Action:** Investigate signup flow and identify issues
+
+---
+
+### 4. 🟡 MEDIUM: Type Errors
+**Status:** Not yet checked
+**Command:** `npm run type-check`
+
+**Problem:**
+- Type errors reported by user
+- Haven't run type-check yet to identify specific errors
+
+**Next Action:** Run `npm run type-check` and fix any TypeScript errors
+
+---
+
+### 5. 🟢 LOW: Dashboard Spotify Button Route Fixed
+**Status:** ✅ FIXED (Day 3)
+**File:** `app/dashboard/page.tsx`
+
+**Problem:**
+- Button called non-existent route `/api/oauth/spotify`
+- Should call `/api/oauth/spotify/connect`
+
+**Solution Applied:**
+- Updated button onClick to use correct route
+- Committed in PR #16
 
 ---
 
@@ -190,6 +272,7 @@ If you find a new bug, add it here with:
 
 ---
 
-**Next Review:** After Day 3 (Landing page optimization)
-**Critical Bugs:** 0 (All resolved! 🎉)
-**Total Open Issues:** 5 (2 medium, 3 low priority)
+**Next Review:** After Day 3 completion
+**Critical Bugs:** 2 HIGH (Spotify OAuth, needs Google OAuth testing)
+**Active Issues:** 5 (2 HIGH, 2 MEDIUM, 1 FIXED)
+**Total Open Issues:** 9 (2 HIGH, 4 MEDIUM, 3 LOW)

@@ -42,17 +42,21 @@ Spotify OAuth enables the **Smart Downgrade Alerts** feature - SubSavvyAI's uniq
 2. Add the following variables:
 
 ```env
-# App URL (IMPORTANT: Use 127.0.0.1, NOT localhost for Spotify OAuth)
-NEXT_PUBLIC_APP_URL=http://127.0.0.1:3000
+# App URL (for Google OAuth, email redirects, etc.)
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 
-# Spotify OAuth
+# Spotify OAuth (requires separate redirect URI)
 SPOTIFY_CLIENT_ID=your_client_id_here
 SPOTIFY_CLIENT_SECRET=your_client_secret_here
+SPOTIFY_REDIRECT_URI=http://127.0.0.1:3000/api/oauth/spotify/callback
 ```
 
 3. Replace `your_client_id_here` and `your_client_secret_here` with the values from Step 2
 
-**Critical**: Make sure `NEXT_PUBLIC_APP_URL` uses `127.0.0.1` (not `localhost`) to match Spotify's redirect URI requirements.
+**Important Notes:**
+- `NEXT_PUBLIC_APP_URL` uses `localhost` for general app usage (Google OAuth, etc.)
+- `SPOTIFY_REDIRECT_URI` uses `127.0.0.1` specifically for Spotify (Spotify requires explicit loopback address)
+- This separation prevents OAuth conflicts between providers
 
 ## Step 4: Update Redirect URI for Production
 
@@ -61,9 +65,10 @@ When deploying to production (e.g., Vercel):
 1. Go back to your Spotify app settings
 2. Add production redirect URI:
    - `https://yourdomain.com/api/oauth/spotify/callback`
-3. Update your production `.env` file:
+3. Update your production environment variables:
    ```env
    NEXT_PUBLIC_APP_URL=https://yourdomain.com
+   SPOTIFY_REDIRECT_URI=https://yourdomain.com/api/oauth/spotify/callback
    ```
 
 ## Step 5: Verify Setup
