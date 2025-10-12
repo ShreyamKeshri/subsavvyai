@@ -332,7 +332,7 @@ export default function DashboardPage() {
                         </p>
                         <Button
                           className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600"
-                          onClick={() => router.push('/api/oauth/spotify')}
+                          onClick={() => router.push('/api/oauth/spotify/connect')}
                         >
                           <Package className="h-4 w-4 mr-2" />
                           Connect Now
