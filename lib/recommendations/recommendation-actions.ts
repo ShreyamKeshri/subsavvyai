@@ -15,7 +15,7 @@ export interface OptimizationRecommendation {
   id: string
   user_id: string
   subscription_id: string | null
-  type: 'downgrade' | 'upgrade' | 'cancel' | 'bundle' | 'overlap' | 'price_alert'
+  type: 'downgrade' | 'upgrade' | 'cancel' | 'bundle' // | 'overlap' | 'price_alert' // POST-MVP: Content Overlap & Price Monitoring
   title: string
   description: string
   current_cost: number

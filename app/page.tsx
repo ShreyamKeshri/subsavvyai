@@ -2,12 +2,9 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
-  Mail,
   BarChart3,
-  Scissors,
   Scan,
   Wallet,
-  Bell,
   FileText,
   TrendingUp,
   Shield,
@@ -59,11 +56,10 @@ export default function LandingPage() {
               Join 50,000+ Indians already saving money
             </Badge>
             <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight text-balance">
-              Track Every Subscription. Save Thousands Every Year.
+              AI Finds ₹10,000/Year Hidden in Your Subscriptions
             </h1>
             <p className="text-lg lg:text-xl text-gray-600 leading-relaxed">
-              {branding.name} finds all your subscriptions, shows exactly what you&apos;re spending, and helps you cancel the
-              ones you don&apos;t need.
+              {branding.name} is India&apos;s first AI-powered subscription optimizer. Connect your services, get smart downgrade alerts, and discover telecom bundle savings—all powered by AI.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link href="/signup">
@@ -175,22 +171,22 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                icon: Mail,
+                icon: Wallet,
                 number: "1",
-                title: "Connect Your Gmail",
-                description: "We securely scan for subscription receipts (read-only access)",
+                title: "Add Your Subscriptions",
+                description: "Quickly add subscriptions from 52 pre-loaded Indian services",
               },
               {
                 icon: BarChart3,
                 number: "2",
-                title: "See Everything",
-                description: "All subscriptions in one dashboard with spending insights",
+                title: "Connect Services & Track Usage",
+                description: "Connect Spotify to get AI-powered insights on your actual usage",
               },
               {
-                icon: Scissors,
+                icon: TrendingUp,
                 number: "3",
-                title: "Cancel Easily",
-                description: "Step-by-step guides for every service in India",
+                title: "Get AI Savings Recommendations",
+                description: "Smart downgrade alerts & telecom bundle savings powered by AI",
               },
             ].map((step, i) => (
               <Card key={i} className="p-8 space-y-6 border-gray-200 bg-white hover:shadow-xl transition relative">
@@ -217,34 +213,34 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
-                icon: Scan,
-                title: "Gmail Auto-Scan",
-                description: "Automatically finds subscriptions from receipts",
-              },
-              {
                 icon: Wallet,
-                title: "Spending Tracker",
-                description: "See monthly, yearly costs at a glance",
+                title: "Smart Subscription Tracking",
+                description: "Track all your subscriptions with 52 pre-loaded Indian services",
               },
               {
-                icon: Bell,
-                title: "Renewal Reminders",
-                description: "Get notified before charges hit",
-              },
-              {
-                icon: FileText,
-                title: "Cancellation Guides",
-                description: "Easy steps for Netflix, Prime, Hotstar & more",
+                icon: BarChart3,
+                title: "Spending Dashboard",
+                description: "See monthly, yearly costs and category breakdown at a glance",
               },
               {
                 icon: TrendingUp,
-                title: "Spending Insights",
-                description: "Understand your subscription patterns",
+                title: "AI Downgrade Alerts",
+                description: "Connect Spotify and get smart recommendations based on actual usage",
+              },
+              {
+                icon: Scan,
+                title: "India Bundle Optimizer",
+                description: "Find telecom bundles that save ₹10,000+/year on OTT subscriptions",
+              },
+              {
+                icon: FileText,
+                title: "Manual Usage Tracking",
+                description: "Track usage for services without API integrations",
               },
               {
                 icon: Shield,
                 title: "Bank-Level Security",
-                description: "256-bit encryption, never stored",
+                description: "Row-level security, encrypted OAuth tokens, HTTPS-only",
               },
             ].map((feature, i) => (
               <Card
