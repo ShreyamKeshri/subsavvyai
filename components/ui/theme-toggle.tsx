@@ -2,49 +2,30 @@
 
 /**
  * Theme Toggle Component
- * Switches between light and dark mode
- * Saves preference to localStorage and database
+ * Switches between light, dark, and system theme
+ * Uses next-themes for seamless theme management
  */
 
-import { Moon, Sun } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import * as React from 'react'
+import { Moon, Sun, Monitor } from 'lucide-react'
+import { useTheme } from 'next-themes'
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light')
-  const [mounted, setMounted] = useState(false)
-
-  // Load theme on mount
-  useEffect(() => {
-    setMounted(true)
-    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-
-    const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light')
-    setTheme(initialTheme)
-    applyTheme(initialTheme)
-  }, [])
-
-  const applyTheme = (newTheme: 'light' | 'dark') => {
-    const root = document.documentElement
-    if (newTheme === 'dark') {
-      root.classList.add('dark')
-    } else {
-      root.classList.remove('dark')
-    }
-  }
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light'
-    setTheme(newTheme)
-    applyTheme(newTheme)
-    localStorage.setItem('theme', newTheme)
-
-    // TODO: Save to database via server action when user is authenticated
-    // This will be handled in Settings page
-  }
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = React.useState(false)
 
   // Prevent hydration mismatch
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
   if (!mounted) {
     return (
       <Button variant="outline" size="sm" className="w-9 h-9 p-0">
@@ -54,18 +35,34 @@ export function ThemeToggle() {
   }
 
   return (
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={toggleTheme}
-      className="w-9 h-9 p-0"
-      aria-label="Toggle theme"
-    >
-      {theme === 'light' ? (
-        <Moon className="h-4 w-4" />
-      ) : (
-        <Sun className="h-4 w-4" />
-      )}
-    </Button>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-9 h-9 p-0"
+          aria-label="Toggle theme"
+        >
+          {theme === 'light' && <Sun className="h-4 w-4" />}
+          {theme === 'dark' && <Moon className="h-4 w-4" />}
+          {theme === 'system' && <Monitor className="h-4 w-4" />}
+          <span className="sr-only">Toggle theme</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => setTheme('light')}>
+          <Sun className="mr-2 h-4 w-4" />
+          <span>Light</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme('dark')}>
+          <Moon className="mr-2 h-4 w-4" />
+          <span>Dark</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme('system')}>
+          <Monitor className="mr-2 h-4 w-4" />
+          <span>System</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }

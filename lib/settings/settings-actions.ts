@@ -39,8 +39,8 @@ export async function getUserProfile() {
     // Fetch profile data
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('full_name, phone_number, avatar_url, timezone, currency')
-      .eq('user_id', user.id)
+      .select('full_name, phone_number, avatar_url, timezone, currency_preference')
+      .eq('id', user.id)
       .single()
 
     if (profileError) {
@@ -102,7 +102,7 @@ export async function updateProfile(data: ProfileData) {
         phone_number: data.phone_number,
         updated_at: new Date().toISOString(),
       })
-      .eq('user_id', user.id)
+      .eq('id', user.id)
 
     if (error) {
       return { success: false, error: error.message }

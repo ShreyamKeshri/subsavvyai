@@ -155,8 +155,8 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <Loader2 className="h-8 w-8 animate-spin text-indigo-600 dark:text-indigo-400" />
       </div>
     )
   }
@@ -166,9 +166,9 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <header className="border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 sticky top-0 z-50">
+      <header className="border-b bg-white/95 dark:bg-gray-800/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-800/60 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/dashboard">
@@ -181,7 +181,7 @@ export default function SettingsPage() {
           <div className="flex items-center gap-3">
             <Image src="/logo-icon.png" alt={branding.name} width={40} height={40} />
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Settings</h1>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">Settings</h1>
             </div>
           </div>
           <div className="w-24"></div> {/* Spacer for alignment */}
@@ -222,9 +222,9 @@ export default function SettingsPage() {
                     type="email"
                     value={user.email || ''}
                     disabled
-                    className="bg-gray-50"
+                    className="bg-gray-50 dark:bg-gray-800"
                   />
-                  <p className="text-xs text-gray-500">Email cannot be changed</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Email cannot be changed</p>
                 </div>
 
                 <div className="space-y-2">
@@ -297,7 +297,7 @@ export default function SettingsPage() {
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label>Theme</Label>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
                       Choose your preferred color scheme
                     </p>
                   </div>
@@ -350,7 +350,7 @@ export default function SettingsPage() {
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label>Email Notifications</Label>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
                       Receive renewal reminders and savings alerts via email
                     </p>
                   </div>
@@ -363,7 +363,7 @@ export default function SettingsPage() {
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label>Push Notifications</Label>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
                       Get real-time alerts for important updates
                     </p>
                   </div>

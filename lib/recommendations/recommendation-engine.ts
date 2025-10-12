@@ -8,7 +8,7 @@ import type { ServiceUsage } from '@/lib/usage/usage-actions'
 
 export interface OptimizationRecommendation {
   subscription_id: string | null
-  type: 'downgrade' | 'upgrade' | 'cancel' | 'bundle' | 'overlap' | 'price_alert'
+  type: 'downgrade' | 'upgrade' | 'cancel' | 'bundle' // | 'overlap' | 'price_alert' // POST-MVP: Content Overlap & Price Monitoring
   title: string
   description: string
   current_cost: number

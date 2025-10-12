@@ -5,13 +5,25 @@
 
 import { Resend } from 'resend'
 
-if (!process.env.RESEND_API_KEY) {
-  throw new Error('RESEND_API_KEY is not defined in environment variables')
-}
-
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'SubSavvyAI <onboarding@subsavvyai.com>'
+
+let resend: Resend | null = null
+
+/**
+ * Lazy initialize Resend client
+ */
+function getResendClient(): Resend | null {
+  if (!process.env.RESEND_API_KEY) {
+    console.warn('⚠️ RESEND_API_KEY is not set. Email sending is disabled.')
+    return null
+  }
+
+  if (!resend) {
+    resend = new Resend(process.env.RESEND_API_KEY)
+  }
+
+  return resend
+}
 
 export interface EmailOptions {
   to: string | string[]
@@ -25,7 +37,24 @@ export interface EmailOptions {
  */
 export async function sendEmail(options: EmailOptions) {
   try {
-    const { data, error } = await resend.emails.send({
+    const client = getResendClient()
+
+    // If Resend is not configured, log and return gracefully
+    if (!client) {
+      if (process.env.NODE_ENV === 'development') {
+        // eslint-disable-next-line no-console
+        console.log('📧 Email would be sent (Resend not configured):', {
+          to: options.to,
+          subject: options.subject,
+        })
+      }
+      return {
+        success: false,
+        error: 'Email service not configured',
+      }
+    }
+
+    const { data, error } = await client.emails.send({
       from: FROM_EMAIL,
       to: options.to,
       subject: options.subject,

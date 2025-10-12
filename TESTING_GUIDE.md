@@ -433,6 +433,152 @@ npm run dev
 - [ ] Recommendation removed from view
 - [ ] Status updated in database
 
+### 3.7 Manual Usage Tracking (Non-OAuth Services)
+
+**Prerequisites:**
+- Migration 007 applied in Supabase
+- Subscription added for Netflix, Hotstar, Prime Video, or YouTube Premium
+
+**Steps:**
+1. Add a Netflix subscription
+2. Look for "Track Usage" or usage survey prompt (UI pending)
+3. Or manually open usage survey dialog
+
+**Expected Results:**
+- ✅ Usage survey dialog opens
+- ✅ Shows service name (e.g., "How often do you use Netflix?")
+- ✅ 5 frequency options displayed:
+  - Daily: "I use this almost every day"
+  - Weekly: "I use this a few times per week"
+  - Monthly: "I use this once or twice a month"
+  - Rarely: "I barely use this anymore"
+  - Never: "I haven't used this in months"
+- ✅ "When did you last use it?" date picker (hidden if "Never")
+- ✅ Optional notes textarea
+
+**Check:**
+- [ ] Dialog opens correctly
+- [ ] All frequency options visible
+- [ ] Date picker works (calendar opens)
+- [ ] Notes field accepts text
+
+### 3.8 Save Manual Usage Data
+
+**Steps:**
+1. In usage survey dialog:
+   - Select frequency: "Weekly"
+   - Select last used date: Today
+   - Add note: "Watch shows on weekends"
+2. Click "Save Usage Data"
+
+**Expected Results:**
+- ✅ Success toast: "Usage data saved successfully!"
+- ✅ Dialog closes
+- ✅ Data saved to `service_usage` table with:
+  - `usage_frequency`: "weekly"
+  - `last_used_date`: selected date
+  - `manual_usage_note`: "Watch shows on weekends"
+  - `usage_hours`: 20 (estimated from weekly)
+  - `is_manual`: true
+
+**Check:**
+- [ ] Success toast appears
+- [ ] Dialog closes after save
+- [ ] Data persisted in database
+- [ ] Usage hours calculated correctly (daily=60, weekly=20, monthly=5, rarely=2, never=0)
+
+### 3.9 Update Manual Usage Data
+
+**Steps:**
+1. Open usage survey again for same subscription
+2. Change frequency from "Weekly" to "Rarely"
+3. Update note: "Almost never use anymore"
+4. Save
+
+**Expected Results:**
+- ✅ Existing record updated (not new record created)
+- ✅ `usage_frequency` changed to "rarely"
+- ✅ `usage_hours` recalculated to 2
+- ✅ `manual_usage_note` updated
+- ✅ `updated_at` timestamp refreshed
+
+**Check:**
+- [ ] No duplicate records created
+- [ ] Existing record updated correctly
+- [ ] Calculations updated
+
+### 3.10 Frequency-to-Hours Conversion
+
+**Test all frequency options:**
+
+| Frequency | Expected Usage Hours |
+|-----------|---------------------|
+| Daily     | 60 (~2 hours/day)   |
+| Weekly    | 20 (~5 hours/week)  |
+| Monthly   | 5                   |
+| Rarely    | 2                   |
+| Never     | 0                   |
+
+**Steps:**
+1. Create 5 test subscriptions
+2. Set different frequency for each
+3. Check `usage_hours` in database
+
+**Check:**
+- [ ] Daily → 60 hours
+- [ ] Weekly → 20 hours
+- [ ] Monthly → 5 hours
+- [ ] Rarely → 2 hours
+- [ ] Never → 0 hours
+
+### 3.11 Manual Usage in AI Recommendations
+
+**Steps:**
+1. Add Netflix subscription
+2. Report usage frequency: "Never"
+3. Generate AI recommendations
+
+**Expected Results:**
+- ✅ AI recommendation generated: "Cancel Netflix"
+- ✅ Reasoning mentions: "You haven't used Netflix (0 hours/month)"
+- ✅ Potential savings calculated correctly
+- ✅ Confidence score high (0.85+) for "Never" usage
+
+**Test with high usage:**
+1. Change frequency to "Daily"
+2. Regenerate recommendations
+
+**Expected Results:**
+- ✅ No "Cancel" recommendation
+- ✅ May suggest: Keep current plan or upgrade
+
+**Check:**
+- [ ] Manual usage data used in AI logic
+- [ ] Recommendations appropriate for usage level
+- [ ] Reasoning mentions usage hours
+
+### 3.12 Hybrid System (OAuth + Manual)
+
+**Test mixed usage data:**
+
+**Steps:**
+1. Add Spotify subscription → Connect OAuth → Fetch real usage (e.g., 30 hours)
+2. Add Netflix subscription → Manual tracking → Set "Rarely" (2 hours)
+3. Generate AI recommendations
+
+**Expected Results:**
+- ✅ Both usage sources recognized
+- ✅ Spotify: Uses OAuth data (accurate hours)
+- ✅ Netflix: Uses manual data (estimated hours)
+- ✅ Recommendations generated for both
+- ✅ Different recommendation logic based on data source
+
+**Check:**
+- [ ] OAuth data preferred for Spotify
+- [ ] Manual data used for Netflix
+- [ ] Both show in dashboard
+- [ ] AI handles both data types
+
 ---
 
 ## 4. India Bundle Optimizer

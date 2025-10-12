@@ -66,12 +66,14 @@ Multi-method authentication via Supabase Auth:
 
 ### Database (Supabase/PostgreSQL)
 
-**Migrations Applied (5 total):**
+**Migrations Applied (7 total):**
 1. `001_initial_schema.sql` - Core tables, RLS policies, triggers, seed data (52 Indian services)
 2. `002_security_events.sql` - Security audit logging
 3. `003_auto_create_profile.sql` - Auto-create profile on signup
 4. `004_proper_schema.sql` - User preferences & category preferences
 5. `005_smart_downgrade_alerts.sql` - AI optimizer tables (oauth_tokens, service_usage, optimization_recommendations) + analytics fix
+6. `006_telecom_bundles.sql` - Bundle optimizer tables (telecom_bundles, bundle_recommendations) + 20 bundles
+7. `007_manual_usage_tracking.sql` - Manual usage fields (usage_frequency, last_used_date, is_manual, manual_usage_note)
 
 **Key Tables:**
 - **User Management:**
@@ -86,10 +88,14 @@ Multi-method authentication via Supabase Auth:
   - `payment_methods`, `payment_history` - Payment tracking
   - `user_analytics_cache` - Pre-calculated analytics (monthly/yearly spend, category breakdown)
 
-- **AI Optimizer (NEW):**
+- **AI Optimizer:**
   - `oauth_tokens` - Encrypted OAuth tokens for Spotify, Netflix APIs
-  - `service_usage` - Usage data from external APIs (listening hours, watch time)
+  - `service_usage` - Usage data from external APIs (listening hours, watch time) + manual tracking
   - `optimization_recommendations` - AI-generated savings recommendations (downgrade, cancel, bundle, overlap alerts)
+
+- **Bundle Optimizer:**
+  - `telecom_bundles` - 20 pre-populated telecom bundles (Jio, Airtel, Vi)
+  - `bundle_recommendations` - AI-matched bundle recommendations for users
 
 - **Security & Analytics:**
   - `security_events` - Security audit log
@@ -148,7 +154,14 @@ unsubscribr/
 │   ├── layout.tsx                # Root layout (with Toaster)
 │   └── globals.css               # Global styles (Tailwind v4)
 ├── lib/                          # Core utilities
+│   ├── analytics/                # Analytics tracking
+│   │   ├── posthog-provider.tsx  # PostHog React provider
+│   │   ├── events.ts             # Client-side event tracking
+│   │   ├── server-events.ts      # Server-side event tracking
+│   │   └── sentry.ts             # Sentry error tracking config
 │   ├── auth/                     # Auth helpers
+│   ├── bundles/                  # Bundle optimizer
+│   │   └── bundle-actions.ts     # Server actions for bundle recommendations
 │   ├── config/                   # Theme & branding
 │   │   ├── theme.ts              # Centralized theme config
 │   │   └── branding.ts           # SubSavvyAI branding
@@ -157,6 +170,8 @@ unsubscribr/
 │   ├── recommendations/          # AI recommendation engine
 │   │   ├── recommendation-engine.ts  # Core AI logic
 │   │   └── recommendation-actions.ts # Server actions
+│   ├── settings/                 # Settings management
+│   │   └── settings-actions.ts   # Server actions for user settings
 │   ├── subscriptions/            # Subscription CRUD
 │   │   └── subscription-actions.ts  # Server actions
 │   ├── supabase/                 # Supabase clients
@@ -164,15 +179,23 @@ unsubscribr/
 │   │   ├── server.ts             # Server client
 │   │   └── middleware.ts         # Middleware client
 │   ├── usage/                    # Usage tracking
-│   │   └── usage-actions.ts      # Server actions
+│   │   ├── usage-actions.ts      # OAuth-based usage tracking
+│   │   └── manual-usage-actions.ts  # Manual usage tracking
 │   └── validators.ts             # Zod schemas
 ├── components/                   # React components
 │   ├── ui/                       # shadcn/ui components
+│   │   └── theme-toggle.tsx      # Dark/light theme toggle
+│   ├── bundles/                  # Bundle optimizer components
+│   │   ├── bundle-recommendation-card.tsx
+│   │   └── bundle-recommendations-list.tsx
 │   ├── subscriptions/            # Subscription components
-│   │   └── add-subscription-dialog.tsx
-│   └── recommendations/          # Recommendation components
-│       └── recommendations-list.tsx
-├── supabase/migrations/          # Database migrations (5 total)
+│   │   ├── add-subscription-dialog.tsx
+│   │   └── edit-subscription-dialog.tsx
+│   ├── recommendations/          # Recommendation components
+│   │   └── recommendations-list.tsx
+│   └── usage/                    # Usage tracking components
+│       └── usage-survey-dialog.tsx  # Manual usage survey
+├── supabase/migrations/          # Database migrations (7 total)
 ├── middleware.ts                 # Next.js middleware (auth + security)
 ├── tsconfig.json                 # TypeScript config
 └── CLAUDE.md                     # This file
@@ -180,23 +203,43 @@ unsubscribr/
 
 ## Current Status
 
-**Phase:** Smart Downgrade Alerts Implementation ✅ COMPLETE
+**Phase:** MVP Launch Sprint - Day 2 Complete! ✅
 
-**Completed:**
-- ✅ Database schema for AI optimizer (oauth_tokens, service_usage, optimization_recommendations)
-- ✅ Spotify OAuth integration (`lib/oauth/spotify.ts`)
-- ✅ Usage tracking system (`lib/usage/usage-actions.ts`)
-- ✅ AI recommendation engine (`lib/recommendations/recommendation-engine.ts`)
-- ✅ Dashboard integration with beautiful v0-inspired UI
-- ✅ SubSavvyAI rebranding (logo, theme, branding config)
-- ✅ Fixed nested aggregate error in analytics function
-- ✅ Fixed RLS policy for analytics cache
-- ✅ Subscription creation working
-- ✅ Form UX improvements (cost step, billing date clarity)
+**Recent Completions (Day 2 - Oct 12, 2025):**
 
-**Known Issues:**
-- Migration 005 must be run in Supabase to enable AI features
-- PostgREST schema cache must be reloaded after migration: `NOTIFY pgrst, 'reload schema';`
+**Analytics Infrastructure:**
+- ✅ PostHog client & server-side tracking (13 event types)
+- ✅ Sentry error tracking with privacy filters
+- ✅ Revenue-critical affiliate click tracking
+- ✅ CSP headers updated
+
+**Critical Bug Fixes:**
+- ✅ RESEND_API_KEY: Lazy initialization prevents signup blocking
+- ✅ Settings page: Fixed database column errors (user_id → id)
+- ✅ Edit/Delete subscription: Wired up existing components
+
+**Dark Mode:**
+- ✅ Implemented with next-themes (Light/Dark/System)
+- ✅ Enhanced ThemeToggle with dropdown menu
+- ✅ Zero-flash dark mode with localStorage persistence
+
+**Manual Usage Tracking (Hybrid Recommendation System):**
+- ✅ Migration 007: Extended service_usage table
+- ✅ Server actions for CRUD operations
+- ✅ UsageSurveyDialog component with frequency selection
+- ✅ Frequency-to-hours conversion (daily→60, weekly→20, etc.)
+- ✅ Works alongside OAuth tracking (Spotify)
+
+**Previous Completions:**
+- ✅ Smart Downgrade Alerts (Spotify OAuth, AI recommendations)
+- ✅ India Bundle Optimizer (20 bundles, AI matching)
+- ✅ Savings-First Dashboard UX
+- ✅ SubSavvyAI rebranding
+
+**Next Steps:**
+- Integrate usage survey into dashboard workflow
+- Run migration 007 in Supabase
+- Test end-to-end recommendation flow with manual data
 
 ## Key Implementation Patterns
 
@@ -257,12 +300,22 @@ NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 
 # Spotify OAuth (for Smart Downgrade Alerts)
+# IMPORTANT: Use 127.0.0.1 not localhost (Spotify security requirement)
 SPOTIFY_CLIENT_ID=your_client_id
 SPOTIFY_CLIENT_SECRET=your_client_secret
-SPOTIFY_REDIRECT_URI=http://localhost:3000/api/oauth/spotify/callback
+SPOTIFY_REDIRECT_URI=http://127.0.0.1:3000/api/oauth/spotify/callback
 
-# App
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+# Analytics (Optional - graceful fallback if not set)
+NEXT_PUBLIC_POSTHOG_KEY=your_posthog_key
+NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
+NEXT_PUBLIC_SENTRY_DSN=your_sentry_dsn
+
+# Email (Optional - graceful fallback if not set)
+RESEND_API_KEY=re_your_resend_key
+RESEND_FROM_EMAIL=SubSavvyAI <onboarding@subsavvyai.com>
+
+# App (use 127.0.0.1 for Spotify OAuth compatibility)
+NEXT_PUBLIC_APP_URL=http://127.0.0.1:3000
 ```
 
 ## Common Tasks
@@ -316,8 +369,11 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 6. **Server Actions:** All mutations should be server actions
 7. **TypeScript:** Never use `any`, prefer `unknown` with type guards
 8. **RLS:** All tables must have RLS enabled
-9. **Migration 005:** Contains analytics fix - must be applied
+9. **Migrations:** 7 migrations must be applied (001-007)
 10. **Subscription Form:** "Last/Current Billing Date" calculates next billing automatically
+11. **Spotify OAuth:** Use 127.0.0.1 not localhost (security requirement)
+12. **Manual Usage Tracking:** For services without OAuth APIs (Netflix, Hotstar, etc.)
+13. **Analytics:** PostHog & Sentry are optional (graceful fallback)
 
 ## Next Steps
 
