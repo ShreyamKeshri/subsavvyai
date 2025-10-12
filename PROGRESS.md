@@ -1,9 +1,9 @@
 # SubSavvyAI - Development Progress
 
-**Last Updated:** October 12, 2025
-**Current Phase:** MVP Launch Sprint - Day 2 Complete! ✅
-**Overall Progress:** 70% Complete (90% MVP ready)
-**Launch Date:** October 31, 2025 (19 days remaining)
+**Last Updated:** October 13, 2025
+**Current Phase:** MVP Launch Sprint - Day 3 In Progress
+**Overall Progress:** 72% Complete (90% MVP ready)
+**Launch Date:** October 31, 2025 (18 days remaining)
 
 ---
 
@@ -37,7 +37,31 @@
 
 ---
 
-## 🎯 Current Status: Day 2 Complete! ✅
+## 🎯 Current Status: Day 3 In Progress
+
+### Day 3 (Oct 13, 2025): Landing Page + Spotify OAuth Fixes - IN PROGRESS ⏳
+
+**PR:** #15 (landing page), #16 (Spotify OAuth fixes)
+
+**Completed:**
+- ✅ Fixed `<img>` → Next.js `<Image>` in subscriptions-list.tsx
+- ✅ Fixed Spotify OAuth dashboard button route
+- ✅ Created separate `SPOTIFY_REDIRECT_URI` env variable
+  - Spotify: `http://127.0.0.1:3000/api/oauth/spotify/callback`
+  - App: `http://localhost:3000` (for Google OAuth, emails)
+- ✅ Updated `.env.example` with documentation
+
+**In Progress:**
+- [ ] Fix Spotify `service_not_found` error in callback route
+- [ ] Test Google OAuth login (should work after localhost revert)
+- [ ] Address type errors
+- [ ] Fix signup page issues
+- [ ] Add missing pricing section to landing page
+
+**Impact:**
+- Separated OAuth redirect URIs prevents conflicts between providers
+- Google OAuth should work again after localhost revert
+- Better documentation for environment variables
 
 ### Day 2 (Oct 12, 2025): Analytics + Bug Fixes + Manual Usage Tracking ✅
 
@@ -83,7 +107,7 @@
 
 ### MVP Launch Checklist Progress:
 
-- **Week 1 (Polish MVP):** 29% complete (Day 2/7 complete)
+- **Week 1 (Polish MVP):** 43% complete (Day 3/7 in progress)
 - **Week 2 (Beta Testing):** 0% complete
 - **Week 3 (Launch):** 0% complete
 
@@ -256,14 +280,18 @@
 - [x] Document Spotify OAuth setup
 - [x] Implement manual usage tracking system
 
-### Day 3 - Sunday, Oct 13 (3.5 hours):
+### Day 3 - Sunday, Oct 13 (3.5 hours): ⏳ IN PROGRESS
 
-**Focus:** Landing Page Optimization
+**Focus:** Landing Page Optimization + Spotify OAuth Fixes
 
 - [x] Update hero copy ("AI finds ₹10,000/year") ✅ Done in Day 2
 - [x] Update "How It Works" with MVP features ✅ Done in Day 2
 - [x] Update features grid with MVP features ✅ Done in Day 2
-- [ ] Fix `<img>` tags → Next.js `<Image>` components
+- [x] Fix `<img>` tags → Next.js `<Image>` components ✅
+- [x] Fix Spotify OAuth route bug ✅
+- [x] Separate Spotify redirect URI from app URL ✅
+- [ ] Fix Spotify `service_not_found` error
+- [ ] Test Google OAuth login
 - [ ] Add missing pricing section (#pricing link exists but no section)
 - [ ] Mobile optimization & responsiveness
 - [ ] Performance optimization (lazy loading, etc.)
@@ -444,11 +472,30 @@
 5. **MVP Roadmap Alignment** - Landing page now shows only MVP features
 6. **Manual Usage Tracking** - Hybrid system (OAuth + Manual) operational
 7. **Dark Mode Complete** - Dashboard & Settings fully styled for dark theme
-8. **Progress:** 70% complete overall, 90% MVP features complete
+8. **Day 3 Progress** - Spotify OAuth fixes (PR #16), Image optimization complete
+9. **Progress:** 72% complete overall, 90% MVP features complete
 
 ---
 
-**Next Review:** End of Day 3 (Landing page optimization)
+## 📋 Known Issues & Next Actions
+
+### Immediate (Day 3 Completion):
+1. Fix Spotify `service_not_found` error in callback route
+2. Test Google OAuth login (should work after localhost revert)
+3. Address type errors (run `npm run type-check`)
+4. Fix signup page issues
+5. Add pricing section to landing page
+6. Restart dev server to load new `SPOTIFY_REDIRECT_URI`
+
+### Upcoming (Day 4):
+1. End-to-end testing of Spotify OAuth flow
+2. Test Bundle Optimizer with real data
+3. Mobile optimization for landing page
+4. Performance optimization (lazy loading)
+
+---
+
+**Next Review:** End of Day 3 (Landing page + OAuth fixes complete)
 **Next Major Milestone:** Beta Launch (October 17 - Day 7)
-**Launch Date:** October 31, 2025 (19 days remaining)
-**Overall Progress:** 70% Complete (was 65%)
+**Launch Date:** October 31, 2025 (18 days remaining)
+**Overall Progress:** 72% Complete (was 70%)
