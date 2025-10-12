@@ -199,7 +199,7 @@ export default function DashboardPage() {
 
   if (loading || loadingSubscriptions) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
       </div>
     )
@@ -210,15 +210,15 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <header className="border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 sticky top-0 z-50">
+      <header className="border-b bg-white/95 dark:bg-gray-800/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-800/60 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Image src="/logo-icon.png" alt={branding.name} width={48} height={48} className="rounded-xl" />
             <div>
-              <h1 className="text-xl font-bold text-gray-900">{branding.name}</h1>
-              <p className="text-xs text-gray-500 hidden sm:block">{branding.taglines.ai}</p>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">{branding.name}</h1>
+              <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">{branding.taglines.ai}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -280,21 +280,21 @@ export default function DashboardPage() {
             <Card className="border-l-4 border-l-indigo-600">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-600">Active Subscriptions</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Active Subscriptions</span>
                   <CreditCard className="h-5 w-5 text-indigo-600" />
                 </div>
-                <p className="text-4xl font-extrabold text-gray-900">{activeSubscriptions.length}</p>
-                <p className="text-xs text-gray-500 mt-1">₹{totalMonthlySpend.toFixed(0)}/month total</p>
+                <p className="text-4xl font-extrabold text-gray-900 dark:text-white">{activeSubscriptions.length}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">₹{totalMonthlySpend.toFixed(0)}/month total</p>
               </CardContent>
             </Card>
 
             <Card className="border-l-4 border-l-green-600">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-600">Monthly Spending</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Monthly Spending</span>
                   <TrendingUp className="h-5 w-5 text-green-600" />
                 </div>
-                <p className="text-4xl font-extrabold text-gray-900">₹{totalMonthlySpend.toFixed(0)}</p>
+                <p className="text-4xl font-extrabold text-gray-900 dark:text-white">₹{totalMonthlySpend.toFixed(0)}</p>
                 <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
                   <ArrowDownRight className="h-3 w-3" />
                   Track your spending
@@ -305,11 +305,11 @@ export default function DashboardPage() {
             <Card className="border-l-4 border-l-orange-500">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-600">Upcoming Renewals</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Upcoming Renewals</span>
                   <Calendar className="h-5 w-5 text-orange-500" />
                 </div>
-                <p className="text-4xl font-extrabold text-gray-900">{upcomingRenewals}</p>
-                <p className="text-xs text-gray-500 mt-1">In next 7 days</p>
+                <p className="text-4xl font-extrabold text-gray-900 dark:text-white">{upcomingRenewals}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">In next 7 days</p>
               </CardContent>
             </Card>
           </div>
@@ -319,19 +319,19 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Connect Spotify CTA */}
               {connectedServices.length === 0 && (
-                <Card className="border-2 border-dashed border-indigo-300 bg-indigo-50/50 hover:border-indigo-400 transition-colors">
+                <Card className="border-2 border-dashed border-indigo-300 dark:border-indigo-700 bg-indigo-50/50 dark:bg-indigo-950/30 hover:border-indigo-400 dark:hover:border-indigo-600 transition-colors">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4">
-                      <div className="bg-indigo-100 p-3 rounded-lg">
-                        <Sparkles className="h-6 w-6 text-indigo-600" />
+                      <div className="bg-indigo-100 dark:bg-indigo-900/50 p-3 rounded-lg">
+                        <Sparkles className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-semibold text-lg mb-1">Connect Spotify</h3>
-                        <p className="text-sm text-gray-600 mb-3">
+                        <h3 className="font-semibold text-lg mb-1 dark:text-white">Connect Spotify</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                           See if you&apos;re overpaying. Find up to ₹1,428/year in savings based on your listening habits.
                         </p>
                         <Button
-                          className="bg-indigo-600 hover:bg-indigo-700"
+                          className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600"
                           onClick={() => router.push('/api/oauth/spotify')}
                         >
                           <Package className="h-4 w-4 mr-2" />
@@ -345,19 +345,19 @@ export default function DashboardPage() {
 
               {/* Find Bundle Savings CTA */}
               {activeSubscriptions.length >= 2 && (
-                <Card className="border-2 border-dashed border-green-300 bg-green-50/50 hover:border-green-400 transition-colors">
+                <Card className="border-2 border-dashed border-green-300 dark:border-green-700 bg-green-50/50 dark:bg-green-950/30 hover:border-green-400 dark:hover:border-green-600 transition-colors">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4">
-                      <div className="bg-green-100 p-3 rounded-lg">
-                        <TrendingUp className="h-6 w-6 text-green-600" />
+                      <div className="bg-green-100 dark:bg-green-900/50 p-3 rounded-lg">
+                        <TrendingUp className="h-6 w-6 text-green-600 dark:text-green-400" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-semibold text-lg mb-1">Find Bundle Savings</h3>
-                        <p className="text-sm text-gray-600 mb-3">
+                        <h3 className="font-semibold text-lg mb-1 dark:text-white">Find Bundle Savings</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                           You have {activeSubscriptions.length} subscriptions. Check if bundling can save you money!
                         </p>
                         <Button
-                          className="bg-green-600 hover:bg-green-700"
+                          className="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600"
                           onClick={() => {
                             const bundleSection = document.getElementById('bundle-section')
                             bundleSection?.scrollIntoView({ behavior: 'smooth' })
@@ -379,14 +379,14 @@ export default function DashboardPage() {
         <section className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold flex items-center gap-2">
-                <Zap className="h-6 w-6 text-indigo-600" />
+              <h2 className="text-2xl font-bold flex items-center gap-2 dark:text-white">
+                <Zap className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
                 AI-Powered Savings Opportunities
               </h2>
-              <p className="text-sm text-gray-600 mt-1">Based on your usage patterns and spending behavior</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Based on your usage patterns and spending behavior</p>
             </div>
             {totalSavings && totalSavings.monthly > 0 && (
-              <Badge variant="secondary" className="text-lg px-4 py-2 bg-green-100 text-green-700">
+              <Badge variant="secondary" className="text-lg px-4 py-2 bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-400">
                 ₹{totalSavings.monthly.toFixed(0)}/mo potential savings
               </Badge>
             )}
@@ -401,9 +401,9 @@ export default function DashboardPage() {
           ) : recommendations.length === 0 ? (
             <Card>
               <CardContent className="p-12 text-center">
-                <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">All optimized!</h3>
-                <p className="text-sm text-gray-600">
+                <Shield className="h-12 w-12 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2 dark:text-white">All optimized!</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   No recommendations at the moment. Connect services and sync usage to get AI-powered insights.
                 </p>
               </CardContent>
@@ -497,7 +497,7 @@ export default function DashboardPage() {
         {/* Subscriptions Section */}
         <section className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold">Your Subscriptions</h2>
+            <h2 className="text-2xl font-bold dark:text-white">Your Subscriptions</h2>
             <AddSubscriptionDialog onSuccess={fetchSubscriptions} />
           </div>
 
@@ -512,9 +512,9 @@ export default function DashboardPage() {
           ) : subscriptions.length === 0 ? (
             <Card>
               <CardContent className="p-12 text-center">
-                <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No subscriptions yet</h3>
-                <p className="text-sm text-gray-600 mb-6">
+                <Package className="h-12 w-12 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2 dark:text-white">No subscriptions yet</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
                   Add your first subscription to start tracking and optimizing
                 </p>
                 <AddSubscriptionDialog onSuccess={fetchSubscriptions} />
@@ -532,13 +532,13 @@ export default function DashboardPage() {
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex-1">
-                          <h3 className="font-semibold text-lg">{sub.service?.name || sub.custom_service_name}</h3>
+                          <h3 className="font-semibold text-lg dark:text-white">{sub.service?.name || sub.custom_service_name}</h3>
                           <div className="mt-2">
-                            <p className="text-3xl font-extrabold text-gray-900">₹{monthlyCost.toFixed(0)}</p>
-                            <p className="text-xs text-gray-500">/month</p>
+                            <p className="text-3xl font-extrabold text-gray-900 dark:text-white">₹{monthlyCost.toFixed(0)}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">/month</p>
                           </div>
                           {sub.billing_cycle !== 'monthly' && (
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                               ₹{sub.cost} billed {sub.billing_cycle}
                             </p>
                           )}
@@ -550,8 +550,8 @@ export default function DashboardPage() {
 
                       <div className="space-y-2 text-sm mb-4">
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-600">Next billing</span>
-                          <span className="font-medium">{new Date(sub.next_billing_date).toLocaleDateString()}</span>
+                          <span className="text-gray-600 dark:text-gray-400">Next billing</span>
+                          <span className="font-medium dark:text-white">{new Date(sub.next_billing_date).toLocaleDateString()}</span>
                         </div>
                       </div>
 
