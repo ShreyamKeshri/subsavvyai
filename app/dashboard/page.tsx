@@ -93,18 +93,29 @@ export default function DashboardPage() {
     return usageData.some(usage => usage.subscription_id === subscriptionId)
   }
 
-  const handleDeleteSubscription = async (subscriptionId: string, subscriptionName: string) => {
-    if (!confirm(`Are you sure you want to delete "${subscriptionName}"? This action cannot be undone.`)) {
-      return
-    }
-
-    const result = await deleteSubscription(subscriptionId)
-    if (result.success) {
-      toast.success('Subscription deleted successfully')
-      fetchData()
-    } else {
-      toast.error(result.error || 'Failed to delete subscription')
-    }
+  const handleDeleteSubscription = (subscriptionId: string, subscriptionName: string) => {
+    toast.warning(`Delete "${subscriptionName}"?`, {
+      description: 'This action cannot be undone.',
+      action: {
+        label: 'Delete',
+        onClick: async () => {
+          const result = await deleteSubscription(subscriptionId)
+          if (result.success) {
+            toast.success('Subscription deleted successfully')
+            fetchData()
+          } else {
+            toast.error(result.error || 'Failed to delete subscription')
+          }
+        },
+      },
+      cancel: {
+        label: 'Cancel',
+        onClick: () => {
+          toast.info('Deletion cancelled')
+        },
+      },
+      duration: 10000,
+    })
   }
 
   // Calculate metrics
