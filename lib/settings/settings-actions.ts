@@ -14,7 +14,7 @@ export interface ProfileData {
 }
 
 export interface PreferencesData {
-  theme?: 'light' | 'dark'
+  theme?: 'light' | 'dark' | 'system'
   language?: string
 }
 
