@@ -14,12 +14,14 @@ import { OnboardingChecklistCard } from '@/components/dashboard/onboarding-check
 import { RecommendationsFeedCard } from '@/components/dashboard/recommendations-feed-card'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Plus, Loader2 } from 'lucide-react'
-import { getUserSubscriptions, type Subscription } from '@/lib/subscriptions/subscription-actions'
+import { Plus, Loader2, Edit2, Trash2 } from 'lucide-react'
+import { getUserSubscriptions, deleteSubscription, type Subscription } from '@/lib/subscriptions/subscription-actions'
 import { getPendingRecommendations, dismissRecommendation, type OptimizationRecommendation } from '@/lib/recommendations/recommendation-actions'
-import { getConnectedServices } from '@/lib/usage/usage-actions'
+import { getConnectedServices, getAllUserUsageData, type ServiceUsage } from '@/lib/usage/usage-actions'
 import { AddSubscriptionDialog } from '@/components/subscriptions/add-subscription-dialog'
+import { EditSubscriptionDialog } from '@/components/subscriptions/edit-subscription-dialog'
 import { BundleRecommendationsList } from '@/components/bundles/bundle-recommendations-list'
+import { UsageSurveyDialog } from '@/components/usage/usage-survey-dialog'
 import { toast } from 'sonner'
 
 export default function DashboardPage() {
@@ -29,8 +31,11 @@ export default function DashboardPage() {
   const [recommendations, setRecommendations] = useState<OptimizationRecommendation[]>([])
   const [totalSavings, setTotalSavings] = useState<{ monthly: number; annual: number } | null>(null)
   const [connectedServices, setConnectedServices] = useState<string[]>([])
+  const [usageData, setUsageData] = useState<ServiceUsage[]>([])
   const [loadingData, setLoadingData] = useState(true)
   const [showChecklist, setShowChecklist] = useState(true)
+  const [selectedSubscriptionForUsage, setSelectedSubscriptionForUsage] = useState<Subscription | null>(null)
+  const [selectedSubscriptionForEdit, setSelectedSubscriptionForEdit] = useState<Subscription | null>(null)
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -42,10 +47,11 @@ export default function DashboardPage() {
     setLoadingData(true)
 
     // Fetch all data in parallel
-    const [subsResult, recsResult, servicesResult] = await Promise.all([
+    const [subsResult, recsResult, servicesResult, usageResult] = await Promise.all([
       getUserSubscriptions(),
       getPendingRecommendations(),
       getConnectedServices(),
+      getAllUserUsageData(),
     ])
 
     if (subsResult.success && subsResult.data) {
@@ -59,6 +65,10 @@ export default function DashboardPage() {
 
     if (servicesResult.success && servicesResult.data) {
       setConnectedServices(servicesResult.data)
+    }
+
+    if (usageResult.success && usageResult.data) {
+      setUsageData(usageResult.data)
     }
 
     setLoadingData(false)
@@ -76,6 +86,36 @@ export default function DashboardPage() {
       toast.info('Recommendation dismissed')
       fetchData()
     }
+  }
+
+  // Check if a subscription has usage data
+  const hasUsageData = (subscriptionId: string) => {
+    return usageData.some(usage => usage.subscription_id === subscriptionId)
+  }
+
+  const handleDeleteSubscription = (subscriptionId: string, subscriptionName: string) => {
+    toast.warning(`Delete "${subscriptionName}"?`, {
+      description: 'This action cannot be undone.',
+      action: {
+        label: 'Delete',
+        onClick: async () => {
+          const result = await deleteSubscription(subscriptionId)
+          if (result.success) {
+            toast.success('Subscription deleted successfully')
+            fetchData()
+          } else {
+            toast.error(result.error || 'Failed to delete subscription')
+          }
+        },
+      },
+      cancel: {
+        label: 'Cancel',
+        onClick: () => {
+          toast.info('Deletion cancelled')
+        },
+      },
+      duration: 10000,
+    })
   }
 
   // Calculate metrics
@@ -169,6 +209,13 @@ export default function DashboardPage() {
                 toast.info('View recommendation details')
                 // TODO: Open recommendation details modal
               }}
+              hasSubscriptions={activeSubscriptions.length > 0}
+              hasConnectedServices={connectedServices.length > 0}
+              onAddSubscription={() => {
+                const addButton = document.querySelector('[data-add-subscription]') as HTMLButtonElement
+                addButton?.click()
+              }}
+              onConnectService={() => router.push('/api/oauth/spotify/connect')}
             />
 
             {/* Bundle Optimizer */}
@@ -207,48 +254,101 @@ export default function DashboardPage() {
             </Card>
 
             {/* Recent Subscriptions */}
-            {activeSubscriptions.length > 0 && (
-              <Card className="p-6">
-                <h3 className="font-semibold text-foreground mb-4">Recent Subscriptions</h3>
-                <div className="space-y-3">
-                  {activeSubscriptions.slice(0, 3).map((sub) => {
-                    const monthlyCost = sub.billing_cycle === 'monthly' ? sub.cost :
-                                        sub.billing_cycle === 'quarterly' ? sub.cost / 3 :
-                                        sub.billing_cycle === 'yearly' ? sub.cost / 12 : sub.cost
+            <Card className="p-6">
+              <h3 className="font-semibold text-foreground mb-4">Recent Subscriptions</h3>
+              {activeSubscriptions.length > 0 ? (
+                <>
+                  <div className="space-y-3">
+                    {activeSubscriptions.slice(0, 3).map((sub) => {
+                      const monthlyCost = sub.billing_cycle === 'monthly' ? sub.cost :
+                                          sub.billing_cycle === 'quarterly' ? sub.cost / 3 :
+                                          sub.billing_cycle === 'yearly' ? sub.cost / 12 : sub.cost
+                      const needsUsageData = !hasUsageData(sub.id)
 
-                    return (
-                      <div key={sub.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                        <div className="flex-1">
-                          <p className="font-medium text-sm text-foreground">
-                            {sub.service?.name || sub.custom_service_name}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            ₹{monthlyCost.toFixed(0)}/month
-                          </p>
+                      return (
+                        <div key={sub.id} className="relative">
+                          <div className="flex items-start gap-2 p-3 bg-muted rounded-lg">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <p className="font-medium text-sm text-foreground">
+                                  {sub.service?.name || sub.custom_service_name}
+                                </p>
+                                {needsUsageData && (
+                                  <span className="text-xs px-2 py-0.5 rounded bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">
+                                    Track usage
+                                  </span>
+                                )}
+                                <span className={`text-xs px-2 py-1 rounded ${
+                                  sub.status === 'active'
+                                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                                    : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400'
+                                }`}>
+                                  {sub.status}
+                                </span>
+                              </div>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                ₹{monthlyCost.toFixed(2)}/month
+                                {sub.original_currency && sub.original_currency !== 'INR' && (
+                                  <span className="text-[10px] ml-1 opacity-70">
+                                    (was {sub.original_currency} {sub.original_cost?.toFixed(2)})
+                                  </span>
+                                )}
+                              </p>
+                              {needsUsageData && (
+                                <button
+                                  onClick={() => setSelectedSubscriptionForUsage(sub)}
+                                  className="text-xs text-blue-600 dark:text-blue-400 hover:underline mt-1 block"
+                                >
+                                  Add usage data
+                                </button>
+                              )}
+                            </div>
+                            <div className="flex gap-1 flex-shrink-0">
+                              <button
+                                onClick={() => setSelectedSubscriptionForEdit(sub)}
+                                className="p-1 hover:bg-background rounded transition-colors"
+                                title="Edit subscription"
+                              >
+                                <Edit2 className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteSubscription(sub.id, sub.service?.name || sub.custom_service_name || 'subscription')}
+                                className="p-1 hover:bg-background rounded transition-colors"
+                                title="Delete subscription"
+                              >
+                                <Trash2 className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" />
+                              </button>
+                            </div>
+                          </div>
                         </div>
-                        <span className={`text-xs px-2 py-1 rounded ${
-                          sub.status === 'active'
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-gray-100 text-gray-700'
-                        }`}>
-                          {sub.status}
-                        </span>
-                      </div>
-                    )
-                  })}
+                      )
+                    })}
+                  </div>
+                  {activeSubscriptions.length > 3 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full mt-3"
+                      onClick={() => router.push('/dashboard/subscriptions')}
+                    >
+                      View All Subscriptions
+                    </Button>
+                  )}
+                </>
+              ) : (
+                <div className="text-center py-6">
+                  <div className="w-12 h-12 mx-auto rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-3">
+                    <Plus className="w-6 h-6 text-blue-500" />
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    No subscriptions yet
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Start tracking to unlock savings
+                  </p>
                 </div>
-                {activeSubscriptions.length > 3 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full mt-3"
-                    onClick={() => router.push('/dashboard/subscriptions')}
-                  >
-                    View All Subscriptions
-                  </Button>
-                )}
-              </Card>
-            )}
+              )}
+            </Card>
 
             {/* Quick Stats */}
             <Card className="p-6">
@@ -271,6 +371,36 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Usage Survey Dialog */}
+      {selectedSubscriptionForUsage && (
+        <UsageSurveyDialog
+          subscription={selectedSubscriptionForUsage}
+          open={!!selectedSubscriptionForUsage}
+          onOpenChange={(open) => {
+            if (!open) setSelectedSubscriptionForUsage(null)
+          }}
+          onSuccess={() => {
+            toast.success('Usage data saved!')
+            fetchData()
+          }}
+        />
+      )}
+
+      {/* Edit Subscription Dialog */}
+      {selectedSubscriptionForEdit && (
+        <EditSubscriptionDialog
+          subscription={selectedSubscriptionForEdit}
+          open={!!selectedSubscriptionForEdit}
+          onOpenChange={(open) => {
+            if (!open) setSelectedSubscriptionForEdit(null)
+          }}
+          onSuccess={() => {
+            setSelectedSubscriptionForEdit(null)
+            fetchData()
+          }}
+        />
+      )}
     </DashboardLayout>
   )
 }

@@ -8,6 +8,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { trackServerEvent } from '@/lib/analytics/server-events'
+import { convertToINR } from '@/lib/currency/exchange-rates'
 
 export type BillingCycle = 'monthly' | 'quarterly' | 'yearly' | 'custom'
 export type SubscriptionStatus = 'active' | 'cancellation_initiated' | 'cancelled' | 'paused' | 'expired'
@@ -17,8 +18,10 @@ export interface Subscription {
   user_id: string
   service_id: string | null
   custom_service_name: string | null
-  cost: number
-  currency: string
+  cost: number  // Always in INR
+  currency: string  // Always 'INR'
+  original_cost: number | null  // Original amount entered by user
+  original_currency: string | null  // Original currency selected by user
   billing_cycle: BillingCycle
   billing_date: string
   next_billing_date: string
@@ -106,14 +109,20 @@ export async function createSubscription(
       return { success: false, error: 'Either service or custom service name is required' }
     }
 
+    // Convert cost to INR
+    const selectedCurrency = input.currency || 'INR'
+    const costInINR = convertToINR(input.cost, selectedCurrency)
+
     const { data, error } = await supabase
       .from('subscriptions')
       .insert({
         user_id: user.id,
         service_id: input.service_id || null,
         custom_service_name: input.custom_service_name || null,
-        cost: input.cost,
-        currency: input.currency || 'INR',
+        cost: costInINR,  // Normalized cost in INR
+        currency: 'INR',  // Always INR
+        original_cost: input.cost,  // Original amount entered by user
+        original_currency: selectedCurrency,  // Original currency selected by user
         billing_cycle: input.billing_cycle,
         billing_date: input.billing_date,
         next_billing_date: input.next_billing_date,
@@ -177,9 +186,24 @@ export async function updateSubscription(
       return { success: false, error: 'Not authenticated' }
     }
 
+    // If cost or currency is being updated, convert to INR
+    const updateData: Record<string, unknown> = { ...input }
+    if (input.cost !== undefined && input.currency !== undefined) {
+      const selectedCurrency = input.currency || 'INR'
+      updateData.cost = convertToINR(input.cost, selectedCurrency)
+      updateData.currency = 'INR'
+      updateData.original_cost = input.cost
+      updateData.original_currency = selectedCurrency
+    } else if (input.cost !== undefined) {
+      // If only cost is updated, assume INR
+      updateData.cost = input.cost
+      updateData.original_cost = input.cost
+      updateData.original_currency = 'INR'
+    }
+
     const { data, error } = await supabase
       .from('subscriptions')
-      .update(input)
+      .update(updateData)
       .eq('id', subscriptionId)
       .eq('user_id', user.id)
       .select(`
