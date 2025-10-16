@@ -86,7 +86,7 @@ export function UsageSurveyDialog({
       } else {
         toast.error(result.error || 'Failed to save usage data')
       }
-    } catch (error) {
+    } catch {
       toast.error('Something went wrong')
     } finally {
       setIsSubmitting(false)

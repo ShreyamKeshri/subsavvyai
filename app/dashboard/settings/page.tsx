@@ -52,7 +52,6 @@ export default function SettingsPage() {
 
           // Set profile data
           if (profile.full_name) {
-            const nameParts = profile.full_name.split(' ')
             setFullName(profile.full_name)
           }
           if (profile.phone_number) {
@@ -93,7 +92,7 @@ export default function SettingsPage() {
       }
 
       toast.success('Profile updated successfully')
-    } catch (error) {
+    } catch {
       toast.error('Failed to update profile')
     } finally {
       setSaving(false)
@@ -124,7 +123,7 @@ export default function SettingsPage() {
       }
 
       toast.success('Preferences updated successfully')
-    } catch (error) {
+    } catch {
       toast.error('Failed to update preferences')
     } finally {
       setSaving(false)
@@ -146,7 +145,7 @@ export default function SettingsPage() {
       }
 
       toast.success('Notification preferences updated successfully')
-    } catch (error) {
+    } catch {
       toast.error('Failed to update notifications')
     } finally {
       setSaving(false)

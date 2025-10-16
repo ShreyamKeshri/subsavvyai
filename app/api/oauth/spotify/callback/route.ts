@@ -44,14 +44,15 @@ export async function GET(request: NextRequest) {
     // Get Spotify profile to verify connection
     const _profile = await getSpotifyProfile(tokenData.access_token) // TODO: Store profile data
 
-    // Get Spotify service ID from database
+    // Get Spotify service ID from database (case-insensitive name match)
     const { data: service, error: serviceError } = await supabase
       .from('services')
       .select('id')
-      .eq('api_provider', 'spotify')
+      .ilike('name', 'spotify')
       .single()
 
     if (serviceError || !service) {
+      console.error('Spotify service lookup error:', serviceError)
       return NextResponse.redirect(
         new URL('/dashboard?oauth_error=service_not_found', request.url)
       )
