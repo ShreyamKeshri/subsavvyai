@@ -16,6 +16,7 @@ import {
   Menu,
 } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { branding } from "@/lib/config/branding"
 
 export default function LandingPage() {
@@ -25,7 +26,7 @@ export default function LandingPage() {
       <header className="border-b border-gray-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <img src="/logo-icon.png" alt={branding.name} className="h-10 w-10" />
+            <Image src="/logo-icon.png" alt={branding.name} width={40} height={40} className="h-10 w-10" />
             <span className="text-2xl font-bold text-gray-900">{branding.name}</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
@@ -319,6 +320,118 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Pricing Section */}
+      <section id="pricing" className="py-16 lg:py-24">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <p className="text-sm font-semibold text-blue-600 uppercase tracking-wide mb-3">PRICING</p>
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Simple, Transparent Pricing</h2>
+            <p className="text-lg text-gray-600">Start free, upgrade when you&apos;re ready</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {/* Free Plan */}
+            <Card className="p-8 space-y-6 border-gray-200 bg-white hover:shadow-xl transition">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Free</h3>
+                <p className="text-gray-600">Perfect for getting started</p>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-5xl font-bold text-gray-900">₹0</span>
+                <span className="text-gray-600">/month</span>
+              </div>
+              <ul className="space-y-3">
+                {[
+                  "Track up to 10 subscriptions",
+                  "Manual usage tracking",
+                  "Basic spending insights",
+                  "Bundle recommendations",
+                ].map((feature, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-green-600 text-sm">✓</span>
+                    </div>
+                    <span className="text-gray-700">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link href="/signup" className="block">
+                <Button className="w-full bg-gray-900 hover:bg-gray-800 text-white">
+                  Get Started Free
+                </Button>
+              </Link>
+            </Card>
+
+            {/* Pro Plan */}
+            <Card className="p-8 space-y-6 border-green-600 bg-white hover:shadow-2xl transition relative border-2">
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                <Badge className="bg-green-600 text-white hover:bg-green-700">MOST POPULAR</Badge>
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Pro</h3>
+                <p className="text-gray-600">Best for power savers</p>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-5xl font-bold text-gray-900">₹99</span>
+                <span className="text-gray-600">/month</span>
+              </div>
+              <ul className="space-y-3">
+                {[
+                  "Unlimited subscriptions",
+                  "AI-powered downgrade alerts",
+                  "OAuth integrations (Spotify, etc.)",
+                  "Advanced analytics & insights",
+                  "Priority support",
+                ].map((feature, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-green-600 text-sm">✓</span>
+                    </div>
+                    <span className="text-gray-700">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link href="/signup" className="block">
+                <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+                  Start Free Trial
+                </Button>
+              </Link>
+            </Card>
+
+            {/* Enterprise Plan */}
+            <Card className="p-8 space-y-6 border-gray-200 bg-white hover:shadow-xl transition">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Enterprise</h3>
+                <p className="text-gray-600">For teams & businesses</p>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-5xl font-bold text-gray-900">Custom</span>
+              </div>
+              <ul className="space-y-3">
+                {[
+                  "Everything in Pro",
+                  "Team management",
+                  "Custom integrations",
+                  "Dedicated account manager",
+                  "SLA & compliance",
+                ].map((feature, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-green-600 text-sm">✓</span>
+                    </div>
+                    <span className="text-gray-700">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link href="mailto:contact@subsavvyai.com" className="block">
+                <Button variant="outline" className="w-full border-gray-300 text-gray-900 hover:bg-gray-50">
+                  Contact Sales
+                </Button>
+              </Link>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Final CTA */}
       <section className="bg-gradient-to-br from-green-600 to-green-700 py-16 lg:py-24">
         <div className="max-w-4xl mx-auto px-4 text-center space-y-8">
@@ -355,7 +468,7 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <img src="/logo-icon.png" alt={branding.name} className="h-8 w-8" />
+                <Image src="/logo-icon.png" alt={branding.name} width={32} height={32} className="h-8 w-8" />
                 <div className="text-2xl font-bold">{branding.name}</div>
               </div>
               <p className="text-gray-400 text-sm">{branding.tagline}</p>
