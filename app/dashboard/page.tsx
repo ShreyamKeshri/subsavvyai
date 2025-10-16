@@ -14,11 +14,12 @@ import { OnboardingChecklistCard } from '@/components/dashboard/onboarding-check
 import { RecommendationsFeedCard } from '@/components/dashboard/recommendations-feed-card'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Plus, Loader2 } from 'lucide-react'
-import { getUserSubscriptions, type Subscription } from '@/lib/subscriptions/subscription-actions'
+import { Plus, Loader2, Edit2, Trash2 } from 'lucide-react'
+import { getUserSubscriptions, deleteSubscription, type Subscription } from '@/lib/subscriptions/subscription-actions'
 import { getPendingRecommendations, dismissRecommendation, type OptimizationRecommendation } from '@/lib/recommendations/recommendation-actions'
 import { getConnectedServices, getAllUserUsageData, type ServiceUsage } from '@/lib/usage/usage-actions'
 import { AddSubscriptionDialog } from '@/components/subscriptions/add-subscription-dialog'
+import { EditSubscriptionDialog } from '@/components/subscriptions/edit-subscription-dialog'
 import { BundleRecommendationsList } from '@/components/bundles/bundle-recommendations-list'
 import { UsageSurveyDialog } from '@/components/usage/usage-survey-dialog'
 import { toast } from 'sonner'
@@ -34,6 +35,7 @@ export default function DashboardPage() {
   const [loadingData, setLoadingData] = useState(true)
   const [showChecklist, setShowChecklist] = useState(true)
   const [selectedSubscriptionForUsage, setSelectedSubscriptionForUsage] = useState<Subscription | null>(null)
+  const [selectedSubscriptionForEdit, setSelectedSubscriptionForEdit] = useState<Subscription | null>(null)
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -89,6 +91,20 @@ export default function DashboardPage() {
   // Check if a subscription has usage data
   const hasUsageData = (subscriptionId: string) => {
     return usageData.some(usage => usage.subscription_id === subscriptionId)
+  }
+
+  const handleDeleteSubscription = async (subscriptionId: string, subscriptionName: string) => {
+    if (!confirm(`Are you sure you want to delete "${subscriptionName}"? This action cannot be undone.`)) {
+      return
+    }
+
+    const result = await deleteSubscription(subscriptionId)
+    if (result.success) {
+      toast.success('Subscription deleted successfully')
+      fetchData()
+    } else {
+      toast.error(result.error || 'Failed to delete subscription')
+    }
   }
 
   // Calculate metrics
@@ -240,9 +256,9 @@ export default function DashboardPage() {
 
                       return (
                         <div key={sub.id} className="relative">
-                          <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2">
+                          <div className="flex items-start gap-2 p-3 bg-muted rounded-lg">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
                                 <p className="font-medium text-sm text-foreground">
                                   {sub.service?.name || sub.custom_service_name}
                                 </p>
@@ -251,26 +267,47 @@ export default function DashboardPage() {
                                     Track usage
                                   </span>
                                 )}
+                                <span className={`text-xs px-2 py-1 rounded ${
+                                  sub.status === 'active'
+                                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                                    : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400'
+                                }`}>
+                                  {sub.status}
+                                </span>
                               </div>
-                              <p className="text-xs text-muted-foreground">
-                                ₹{monthlyCost.toFixed(0)}/month
+                              <p className="text-xs text-muted-foreground mt-1">
+                                ₹{monthlyCost.toFixed(2)}/month
+                                {sub.original_currency && sub.original_currency !== 'INR' && (
+                                  <span className="text-[10px] ml-1 opacity-70">
+                                    (was {sub.original_currency} {sub.original_cost?.toFixed(2)})
+                                  </span>
+                                )}
                               </p>
                               {needsUsageData && (
                                 <button
                                   onClick={() => setSelectedSubscriptionForUsage(sub)}
-                                  className="text-xs text-blue-600 dark:text-blue-400 hover:underline mt-1"
+                                  className="text-xs text-blue-600 dark:text-blue-400 hover:underline mt-1 block"
                                 >
-                                  Add usage data for better recommendations
+                                  Add usage data
                                 </button>
                               )}
                             </div>
-                            <span className={`text-xs px-2 py-1 rounded ${
-                              sub.status === 'active'
-                                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                                : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400'
-                            }`}>
-                              {sub.status}
-                            </span>
+                            <div className="flex gap-1 flex-shrink-0">
+                              <button
+                                onClick={() => setSelectedSubscriptionForEdit(sub)}
+                                className="p-1 hover:bg-background rounded transition-colors"
+                                title="Edit subscription"
+                              >
+                                <Edit2 className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteSubscription(sub.id, sub.service?.name || sub.custom_service_name || 'subscription')}
+                                className="p-1 hover:bg-background rounded transition-colors"
+                                title="Delete subscription"
+                              >
+                                <Trash2 className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" />
+                              </button>
+                            </div>
                           </div>
                         </div>
                       )
@@ -334,6 +371,21 @@ export default function DashboardPage() {
           }}
           onSuccess={() => {
             toast.success('Usage data saved!')
+            fetchData()
+          }}
+        />
+      )}
+
+      {/* Edit Subscription Dialog */}
+      {selectedSubscriptionForEdit && (
+        <EditSubscriptionDialog
+          subscription={selectedSubscriptionForEdit}
+          open={!!selectedSubscriptionForEdit}
+          onOpenChange={(open) => {
+            if (!open) setSelectedSubscriptionForEdit(null)
+          }}
+          onSuccess={() => {
+            setSelectedSubscriptionForEdit(null)
             fetchData()
           }}
         />
