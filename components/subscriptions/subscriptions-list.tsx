@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { format } from 'date-fns'
+import Image from 'next/image'
 import {
   Table,
   TableBody,
@@ -136,9 +137,11 @@ export function SubscriptionsList({ subscriptions, onUpdate }: SubscriptionsList
                   <TableCell className="font-medium">
                     <div className="flex items-center gap-3">
                       {subscription.service?.logo_url ? (
-                        <img
+                        <Image
                           src={subscription.service.logo_url}
                           alt={serviceName}
+                          width={32}
+                          height={32}
                           className="w-8 h-8 rounded-lg object-cover"
                         />
                       ) : (
