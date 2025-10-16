@@ -27,7 +27,7 @@ import { saveManualUsage, type UsageFrequency } from '@/lib/usage/manual-usage-a
 
 interface Subscription {
   id: string
-  service_id: string
+  service_id: string | null
   custom_service_name: string | null
   services?: {
     id: string

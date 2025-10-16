@@ -1,7 +1,7 @@
 "use client"
 
 import { Card } from "@/components/ui/card"
-import { TrendingDown, X, ArrowRight } from "lucide-react"
+import { TrendingDown, X, ArrowRight, Sparkles, Plus, Plug } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { OptimizationRecommendation } from "@/lib/recommendations/recommendation-actions"
 
@@ -9,12 +9,20 @@ interface RecommendationsFeedCardProps {
   recommendations: OptimizationRecommendation[]
   onDismiss?: (id: string) => void
   onView?: (id: string) => void
+  hasSubscriptions?: boolean
+  hasConnectedServices?: boolean
+  onAddSubscription?: () => void
+  onConnectService?: () => void
 }
 
 export function RecommendationsFeedCard({
   recommendations,
   onDismiss,
   onView,
+  hasSubscriptions = true,
+  hasConnectedServices = false,
+  onAddSubscription,
+  onConnectService,
 }: RecommendationsFeedCardProps) {
   const getRecommendationIcon = (type: string) => {
     const icons: Record<string, string> = {
@@ -74,10 +82,61 @@ export function RecommendationsFeedCard({
           ))
         ) : (
           <div className="text-center py-8">
-            <p className="text-sm text-muted-foreground">All caught up! No new recommendations.</p>
-            <p className="text-xs text-muted-foreground mt-2">
-              Add more subscriptions or connect services to get AI-powered savings tips.
-            </p>
+            {!hasSubscriptions ? (
+              // No subscriptions at all
+              <div className="space-y-4">
+                <Sparkles className="w-12 h-12 mx-auto text-blue-500" />
+                <div>
+                  <p className="font-medium text-foreground">Get Started with AI Recommendations</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Add your first subscription to unlock personalized savings tips
+                  </p>
+                </div>
+                {onAddSubscription && (
+                  <Button
+                    onClick={onAddSubscription}
+                    className="bg-blue-500 hover:bg-blue-600 text-white"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Your First Subscription
+                  </Button>
+                )}
+              </div>
+            ) : !hasConnectedServices ? (
+              // Has subscriptions but no connected services
+              <div className="space-y-4">
+                <Plug className="w-12 h-12 mx-auto text-indigo-500" />
+                <div>
+                  <p className="font-medium text-foreground">Unlock Smarter Recommendations</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Connect Spotify to get usage-based savings recommendations
+                  </p>
+                </div>
+                {onConnectService && (
+                  <Button
+                    onClick={onConnectService}
+                    variant="outline"
+                    className="border-indigo-500 text-indigo-600 hover:bg-indigo-50"
+                  >
+                    <Plug className="w-4 h-4 mr-2" />
+                    Connect Spotify
+                  </Button>
+                )}
+              </div>
+            ) : (
+              // All caught up state
+              <div className="space-y-4">
+                <div className="w-12 h-12 mx-auto rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                  <span className="text-2xl">✅</span>
+                </div>
+                <div>
+                  <p className="font-medium text-foreground">All Caught Up!</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    No new recommendations right now. We&apos;ll notify you when we find savings opportunities.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
