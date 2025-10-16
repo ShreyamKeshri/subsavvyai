@@ -1,9 +1,9 @@
 # SubSavvyAI - Development Progress
 
-**Last Updated:** October 16, 2025
+**Last Updated:** October 17, 2025
 **Current Phase:** MVP Launch Sprint - Day 4 Complete
-**Overall Progress:** 88% Complete (88% MVP ready)
-**Launch Date:** October 31, 2025 (15 days remaining)
+**Overall Progress:** 92% Complete (92% MVP ready)
+**Launch Date:** October 31, 2025 (14 days remaining)
 
 ---
 
@@ -39,9 +39,56 @@
 
 ## 🎯 Current Status: Day 4 Complete
 
+### Day 4 (Oct 17, 2025): Currency Conversion + Delete Confirmation + Edit/Delete Functionality ✅
+
+**PR:** #17 - Day 4 UX Improvements
+
+**Completed:**
+- ✅ **Currency Conversion System** - Automatic conversion to INR
+  - Created `lib/currency/exchange-rates.ts` with conversion utilities
+  - Support for 8 currencies (INR, USD, EUR, GBP, AUD, CAD, SGD, AED)
+  - Migration 008: Added `original_cost` and `original_currency` columns
+  - Display format: "₹16,624.00/month (was USD 200.00)"
+  - All calculations now use consistent INR values
+- ✅ **Toast-Based Delete Confirmation** - Modern UX
+  - Replaced native browser confirm() with toast notification
+  - Action buttons (Delete / Cancel) with proper feedback
+  - Non-blocking, accessible, mobile-friendly
+  - 10-second auto-dismiss with clear messages
+- ✅ **Edit & Delete Subscription Features**
+  - Wired up existing EditSubscriptionDialog component
+  - Added edit/delete action buttons to subscription cards
+  - Full CRUD operations now available on dashboard
+  - Improved card UI with flex-shrink-0 for buttons
+- ✅ **Usage Tracking Prompts**
+  - Added "Track usage" badges for subscriptions without usage data
+  - Quick "Add usage data" button on subscription cards
+  - Integrated with UsageSurveyDialog for easy data collection
+- ✅ **Contextual Empty States**
+  - Different prompts based on user state (no subscriptions, no services, all caught up)
+  - Actionable CTAs to guide users
+  - Improved onboarding experience
+- ✅ **Error Boundaries**
+  - Root error boundary (app/error.tsx) for global errors
+  - Dashboard error boundary (app/dashboard/error.tsx) for contextual errors
+  - Retry functionality and navigation options
+  - Dev mode shows error messages, production shows friendly UI
+
+**Impact:**
+- Consistent calculations with INR normalization
+- Better UX with modern toast confirmations
+- Transparency showing original currency alongside conversion
+- International support for multi-currency subscriptions
+- Error resilience with graceful recovery options
+- Guided onboarding with contextual CTAs
+
+**Next:** Day 5 - Landing page optimization
+
+---
+
 ### Day 4 (Oct 16, 2025): UI Redesign + Code Cleanup ✅
 
-**PR:** #17 (UI Redesign), #18 (Code Cleanup)
+**PR:** #15 (UI Redesign), #16 (Code Cleanup)
 
 **Completed:**
 - ✅ **Complete Dashboard Redesign** - Implemented Vercel design pattern
@@ -429,7 +476,7 @@
 
 ## 🗄️ Database Status
 
-### Migrations Applied: 7/7 ✅
+### Migrations Applied: 8/8 ✅
 
 1. `001_initial_schema.sql` - Core tables + 52 services
 2. `002_security_events.sql` - Audit logging
@@ -438,6 +485,7 @@
 5. `005_smart_downgrade_alerts.sql` - AI optimizer tables
 6. `006_telecom_bundles.sql` - Bundle Optimizer tables + 20 bundles
 7. `007_manual_usage_tracking.sql` - Manual usage fields for non-OAuth services
+8. `008_currency_conversion.sql` - Currency conversion (original_cost, original_currency columns)
 
 ### Schema Ready For:
 
