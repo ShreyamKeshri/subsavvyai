@@ -1,7 +1,9 @@
 "use client"
 
-import { Bell, Search, User, Menu } from "lucide-react"
+import { Search, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { NotificationBell } from "@/components/ui/notification-bell"
+import { ProfileDropdown } from "@/components/ui/profile-dropdown"
 import { useState } from "react"
 
 export function DashboardHeader() {
@@ -31,13 +33,8 @@ export function DashboardHeader() {
 
         {/* Actions */}
         <div className="flex items-center gap-4 ml-6">
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
-          </Button>
-          <Button variant="ghost" size="icon">
-            <User className="w-5 h-5" />
-          </Button>
+          <NotificationBell />
+          <ProfileDropdown />
         </div>
       </div>
     </header>
