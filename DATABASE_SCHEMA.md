@@ -304,8 +304,10 @@ Main table storing user subscription records.
 | user_id | UUID | NOT NULL, FK to auth.users(id) | Owner user ID |
 | service_id | UUID | FK to services(id) | Service reference (nullable) |
 | custom_service_name | TEXT | | Custom service name (if not in services table) |
-| cost | NUMERIC(10, 2) | NOT NULL, CHECK >= 0 | Subscription cost |
-| currency | TEXT | DEFAULT 'INR', NOT NULL | Currency code |
+| cost | NUMERIC(10, 2) | NOT NULL, CHECK >= 0 | Subscription cost (always in INR after migration 008) |
+| currency | TEXT | DEFAULT 'INR', NOT NULL | Currency code (always 'INR' after migration 008) |
+| original_cost | NUMERIC(10, 2) | | Original cost entered by user in their selected currency |
+| original_currency | TEXT | | Original currency code selected by user (USD, EUR, GBP, etc.) |
 | billing_cycle | billing_cycle | NOT NULL | Billing cycle enum |
 | billing_date | DATE | NOT NULL | Billing day of month/year |
 | next_billing_date | DATE | NOT NULL | Next billing date |
@@ -1077,6 +1079,62 @@ The `service_usage` table (from migration 005) has been extended to support **ma
 
 ---
 
+## Currency Conversion (Migration 008)
+
+### 13. `subscriptions` - Extended for Currency Conversion
+
+The `subscriptions` table has been extended to support **automatic currency conversion to INR** while preserving original currency information for transparency.
+
+**New Columns Added:**
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| original_cost | NUMERIC(10, 2) | | User-entered amount in their selected currency |
+| original_currency | TEXT | | User-selected currency code (USD, EUR, GBP, etc.) |
+
+**Changes to Existing Columns:**
+
+- `cost` - Now always stores INR-converted amount for consistent calculations
+- `currency` - Now always stores 'INR' for all subscriptions
+
+**Supported Currencies:**
+- INR (Indian Rupee) - 1:1 conversion
+- USD (US Dollar) - ₹83.12 per $1
+- EUR (Euro) - ₹90.45 per €1
+- GBP (British Pound) - ₹105.30 per £1
+- AUD (Australian Dollar) - ₹54.20 per A$1
+- CAD (Canadian Dollar) - ₹61.35 per C$1
+- SGD (Singapore Dollar) - ₹61.80 per S$1
+- AED (UAE Dirham) - ₹22.63 per د.إ1
+
+**Conversion Logic:**
+```typescript
+// User enters: USD $200
+// System stores:
+{
+  cost: 16624.00,           // Converted to INR (200 × 83.12)
+  currency: 'INR',          // Always INR
+  original_cost: 200.00,    // Original amount
+  original_currency: 'USD'  // Original currency
+}
+
+// Display: "₹16,624.00/month (was USD 200.00)"
+```
+
+**Benefits:**
+1. **Consistent Calculations** - All analytics use INR
+2. **Transparency** - Users see what they entered
+3. **International Support** - Users can enter costs in local currency
+4. **Accurate Reporting** - No currency mixing in calculations
+5. **Historical Context** - Original values preserved for reference
+
+**Migration Notes:**
+- Existing subscriptions: `original_cost` and `original_currency` copied from current values
+- New subscriptions: Automatic conversion applied on creation/update
+- Exchange rates: Hardcoded initially, can be replaced with API later
+
+---
+
 ## Changelog
 
 | Version | Date | Changes |
@@ -1084,11 +1142,12 @@ The `service_usage` table (from migration 005) has been extended to support **ma
 | 1.0 | Oct 3, 2025 | Initial schema design |
 | 1.1 | Oct 11, 2025 | Added Bundle Optimizer tables (migration 006) |
 | 1.2 | Oct 11, 2025 | Extended service_usage for manual tracking (migration 007) |
+| 1.3 | Oct 17, 2025 | Extended subscriptions for currency conversion (migration 008) |
 
 ---
 
 **Next Steps:**
-1. Execute migration 007 SQL in Supabase
-2. Reload PostgREST schema: `NOTIFY pgrst, 'reload schema';`
-3. Test manual usage tracking in dashboard
-4. Integrate usage survey into subscription workflow
+1. ✅ Execute migration 008 SQL in Supabase
+2. ✅ Reload PostgREST schema: `NOTIFY pgrst, 'reload schema';`
+3. Test currency conversion with different currencies
+4. Update exchange rates periodically (future enhancement)

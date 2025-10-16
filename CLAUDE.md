@@ -66,7 +66,7 @@ Multi-method authentication via Supabase Auth:
 
 ### Database (Supabase/PostgreSQL)
 
-**Migrations Applied (7 total):**
+**Migrations Applied (8 total):**
 1. `001_initial_schema.sql` - Core tables, RLS policies, triggers, seed data (52 Indian services)
 2. `002_security_events.sql` - Security audit logging
 3. `003_auto_create_profile.sql` - Auto-create profile on signup
@@ -74,6 +74,7 @@ Multi-method authentication via Supabase Auth:
 5. `005_smart_downgrade_alerts.sql` - AI optimizer tables (oauth_tokens, service_usage, optimization_recommendations) + analytics fix
 6. `006_telecom_bundles.sql` - Bundle optimizer tables (telecom_bundles, bundle_recommendations) + 20 bundles
 7. `007_manual_usage_tracking.sql` - Manual usage fields (usage_frequency, last_used_date, is_manual, manual_usage_note)
+8. `008_currency_conversion.sql` - Currency conversion (original_cost, original_currency columns)
 
 **Key Tables:**
 - **User Management:**
@@ -195,7 +196,7 @@ unsubscribr/
 │   │   └── recommendations-list.tsx
 │   └── usage/                    # Usage tracking components
 │       └── usage-survey-dialog.tsx  # Manual usage survey
-├── supabase/migrations/          # Database migrations (7 total)
+├── supabase/migrations/          # Database migrations (8 total)
 ├── middleware.ts                 # Next.js middleware (auth + security)
 ├── tsconfig.json                 # TypeScript config
 └── CLAUDE.md                     # This file
@@ -203,9 +204,25 @@ unsubscribr/
 
 ## Current Status
 
-**Phase:** MVP Launch Sprint - Day 2 Complete! ✅
+**Phase:** MVP Launch Sprint - Day 4 Complete! ✅
 
-**Recent Completions (Day 2 - Oct 12, 2025):**
+**Recent Completions (Day 4 - Oct 17, 2025):**
+
+**Currency Conversion System:**
+- ✅ Automatic conversion to INR for all subscriptions
+- ✅ Support for 8 currencies (INR, USD, EUR, GBP, AUD, CAD, SGD, AED)
+- ✅ Migration 008: Added original_cost and original_currency columns
+- ✅ Display format: "₹16,624.00/month (was USD 200.00)"
+- ✅ Consistent analytics with INR normalization
+
+**UX Improvements:**
+- ✅ Toast-based delete confirmation (replaces browser alerts)
+- ✅ Edit/Delete action buttons on subscription cards
+- ✅ Usage tracking prompts for missing data
+- ✅ Contextual empty states with actionable CTAs
+- ✅ Error boundaries (root + dashboard levels)
+
+**Previous Completions (Day 2 - Oct 12, 2025):**
 
 **Analytics Infrastructure:**
 - ✅ PostHog client & server-side tracking (13 event types)
@@ -289,6 +306,48 @@ import { toast } from 'sonner'
 toast.success('Subscription added!')
 toast.error('Failed to add subscription')
 toast.info('Processing...')
+
+// Toast with action buttons (for confirmations)
+toast.warning('Delete subscription?', {
+  description: 'This action cannot be undone.',
+  action: {
+    label: 'Delete',
+    onClick: async () => {
+      // perform delete
+      toast.success('Deleted successfully')
+    },
+  },
+  cancel: {
+    label: 'Cancel',
+    onClick: () => {
+      toast.info('Deletion cancelled')
+    },
+  },
+  duration: 10000,
+})
+```
+
+### Currency Conversion Pattern
+```typescript
+import { convertToINR } from '@/lib/currency/exchange-rates'
+
+// When creating/updating subscription
+const selectedCurrency = input.currency || 'INR'
+const costInINR = convertToINR(input.cost, selectedCurrency)
+
+await supabase.from('subscriptions').insert({
+  cost: costInINR,              // Normalized to INR
+  currency: 'INR',              // Always INR
+  original_cost: input.cost,    // Original amount
+  original_currency: selectedCurrency  // Original currency
+})
+
+// Display with original currency reference
+{sub.original_currency && sub.original_currency !== 'INR' && (
+  <span className="text-xs opacity-70">
+    (was {sub.original_currency} {sub.original_cost?.toFixed(2)})
+  </span>
+)}
 ```
 
 ## Environment Variables
@@ -369,11 +428,13 @@ NEXT_PUBLIC_APP_URL=http://127.0.0.1:3000
 6. **Server Actions:** All mutations should be server actions
 7. **TypeScript:** Never use `any`, prefer `unknown` with type guards
 8. **RLS:** All tables must have RLS enabled
-9. **Migrations:** 7 migrations must be applied (001-007)
+9. **Migrations:** 8 migrations must be applied (001-008)
 10. **Subscription Form:** "Last/Current Billing Date" calculates next billing automatically
 11. **Spotify OAuth:** Use 127.0.0.1 not localhost (security requirement)
 12. **Manual Usage Tracking:** For services without OAuth APIs (Netflix, Hotstar, etc.)
 13. **Analytics:** PostHog & Sentry are optional (graceful fallback)
+14. **Currency Conversion:** All costs stored in INR, original currency preserved for transparency
+15. **Delete Confirmation:** Use toast with action buttons, not native confirm() dialogs
 
 ## Next Steps
 
