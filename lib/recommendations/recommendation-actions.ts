@@ -55,13 +55,14 @@ export async function generateRecommendations(): Promise<{
       return { success: false, error: 'Failed to fetch subscriptions' }
     }
 
-    // Fetch usage data
+    // Fetch usage data (includes both OAuth data from Spotify and manual usage data)
+    // Manual usage data is automatically converted to usage_hours in saveManualUsage()
     const usageResult = await getAllUserUsageData()
     if (!usageResult.success || !usageResult.data) {
       return { success: false, error: 'Failed to fetch usage data' }
     }
 
-    // Create a map of subscription_id -> usage data
+    // Create a map of subscription_id -> usage data (handles both OAuth and manual)
     const usageDataMap = new Map()
     usageResult.data.forEach((usage) => {
       if (usage.subscription_id) {

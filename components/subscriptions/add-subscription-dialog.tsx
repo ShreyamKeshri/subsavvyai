@@ -63,7 +63,12 @@ interface Service {
   logo_url: string | null
 }
 
-export function AddSubscriptionDialog({ onSuccess }: { onSuccess?: () => void }) {
+interface AddSubscriptionDialogProps {
+  onSuccess?: () => void
+  children?: React.ReactNode
+}
+
+export function AddSubscriptionDialog({ onSuccess, children }: AddSubscriptionDialogProps) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [services, setServices] = useState<Service[]>([])
@@ -132,10 +137,12 @@ export function AddSubscriptionDialog({ onSuccess }: { onSuccess?: () => void })
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-200 px-8">
-          <Plus className="w-5 h-5 mr-2" />
-          Add Subscription
-        </Button>
+        {children || (
+          <Button className="h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-200 px-8">
+            <Plus className="w-5 h-5 mr-2" />
+            Add Subscription
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>

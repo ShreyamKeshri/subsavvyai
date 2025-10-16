@@ -375,25 +375,38 @@ Similar alternatives:
 
 ## 📝 Current Status
 
-**Phase:** AI Features Phase 3 - Bundle Optimizer Complete! ✅
+**Phase:** MVP Launch Sprint - Day 3 Complete, Day 4-7 Planned ✅
 
-**Overall Progress:** 60% Complete
+**Overall Progress:** 85% MVP Ready
 
 **Completed:**
 - ✅ Phase 1: Foundation (Auth, Dashboard, Subscriptions)
 - ✅ Phase 2: Smart Downgrade Alerts (Spotify OAuth + AI recommendations)
 - ✅ Phase 3: India Bundle Optimizer (20 bundles + matching algorithm)
+- ✅ Analytics & Error Tracking (PostHog + Sentry)
+- ✅ Dark Mode Implementation
+- ✅ Manual Usage Tracking System (Migration 007)
+
+**Critical Gaps (Blocking Beta):**
+- 🔴 Spotify OAuth `service_not_found` bug
+- 🔴 Manual usage tracking not wired to recommendation engine
+- 🔴 No onboarding checklist (affects activation by 20-30%)
+- 🔴 No usage tracking prompts on subscriptions
+- 🔴 Migration 007 not executed in Supabase production
 
 **Next Up:**
-- 🔄 Phase 4: Content Overlap Detector (Week 6-7)
-- 📅 Phase 5: Price Monitoring & Alerts (Month 2)
+- 🚨 **Days 4-7 (Oct 14-17):** Fix critical gaps → Beta launch
+- 🔄 **Week 2:** Beta testing & iteration
+- 📅 **Week 3:** Public launch preparation
 
 **What We've Built:**
-- **Database:** 17 tables, 6 migrations, full RLS
+- **Database:** 17 tables, 7 migrations (6 applied, 1 pending), full RLS
 - **Components:** 20+ reusable UI components
 - **Lines of Code:** ~8,500 TypeScript
 - **AI Features:** 2/4 complete (Smart Downgrade + Bundle Optimizer)
 - **Revenue Streams:** Freemium SaaS + Affiliates ready
+
+**Comprehensive Review:** See `COMPREHENSIVE_REVIEW.md` for detailed technical and UX analysis
 
 ---
 
@@ -410,5 +423,167 @@ Similar alternatives:
 
 ---
 
-**Last Updated:** October 11, 2025
-**Status:** 🚀 On Track
+## 🎯 MVP Launch Sprint: Day 4-7 Action Plan
+
+### Critical Path to Beta Launch (Oct 14-17)
+
+**Goal:** Fix 5 critical gaps → Beta launch by Oct 17
+
+---
+
+#### **Day 4 (Mon Oct 14) - 6 hours**
+
+**🔴 CRITICAL FIXES**
+
+**Morning (3 hours):**
+- [ ] **Fix Spotify OAuth Bug** (30 min)
+  - File: `app/api/oauth/spotify/callback/route.ts`
+  - Issue: `service_not_found` error
+  - Solution: Use case-insensitive service lookup with `.ilike('name', 'spotify')`
+
+- [ ] **Run Migration 007** (5 min)
+  - Action: Execute `supabase/migrations/007_manual_usage_tracking.sql` in Supabase SQL Editor
+  - Then: `NOTIFY pgrst, 'reload schema';`
+
+- [ ] **Wire Manual Usage to Recommendations** (2 hours)
+  - File: `lib/recommendations/recommendation-engine.ts`
+  - Add: `generateManualUsageRecommendation()` function
+  - Test: Recommendations work with manual usage data
+
+- [ ] **Test Spotify OAuth End-to-End** (15 min)
+
+**Afternoon (3 hours):**
+- [ ] **Test Google OAuth** (15 min)
+- [ ] **Run Type Check & Fix Errors** (1 hour)
+  - Command: `npm run type-check`
+- [ ] **Add Onboarding Checklist** (1 hour)
+  - File: `app/dashboard/page.tsx`
+  - Component: Collapsible checklist card with progress bar
+- [ ] **Test Checklist Flow** (15 min)
+- [ ] **Commit & Push** (15 min)
+
+**Success Criteria:** OAuth working, recommendations complete, checklist added
+
+---
+
+#### **Day 5 (Tue Oct 15) - 4 hours**
+
+**🟡 UX IMPROVEMENTS**
+
+- [ ] **Add Usage Tracking Prompts** (30 min)
+  - File: `app/dashboard/page.tsx` (subscription cards)
+  - Add: Yellow badge prompting users to add usage data
+
+- [ ] **Improve Empty States** (1 hour)
+  - Files: `app/dashboard/page.tsx` (recommendations, subscriptions)
+  - Add: Contextual CTAs based on user state
+
+- [ ] **Add Error Boundaries** (1 hour)
+  - Files: `app/error.tsx`, `app/dashboard/error.tsx`
+  - Add: Graceful error handling UI
+
+- [ ] **Test All Error Scenarios** (30 min)
+
+- [ ] **End-to-End Testing** (1 hour)
+  - Test: Complete user journey (signup → add subscription → connect Spotify → view recommendation)
+
+**Success Criteria:** Better UX, error handling, all flows tested
+
+---
+
+#### **Day 6 (Wed Oct 16) - 3 hours**
+
+**🟡 POLISH & VALIDATION**
+
+- [ ] **Add Zod Validation to Server Actions** (1.5 hours)
+  - Files: `lib/subscriptions/subscription-actions.ts`, `lib/recommendations/recommendation-actions.ts`
+  - Add: Input validation with Zod schemas
+
+- [ ] **Fix Landing Page** (1 hour)
+  - Add: Pricing section (#pricing)
+  - Add: FAQ section
+  - Improve: Hero section with clearer CTAs
+
+- [ ] **Mobile Responsiveness Check** (30 min)
+  - Test: Dashboard, landing page, onboarding on mobile devices
+
+**Success Criteria:** Better validation, landing page complete
+
+---
+
+#### **Day 7 (Thu Oct 17) - 4 hours**
+
+**🚀 BETA LAUNCH DAY!**
+
+- [ ] **Final Smoke Testing** (1 hour)
+  - Test all critical flows
+  - Check analytics tracking
+  - Verify email sending
+
+- [ ] **Fix Critical Bugs** (1 hour)
+  - Address any blockers found in testing
+
+- [ ] **Deploy to Vercel Production** (30 min)
+  - Update environment variables
+  - Deploy to production
+  - Verify deployment
+
+- [ ] **Beta Launch Activities** (1.5 hours)
+  - Send invites to 20-30 beta testers
+  - Create feedback form (Google Forms or TypeForm)
+  - Post to Twitter/LinkedIn announcing beta
+  - Monitor PostHog for errors/issues
+
+**Success Criteria:** BETA LIVE! 🚀
+
+---
+
+### Quick Wins (Do These First - 2.5 hours)
+
+**Highest ROI tasks for immediate impact:**
+
+1. ✅ Fix Spotify OAuth (30 min) → Unblocks key feature
+2. ✅ Run Migration 007 (5 min) → Enables manual tracking
+3. ✅ Wire manual usage to recommendations (2 hours) → Complete AI feature
+4. ✅ Add onboarding checklist (1 hour) → +20-30% activation
+5. ✅ Add usage prompts (30 min) → Makes recommendations work
+
+**Impact:** 85% → 95% MVP ready in one focused session!
+
+---
+
+### Week 2: Beta Testing & Iteration (Oct 21-25)
+
+**Mon-Wed (6 hours):**
+- Monitor PostHog analytics (funnels, drop-offs, user behavior)
+- Fix bugs reported by beta testers
+- Iterate on UX based on feedback
+- Add rate limiting for production security
+
+**Thu-Fri (4 hours):**
+- Add demo video to landing page
+- Performance optimizations (lazy loading, React.memo)
+- Final polish based on beta feedback
+- Prepare Product Hunt launch materials
+
+---
+
+### Technical Debt to Address Post-Beta
+
+**MEDIUM Priority (1-2 weeks after launch):**
+- [ ] Add rate limiting to API routes
+- [ ] Optimize dashboard with lazy loading
+- [ ] Add comprehensive error logging with Sentry contexts
+- [ ] Sync theme preference to database
+- [ ] Add request caching for frequently accessed data
+
+**LOW Priority (Month 2):**
+- [ ] Add pagination for subscriptions (when users have 50+)
+- [ ] Optimize bundle matching algorithm performance
+- [ ] Add comprehensive test suite (Jest + Playwright)
+- [ ] Improve email templates with better branding
+
+---
+
+**Last Updated:** October 13, 2025
+**Status:** 🚀 85% MVP Ready - Critical Path Defined
