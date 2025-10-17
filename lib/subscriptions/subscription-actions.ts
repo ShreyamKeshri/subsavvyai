@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { trackServerEvent } from '@/lib/analytics/server-events'
 import { convertToINR } from '@/lib/currency/exchange-rates'
+import { generateBundleRecommendations } from '@/lib/bundles/bundle-actions'
 
 export type BillingCycle = 'monthly' | 'quarterly' | 'yearly' | 'custom'
 export type SubscriptionStatus = 'active' | 'cancellation_initiated' | 'cancelled' | 'paused' | 'expired'
@@ -160,6 +161,12 @@ export async function createSubscription(
       isCustom: !data.service_id,
     })
 
+    // Auto-generate bundle recommendations (fire-and-forget)
+    // This runs in the background without blocking the response
+    generateBundleRecommendations().catch(error => {
+      console.error('Failed to auto-generate bundle recommendations:', error)
+    })
+
     // Revalidate dashboard to show updated data
     revalidatePath('/dashboard')
 
@@ -217,6 +224,11 @@ export async function updateSubscription(
       return { success: false, error: error.message }
     }
 
+    // Auto-generate bundle recommendations (fire-and-forget)
+    generateBundleRecommendations().catch(error => {
+      console.error('Failed to auto-generate bundle recommendations:', error)
+    })
+
     // Revalidate dashboard
     revalidatePath('/dashboard')
 
@@ -256,6 +268,11 @@ export async function deleteSubscription(
     // Track subscription deleted event
     await trackServerEvent(user.id, 'subscription_deleted', {
       subscriptionId,
+    })
+
+    // Auto-generate bundle recommendations (fire-and-forget)
+    generateBundleRecommendations().catch(error => {
+      console.error('Failed to auto-generate bundle recommendations:', error)
     })
 
     // Revalidate dashboard
