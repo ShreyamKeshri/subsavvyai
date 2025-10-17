@@ -7,6 +7,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { generateRecommendations } from '@/lib/recommendations/recommendation-actions'
 
 export type UsageFrequency = 'daily' | 'weekly' | 'monthly' | 'rarely' | 'never'
 
@@ -124,6 +125,12 @@ export async function saveManualUsage(input: ManualUsageInput) {
         return { success: false, error: insertError.message }
       }
     }
+
+    // Auto-generate AI recommendations (fire-and-forget)
+    // New usage data means we should check for optimization opportunities
+    generateRecommendations().catch(error => {
+      console.error('Failed to auto-generate AI recommendations:', error)
+    })
 
     revalidatePath('/dashboard')
     return { success: true }

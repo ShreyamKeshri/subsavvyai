@@ -10,6 +10,7 @@ import { revalidatePath } from 'next/cache'
 import { trackServerEvent } from '@/lib/analytics/server-events'
 import { convertToINR } from '@/lib/currency/exchange-rates'
 import { generateBundleRecommendations } from '@/lib/bundles/bundle-actions'
+import { generateRecommendations } from '@/lib/recommendations/recommendation-actions'
 
 export type BillingCycle = 'monthly' | 'quarterly' | 'yearly' | 'custom'
 export type SubscriptionStatus = 'active' | 'cancellation_initiated' | 'cancelled' | 'paused' | 'expired'
@@ -167,6 +168,11 @@ export async function createSubscription(
       console.error('Failed to auto-generate bundle recommendations:', error)
     })
 
+    // Auto-generate AI recommendations (fire-and-forget)
+    generateRecommendations().catch(error => {
+      console.error('Failed to auto-generate AI recommendations:', error)
+    })
+
     // Revalidate dashboard to show updated data
     revalidatePath('/dashboard')
 
@@ -229,6 +235,11 @@ export async function updateSubscription(
       console.error('Failed to auto-generate bundle recommendations:', error)
     })
 
+    // Auto-generate AI recommendations (fire-and-forget)
+    generateRecommendations().catch(error => {
+      console.error('Failed to auto-generate AI recommendations:', error)
+    })
+
     // Revalidate dashboard
     revalidatePath('/dashboard')
 
@@ -273,6 +284,11 @@ export async function deleteSubscription(
     // Auto-generate bundle recommendations (fire-and-forget)
     generateBundleRecommendations().catch(error => {
       console.error('Failed to auto-generate bundle recommendations:', error)
+    })
+
+    // Auto-generate AI recommendations (fire-and-forget)
+    generateRecommendations().catch(error => {
+      console.error('Failed to auto-generate AI recommendations:', error)
     })
 
     // Revalidate dashboard

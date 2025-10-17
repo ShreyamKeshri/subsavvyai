@@ -16,7 +16,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Plus, Loader2, Edit2, Trash2 } from 'lucide-react'
 import { getUserSubscriptions, deleteSubscription, type Subscription } from '@/lib/subscriptions/subscription-actions'
-import { getPendingRecommendations, dismissRecommendation, type OptimizationRecommendation } from '@/lib/recommendations/recommendation-actions'
+import { getPendingRecommendations, dismissRecommendation, generateRecommendations, type OptimizationRecommendation } from '@/lib/recommendations/recommendation-actions'
 import { getConnectedServices, getAllUserUsageData, type ServiceUsage } from '@/lib/usage/usage-actions'
 import { AddSubscriptionDialog } from '@/components/subscriptions/add-subscription-dialog'
 import { EditSubscriptionDialog } from '@/components/subscriptions/edit-subscription-dialog'
@@ -76,7 +76,27 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      fetchData()
+      const initializeData = async () => {
+        await fetchData()
+
+        // Auto-generate recommendations if none exist and user has usage data
+        const recsResult = await getPendingRecommendations()
+        if (recsResult.success && (!recsResult.data || recsResult.data.length === 0)) {
+          // Silently generate in the background
+          generateRecommendations()
+            .then(genResult => {
+              if (genResult.success && genResult.data && genResult.data.length > 0) {
+                // Reload recommendations after generation
+                fetchData()
+              }
+            })
+            .catch(error => {
+              console.error('Failed to auto-generate recommendations on mount:', error)
+            })
+        }
+      }
+
+      initializeData()
     }
   }, [isAuthenticated])
 
