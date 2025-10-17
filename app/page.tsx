@@ -39,6 +39,9 @@ export default function LandingPage() {
             <Link href="#pricing" className="text-gray-600 hover:text-gray-900 transition-colors">
               Pricing
             </Link>
+            <Link href="#faq" className="text-gray-600 hover:text-gray-900 transition-colors">
+              FAQ
+            </Link>
             <Link href="/signup">
               <Button className="bg-green-600 hover:bg-green-700 text-white">Get Started Free</Button>
             </Link>
@@ -50,35 +53,54 @@ export default function LandingPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-4 py-16 lg:py-24">
+      <section className="relative max-w-7xl mx-auto px-4 py-16 lg:py-24 overflow-hidden">
+        {/* Background gradient */}
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute top-0 right-0 h-96 w-96 rounded-full bg-green-100 blur-3xl opacity-30" />
+          <div className="absolute bottom-0 left-0 h-96 w-96 rounded-full bg-teal-100 blur-3xl opacity-30" />
+        </div>
+
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
-            <Badge className="bg-green-50 text-green-700 hover:bg-green-100 border-green-200">
-              Join 50,000+ Indians already saving money
+            <Badge className="bg-green-50 text-green-700 hover:bg-green-100 border-green-200 w-fit">
+              <Star className="w-4 h-4 mr-1 fill-green-600 text-green-600" />
+              AI-Powered Savings for Indian Users
             </Badge>
             <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight text-balance">
-              AI Finds ₹10,000/Year Hidden in Your Subscriptions
+              Take Control of Your Subscriptions —{" "}
+              <span className="bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
+                Save Smarter with AI
+              </span>
             </h1>
             <p className="text-lg lg:text-xl text-gray-600 leading-relaxed">
-              {branding.name} is India&apos;s first AI-powered subscription optimizer. Connect your services, get smart downgrade alerts, and discover telecom bundle savings—all powered by AI.
+              Stop overpaying for subscriptions. {branding.name} uses intelligent AI to track usage, alert you to savings, and recommend smarter bundles. Save up to ₹10,000/year on your digital subscriptions.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link href="/signup">
-                <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white text-lg px-8 h-14 w-full sm:w-auto">
+                <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white text-lg px-8 h-14 w-full sm:w-auto group">
                   Get Started Free
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              <Button
-                size="lg"
-                variant="ghost"
-                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 text-lg h-14"
-                asChild
-              >
-                <Link href="#how-it-works">
-                  See How It Works
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Link>
-              </Button>
+              <Link href="/login">
+                <Button size="lg" variant="outline" className="text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 text-lg h-14 w-full sm:w-auto">
+                  Sign In
+                </Button>
+              </Link>
+            </div>
+            <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex items-center gap-2">
+                <Shield className="w-5 h-5 text-green-600" />
+                100% Secure
+              </div>
+              <div className="flex items-center gap-2">
+                <span>🇮🇳</span>
+                Made for India
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-green-600">✓</span>
+                Free Forever Plan
+              </div>
             </div>
           </div>
 
@@ -209,46 +231,62 @@ export default function LandingPage() {
       <section id="features" className="bg-gray-50 py-16 lg:py-24">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Everything You Need to Take Control</h2>
+            <p className="text-sm font-semibold text-green-600 uppercase tracking-wide mb-3">FEATURES</p>
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Powerful AI Features to Save You Money</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">Everything you need to take control of your subscriptions</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
                 icon: Wallet,
                 title: "Smart Subscription Tracking",
-                description: "Track all your subscriptions with 52 pre-loaded Indian services",
+                description: "Track all your subscriptions with 52 pre-loaded Indian services. Add Netflix, Prime, Spotify and more in seconds.",
+                badge: null,
               },
               {
                 icon: BarChart3,
                 title: "Spending Dashboard",
-                description: "See monthly, yearly costs and category breakdown at a glance",
+                description: "See monthly, yearly costs and category breakdown at a glance. Know exactly where your money goes.",
+                badge: null,
               },
               {
                 icon: TrendingUp,
                 title: "AI Downgrade Alerts",
-                description: "Connect Spotify and get smart recommendations based on actual usage",
+                description: "Connect Spotify and get smart recommendations based on actual usage. Save ₹1,400+/year by downgrading unused plans.",
+                badge: "AI",
               },
               {
                 icon: Scan,
                 title: "India Bundle Optimizer",
-                description: "Find telecom bundles that save ₹10,000+/year on OTT subscriptions",
+                description: "Find telecom bundles from Jio, Airtel & Vi that save ₹10,000+/year on your OTT subscriptions.",
+                badge: "AI",
               },
               {
                 icon: FileText,
                 title: "Manual Usage Tracking",
-                description: "Track usage for services without API integrations",
+                description: "Track usage for services without API integrations. Works with Netflix, Hotstar, Prime Video and more.",
+                badge: null,
               },
               {
                 icon: Shield,
                 title: "Bank-Level Security",
-                description: "Row-level security, encrypted OAuth tokens, HTTPS-only",
+                description: "Row-level security, encrypted OAuth tokens, HTTPS-only. Your data is safe with us.",
+                badge: null,
               },
             ].map((feature, i) => (
               <Card
                 key={i}
-                className="p-6 lg:p-8 space-y-4 bg-white border-gray-200 hover:border-green-600 hover:shadow-lg transition"
+                className="group relative p-6 lg:p-8 space-y-4 bg-white border-gray-200 hover:border-green-600 hover:shadow-lg transition overflow-hidden"
               >
-                <feature.icon className="w-10 h-10 text-blue-600" />
+                <div className="absolute inset-0 -z-10 bg-gradient-to-br from-green-50/50 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                {feature.badge && (
+                  <Badge className="absolute top-4 right-4 bg-green-600 text-white hover:bg-green-700">
+                    {feature.badge}
+                  </Badge>
+                )}
+                <div className="w-14 h-14 bg-green-50 rounded-xl flex items-center justify-center">
+                  <feature.icon className="w-7 h-7 text-green-600" />
+                </div>
                 <h3 className="text-xl font-semibold text-gray-900">{feature.title}</h3>
                 <p className="text-gray-600 leading-relaxed">{feature.description}</p>
               </Card>
@@ -258,77 +296,39 @@ export default function LandingPage() {
       </section>
 
       {/* Social Proof Section */}
-      <section className="py-16 lg:py-24">
+      <section className="py-16 lg:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          {/* Stats Bar */}
-          <div className="grid md:grid-cols-3 gap-8 mb-16 text-center">
-            <div className="space-y-2">
-              <div className="text-4xl lg:text-5xl font-bold text-gray-900">50,000+</div>
-              <div className="text-lg text-gray-600">Happy Users</div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-4xl lg:text-5xl font-bold text-gray-900">₹5 Crore+</div>
-              <div className="text-lg text-gray-600">Saved</div>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-center gap-1 text-amber-500 mb-2">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-6 h-6 fill-current" />
-                ))}
-              </div>
-              <div className="text-4xl lg:text-5xl font-bold text-gray-900">4.8★</div>
-              <div className="text-lg text-gray-600">Average Rating</div>
-            </div>
+          <div className="text-center mb-12">
+            <p className="text-sm font-semibold text-green-600 uppercase tracking-wide mb-3">TRUSTED BY THOUSANDS</p>
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Join Indians Saving Money Every Day</h2>
           </div>
-
-          {/* Testimonials */}
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                quote: "Saved ₹8,400 in 6 months! Found subscriptions I completely forgot about.",
-                name: "Priya S.",
-                location: "Mumbai",
-              },
-              {
-                quote: "The Gmail scan found 12 active subscriptions. I only knew about 5!",
-                name: "Rahul K.",
-                location: "Bangalore",
-              },
-              {
-                quote: "Canceled my old gym membership from 2 years ago. Thank you!",
-                name: "Ananya M.",
-                location: "Delhi",
-              },
-            ].map((testimonial, i) => (
-              <Card key={i} className="p-8 space-y-6 border-gray-200 bg-white shadow-md">
-                <div className="flex gap-1 text-amber-500">
-                  {[...Array(5)].map((_, j) => (
-                    <Star key={j} className="w-5 h-5 fill-current" />
-                  ))}
-                </div>
-                <p className="text-lg text-gray-700 leading-relaxed">&ldquo;{testimonial.quote}&rdquo;</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-blue-500 rounded-full" />
-                  <div>
-                    <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                    <div className="text-sm text-gray-600">{testimonial.location}</div>
-                  </div>
-                </div>
-              </Card>
-            ))}
+          {/* Stats Bar */}
+          <div className="grid md:grid-cols-3 gap-8 text-center">
+            <Card className="p-8 border-gray-200 bg-gradient-to-br from-green-50 to-white">
+              <div className="text-4xl lg:text-5xl font-bold text-green-600 mb-2">₹10,000+</div>
+              <div className="text-lg text-gray-600">Average Annual Savings</div>
+            </Card>
+            <Card className="p-8 border-gray-200 bg-gradient-to-br from-blue-50 to-white">
+              <div className="text-4xl lg:text-5xl font-bold text-blue-600 mb-2">52+</div>
+              <div className="text-lg text-gray-600">Indian Services Supported</div>
+            </Card>
+            <Card className="p-8 border-gray-200 bg-gradient-to-br from-purple-50 to-white">
+              <div className="text-4xl lg:text-5xl font-bold text-purple-600 mb-2">2 AI</div>
+              <div className="text-lg text-gray-600">Features Live & Saving Money</div>
+            </Card>
           </div>
         </div>
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-16 lg:py-24">
+      <section id="pricing" className="bg-gray-50 py-16 lg:py-24">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
-            <p className="text-sm font-semibold text-blue-600 uppercase tracking-wide mb-3">PRICING</p>
+            <p className="text-sm font-semibold text-green-600 uppercase tracking-wide mb-3">PRICING</p>
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Simple, Transparent Pricing</h2>
-            <p className="text-lg text-gray-600">Start free, upgrade when you&apos;re ready</p>
+            <p className="text-lg text-gray-600">Start free, upgrade when you&apos;re ready to unlock AI features</p>
           </div>
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Free Plan */}
             <Card className="p-8 space-y-6 border-gray-200 bg-white hover:shadow-xl transition">
               <div>
@@ -337,14 +337,15 @@ export default function LandingPage() {
               </div>
               <div className="flex items-baseline gap-2">
                 <span className="text-5xl font-bold text-gray-900">₹0</span>
-                <span className="text-gray-600">/month</span>
+                <span className="text-gray-600">/forever</span>
               </div>
               <ul className="space-y-3">
                 {[
-                  "Track up to 10 subscriptions",
+                  "Track up to 5 subscriptions",
                   "Manual usage tracking",
                   "Basic spending insights",
-                  "Bundle recommendations",
+                  "Monthly optimization report",
+                  "Dashboard & analytics",
                 ].map((feature, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -364,11 +365,11 @@ export default function LandingPage() {
             {/* Pro Plan */}
             <Card className="p-8 space-y-6 border-green-600 bg-white hover:shadow-2xl transition relative border-2">
               <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                <Badge className="bg-green-600 text-white hover:bg-green-700">MOST POPULAR</Badge>
+                <Badge className="bg-green-600 text-white hover:bg-green-700">SAVE ₹10,000+/YEAR</Badge>
               </div>
               <div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Pro</h3>
-                <p className="text-gray-600">Best for power savers</p>
+                <p className="text-gray-600">Unlock AI-powered savings</p>
               </div>
               <div className="flex items-baseline gap-2">
                 <span className="text-5xl font-bold text-gray-900">₹99</span>
@@ -376,9 +377,10 @@ export default function LandingPage() {
               </div>
               <ul className="space-y-3">
                 {[
+                  "Everything in Free",
                   "Unlimited subscriptions",
-                  "AI-powered downgrade alerts",
-                  "OAuth integrations (Spotify, etc.)",
+                  "🤖 AI Downgrade Alerts (Spotify OAuth)",
+                  "🤖 India Bundle Optimizer (20+ bundles)",
                   "Advanced analytics & insights",
                   "Priority support",
                 ].map((feature, i) => (
@@ -395,39 +397,62 @@ export default function LandingPage() {
                   Start Free Trial
                 </Button>
               </Link>
+              <p className="text-xs text-center text-gray-500">
+                Or ₹999/year (save 17%)
+              </p>
             </Card>
+          </div>
+        </div>
+      </section>
 
-            {/* Enterprise Plan */}
-            <Card className="p-8 space-y-6 border-gray-200 bg-white hover:shadow-xl transition">
-              <div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Enterprise</h3>
-                <p className="text-gray-600">For teams & businesses</p>
-              </div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-5xl font-bold text-gray-900">Custom</span>
-              </div>
-              <ul className="space-y-3">
-                {[
-                  "Everything in Pro",
-                  "Team management",
-                  "Custom integrations",
-                  "Dedicated account manager",
-                  "SLA & compliance",
-                ].map((feature, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <span className="text-green-600 text-sm">✓</span>
-                    </div>
-                    <span className="text-gray-700">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link href="mailto:contact@subsavvyai.com" className="block">
-                <Button variant="outline" className="w-full border-gray-300 text-gray-900 hover:bg-gray-50">
-                  Contact Sales
-                </Button>
-              </Link>
-            </Card>
+      {/* FAQ Section */}
+      <section id="faq" className="py-16 lg:py-24 bg-white dark:bg-gray-900">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <p className="text-sm font-semibold text-green-600 uppercase tracking-wide mb-3">FAQ</p>
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">Frequently Asked Questions</h2>
+            <p className="text-lg text-gray-600 dark:text-gray-400">Everything you need to know about SubSavvyAI</p>
+          </div>
+          <div className="space-y-6">
+            {[
+              {
+                question: "How does the AI find savings in my subscriptions?",
+                answer: "Our AI tracks your actual usage through OAuth integrations (like Spotify) and manual tracking. It analyzes your usage patterns and recommends cheaper plans if you're underutilizing features, or finds telecom bundles that combine multiple services at lower prices."
+              },
+              {
+                question: "Is my data safe? How do you handle OAuth tokens?",
+                answer: "Yes, your data is completely safe. We use bank-level security with row-level database policies, encrypted OAuth tokens, and HTTPS-only connections. We only access the minimum data needed (like listening hours) and never see your passwords."
+              },
+              {
+                question: "What's included in the Free plan?",
+                answer: "The Free plan lets you track up to 5 subscriptions, add manual usage data, view basic spending insights, and get monthly optimization reports. It's perfect for getting started and seeing the value."
+              },
+              {
+                question: "What AI features are included in Pro?",
+                answer: "Pro unlocks 2 AI features: (1) Smart Downgrade Alerts - connects to Spotify to track usage and recommend cheaper plans, and (2) India Bundle Optimizer - analyzes your subscriptions and finds telecom bundles (Jio, Airtel, Vi) that save ₹10,000+/year."
+              },
+              {
+                question: "Which services can I connect with OAuth?",
+                answer: "Currently, we support Spotify OAuth for tracking listening hours. We're adding more services (Netflix, Prime Video, etc.) soon! For services without OAuth, you can manually track usage."
+              },
+              {
+                question: "How accurate are the bundle recommendations?",
+                answer: "Our bundle optimizer uses an AI matching algorithm with 95%+ accuracy. It maps your current subscriptions to 20+ real telecom bundles from Jio, Airtel, and Vi, calculates savings, and shows only bundles that actually save you money."
+              },
+              {
+                question: "Can I cancel anytime?",
+                answer: "Yes! There are no contracts. Cancel your Pro subscription anytime and you'll still have access until the end of your billing period. You can always downgrade to the Free plan."
+              },
+              {
+                question: "Do I need a credit card to start?",
+                answer: "No credit card required! Start with the Free plan and upgrade to Pro when you're ready to unlock AI features. We accept UPI, cards, and netbanking for Pro subscriptions."
+              },
+            ].map((faq, i) => (
+              <Card key={i} className="p-6 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-green-600 dark:hover:border-green-500 transition">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">{faq.question}</h3>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{faq.answer}</p>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
@@ -489,6 +514,11 @@ export default function LandingPage() {
                 <li>
                   <Link href="#pricing" className="hover:text-white transition">
                     Pricing
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#faq" className="hover:text-white transition">
+                    FAQ
                   </Link>
                 </li>
               </ul>
