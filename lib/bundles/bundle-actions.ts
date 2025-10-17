@@ -111,7 +111,8 @@ export async function generateBundleRecommendations(): Promise<{
       totalSavings,
     })
 
-    revalidatePath('/dashboard')
+    // Note: revalidatePath is handled by the caller (subscription actions or manual trigger)
+    // Removed from here to allow fire-and-forget calls during component render
 
     return {
       success: true,

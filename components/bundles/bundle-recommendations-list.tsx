@@ -35,6 +35,7 @@ export function BundleRecommendationsList() {
     if (result.success) {
       if (result.count && result.count > 0) {
         toast.success(`Found ${result.count} bundle${result.count > 1 ? 's' : ''} that could save you money!`)
+        // Reload recommendations to show the newly generated ones
         await loadRecommendations()
       } else {
         toast.info('No bundle recommendations found. Add more subscriptions to see recommendations.')

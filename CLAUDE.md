@@ -565,3 +565,4 @@ SubSavvyAI Root/
 ```
 
 **Rule:** Only these files should exist in the repository root. Any other `.md` files are temporary and must be removed before merging.
+- Don't delete feature branches.
