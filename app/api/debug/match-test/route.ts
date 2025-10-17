@@ -72,30 +72,27 @@ export async function GET() {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
 
-    // Get user subscriptions
-    const { data: subscriptions } = await supabase
+    // Get user subscriptions (using same format as bundle-matcher fix)
+    const { data: subscriptions, error: subsError } = await supabase
       .from('subscriptions')
-      .select(`
-        id,
-        service_id,
-        cost,
-        billing_cycle,
-        plan_name,
-        services (
-          id,
-          name
-        )
-      `)
+      .select('id, service_id, custom_service_name, cost, billing_cycle, services(id, name)')
       .eq('user_id', user.id)
       .eq('status', 'active')
 
+    if (subsError) {
+      console.error('Error fetching subscriptions:', subsError)
+    }
+
     const userSubscriptions = (subscriptions || []).map(sub => {
       const service = sub.services as unknown as { id: string; name: string } | null
+      const customName = (sub as unknown as { custom_service_name?: string }).custom_service_name
+      const serviceName = service?.name || customName || 'Unknown Service'
+
       return {
         id: sub.id,
         service_id: sub.service_id,
-        service_name: service?.name || 'Unknown',
-        plan_name: sub.plan_name,
+        service_name: serviceName,
+        plan_name: null, // Column doesn't exist
         cost: sub.cost,
         billing_cycle: sub.billing_cycle,
         monthly_cost: calculateMonthlyCost(sub.cost, sub.billing_cycle),

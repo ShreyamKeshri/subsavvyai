@@ -225,7 +225,7 @@ export async function findBundleMatches(
   // 1. Get user's active subscriptions with service details
   const { data: subscriptions, error: subsError } = await supabase
     .from('subscriptions')
-    .select('id, service_id, custom_service_name, cost, billing_cycle, plan_name, services(id, name)')
+    .select('id, service_id, custom_service_name, cost, billing_cycle, services(id, name)')
     .eq('user_id', userId)
     .eq('status', 'active')
 
@@ -249,7 +249,7 @@ export async function findBundleMatches(
       id: sub.id,
       service_id: sub.service_id,
       service_name: serviceName,
-      plan_name: sub.plan_name,
+      plan_name: null, // Column doesn't exist in subscriptions table
       cost: sub.cost,
       billing_cycle: sub.billing_cycle,
       monthly_cost: calculateMonthlyCost(sub.cost, sub.billing_cycle),
