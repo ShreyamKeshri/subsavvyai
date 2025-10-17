@@ -225,31 +225,30 @@ export async function findBundleMatches(
   // 1. Get user's active subscriptions with service details
   const { data: subscriptions, error: subsError } = await supabase
     .from('subscriptions')
-    .select(`
-      id,
-      service_id,
-      cost,
-      billing_cycle,
-      plan_name,
-      services (
-        id,
-        name
-      )
-    `)
+    .select('id, service_id, custom_service_name, cost, billing_cycle, plan_name, services(id, name)')
     .eq('user_id', userId)
     .eq('status', 'active')
 
-  if (subsError || !subscriptions || subscriptions.length === 0) {
+  if (subsError) {
+    console.error('Error fetching subscriptions for bundle matching:', subsError)
+    return []
+  }
+
+  if (!subscriptions || subscriptions.length === 0) {
     return []
   }
 
   // Transform subscriptions with monthly cost
   const userSubscriptions: UserSubscription[] = subscriptions.map(sub => {
-    const service = sub.services as unknown as { id: string; name: string }
+    const service = sub.services as unknown as { id: string; name: string } | null
+    const customName = (sub as unknown as { custom_service_name?: string }).custom_service_name
+    // Use service name from join, or fall back to custom service name
+    const serviceName = service?.name || customName || 'Unknown Service'
+
     return {
       id: sub.id,
       service_id: sub.service_id,
-      service_name: service.name,
+      service_name: serviceName,
       plan_name: sub.plan_name,
       cost: sub.cost,
       billing_cycle: sub.billing_cycle,
