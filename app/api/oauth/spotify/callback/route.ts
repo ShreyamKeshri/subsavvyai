@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { exchangeCodeForToken, storeSpotifyTokens, getSpotifyProfile } from '@/lib/oauth/spotify'
 import { trackServerEvent } from '@/lib/analytics/server-events'
+import { cookies } from 'next/headers'
 
 /**
  * Spotify OAuth Callback Handler
@@ -10,7 +11,7 @@ import { trackServerEvent } from '@/lib/analytics/server-events'
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const code = searchParams.get('code')
-  const _state = searchParams.get('state') // TODO: Implement CSRF state verification
+  const state = searchParams.get('state')
   const error = searchParams.get('error')
 
   // Handle OAuth errors
@@ -26,7 +27,35 @@ export async function GET(request: NextRequest) {
     )
   }
 
+  if (!state) {
+    return NextResponse.redirect(
+      new URL('/dashboard?oauth_error=missing_state', request.url)
+    )
+  }
+
   try {
+    // Verify CSRF state
+    const cookieStore = await cookies()
+    const storedState = cookieStore.get('spotify_oauth_state')?.value
+    const storedUserId = cookieStore.get('spotify_oauth_user')?.value
+
+    if (!storedState || !storedUserId) {
+      return NextResponse.redirect(
+        new URL('/dashboard?oauth_error=invalid_session', request.url)
+      )
+    }
+
+    // Constant-time comparison to prevent timing attacks
+    if (state !== storedState) {
+      return NextResponse.redirect(
+        new URL('/dashboard?oauth_error=state_mismatch', request.url)
+      )
+    }
+
+    // Clear OAuth cookies after verification
+    cookieStore.delete('spotify_oauth_state')
+    cookieStore.delete('spotify_oauth_user')
+
     const supabase = await createClient()
 
     // Get authenticated user
@@ -35,6 +64,13 @@ export async function GET(request: NextRequest) {
     if (authError || !user) {
       return NextResponse.redirect(
         new URL('/login?error=unauthorized', request.url)
+      )
+    }
+
+    // Verify user ID matches the one from OAuth initiation
+    if (user.id !== storedUserId) {
+      return NextResponse.redirect(
+        new URL('/dashboard?oauth_error=user_mismatch', request.url)
       )
     }
 
