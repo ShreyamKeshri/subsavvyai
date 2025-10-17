@@ -3,13 +3,25 @@ import { createClient } from '@/lib/supabase/server'
 import { getSpotifyAuthUrl } from '@/lib/oauth/spotify'
 import { randomBytes } from 'crypto'
 import { cookies } from 'next/headers'
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 
 /**
  * Initiate Spotify OAuth Flow
  * Generates authorization URL and redirects user to Spotify
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    // Apply rate limiting (10 OAuth attempts per 15 minutes per IP)
+    const clientIp = getClientIp(request.headers)
+    const rateLimitResult = await checkRateLimit(clientIp, 'STRICT')
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: 'Too many OAuth attempts. Please try again later.', resetAt: rateLimitResult.resetAt },
+        { status: 429 }
+      )
+    }
+
     const supabase = await createClient()
 
     // Check if user is authenticated

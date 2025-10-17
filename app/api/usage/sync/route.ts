@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { syncServiceUsage } from '@/lib/usage/usage-actions'
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 
 /**
  * Sync Usage Data API Route
@@ -8,6 +9,17 @@ import { syncServiceUsage } from '@/lib/usage/usage-actions'
  */
 export async function POST(request: NextRequest) {
   try {
+    // Apply rate limiting (30 write requests per minute per IP)
+    const clientIp = getClientIp(request.headers)
+    const rateLimitResult = await checkRateLimit(clientIp, 'API_WRITE')
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.', resetAt: rateLimitResult.resetAt },
+        { status: 429 }
+      )
+    }
+
     const supabase = await createClient()
 
     // Check if user is authenticated

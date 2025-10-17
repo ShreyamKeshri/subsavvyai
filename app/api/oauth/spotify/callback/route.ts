@@ -3,12 +3,23 @@ import { createClient } from '@/lib/supabase/server'
 import { exchangeCodeForToken, storeSpotifyTokens, getSpotifyProfile } from '@/lib/oauth/spotify'
 import { trackServerEvent } from '@/lib/analytics/server-events'
 import { cookies } from 'next/headers'
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 
 /**
  * Spotify OAuth Callback Handler
  * Handles the OAuth redirect after user authorizes Spotify access
  */
 export async function GET(request: NextRequest) {
+  // Apply rate limiting (10 callback attempts per 15 minutes per IP)
+  const clientIp = getClientIp(request.headers)
+  const rateLimitResult = await checkRateLimit(clientIp, 'STRICT')
+
+  if (!rateLimitResult.success) {
+    return NextResponse.redirect(
+      new URL('/dashboard?oauth_error=rate_limit_exceeded', request.url)
+    )
+  }
+
   const searchParams = request.nextUrl.searchParams
   const code = searchParams.get('code')
   const state = searchParams.get('state')
