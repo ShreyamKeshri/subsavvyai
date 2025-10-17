@@ -180,7 +180,7 @@ export async function fetchSpotifyUsageData(accessToken: string): Promise<Spotif
 }
 
 /**
- * Store OAuth tokens in database (encrypted in future)
+ * Store OAuth tokens in database (encrypted)
  */
 export async function storeSpotifyTokens(
   userId: string,
@@ -188,6 +188,27 @@ export async function storeSpotifyTokens(
   tokenData: SpotifyTokenResponse
 ): Promise<void> {
   const supabase = await createClient()
+
+  // Encrypt tokens if encryption is configured
+  let accessToken = tokenData.access_token
+  let refreshToken = tokenData.refresh_token || null
+
+  try {
+    const { encrypt, isEncryptionConfigured } = await import('@/lib/crypto/encryption')
+
+    if (isEncryptionConfigured()) {
+      // Encrypt tokens
+      accessToken = encrypt(tokenData.access_token)
+      if (tokenData.refresh_token) {
+        refreshToken = encrypt(tokenData.refresh_token)
+      }
+    } else {
+      console.warn('⚠️ ENCRYPTION_KEY not configured - storing tokens in plaintext (INSECURE)')
+    }
+  } catch (error) {
+    console.error('❌ Encryption error - falling back to plaintext (INSECURE):', error)
+    // Fall back to plaintext if encryption fails
+  }
 
   const expiresAt = new Date(Date.now() + tokenData.expires_in * 1000)
 
@@ -197,8 +218,8 @@ export async function storeSpotifyTokens(
       user_id: userId,
       service_id: serviceId,
       provider: 'spotify',
-      access_token: tokenData.access_token, // TODO: Encrypt before storing
-      refresh_token: tokenData.refresh_token || null, // TODO: Encrypt before storing
+      access_token: accessToken, // Encrypted if ENCRYPTION_KEY is set
+      refresh_token: refreshToken, // Encrypted if ENCRYPTION_KEY is set
       token_type: tokenData.token_type,
       expires_at: expiresAt.toISOString(),
       scope: tokenData.scope,
@@ -214,7 +235,7 @@ export async function storeSpotifyTokens(
 }
 
 /**
- * Get valid access token (refresh if needed)
+ * Get valid access token (refresh if needed, decrypt if encrypted)
  */
 export async function getValidSpotifyToken(userId: string, serviceId: string): Promise<string | null> {
   const supabase = await createClient()
@@ -232,13 +253,31 @@ export async function getValidSpotifyToken(userId: string, serviceId: string): P
     return null
   }
 
+  // Helper function to decrypt token if needed
+  const decryptIfNeeded = async (token: string): Promise<string> => {
+    try {
+      const { decrypt, isEncryptionConfigured } = await import('@/lib/crypto/encryption')
+
+      if (isEncryptionConfigured()) {
+        // Token is encrypted, decrypt it
+        return decrypt(token)
+      }
+    } catch (error) {
+      console.error('Decryption error:', error)
+    }
+
+    // Return token as-is if not encrypted or decryption fails
+    return token
+  }
+
   const now = new Date()
   const expiresAt = new Date(tokenData.expires_at)
 
   // If token is expired, refresh it
   if (now >= expiresAt && tokenData.refresh_token) {
     try {
-      const newTokenData = await refreshSpotifyToken(tokenData.refresh_token)
+      const decryptedRefreshToken = await decryptIfNeeded(tokenData.refresh_token)
+      const newTokenData = await refreshSpotifyToken(decryptedRefreshToken)
       await storeSpotifyTokens(userId, serviceId, newTokenData)
       return newTokenData.access_token
     } catch {
@@ -246,7 +285,8 @@ export async function getValidSpotifyToken(userId: string, serviceId: string): P
     }
   }
 
-  return tokenData.access_token
+  // Decrypt access token before returning
+  return await decryptIfNeeded(tokenData.access_token)
 }
 
 /**

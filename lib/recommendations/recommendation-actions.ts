@@ -10,6 +10,7 @@ import { getUserSubscriptions } from '@/lib/subscriptions/subscription-actions'
 import { getAllUserUsageData } from '@/lib/usage/usage-actions'
 import { generateAllRecommendations, calculateTotalSavings } from './recommendation-engine'
 import { revalidatePath } from 'next/cache'
+import { validateInput, uuidSchema } from '@/lib/validators'
 
 export interface OptimizationRecommendation {
   id: string
@@ -221,6 +222,12 @@ export async function acceptRecommendation(
       return { success: false, error: 'Not authenticated' }
     }
 
+    // Validate recommendation ID
+    const idValidation = validateInput(uuidSchema, recommendationId)
+    if (!idValidation.success) {
+      return { success: false, error: 'Invalid recommendation ID' }
+    }
+
     const { error } = await supabase
       .from('optimization_recommendations')
       .update({
@@ -257,6 +264,12 @@ export async function dismissRecommendation(
 
     if (authError || !user) {
       return { success: false, error: 'Not authenticated' }
+    }
+
+    // Validate recommendation ID
+    const idValidation = validateInput(uuidSchema, recommendationId)
+    if (!idValidation.success) {
+      return { success: false, error: 'Invalid recommendation ID' }
     }
 
     const { error } = await supabase
