@@ -57,7 +57,7 @@ export default function LandingPage() {
         {/* Background gradient */}
         <div className="absolute inset-0 -z-10">
           <div className="absolute top-0 right-0 h-96 w-96 rounded-full bg-green-100 blur-3xl opacity-30" />
-          <div className="absolute bottom-0 left-0 h-96 w-96 rounded-full bg-blue-100 blur-3xl opacity-30" />
+          <div className="absolute bottom-0 left-0 h-96 w-96 rounded-full bg-teal-100 blur-3xl opacity-30" />
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -68,7 +68,7 @@ export default function LandingPage() {
             </Badge>
             <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight text-balance">
               Take Control of Your Subscriptions —{" "}
-              <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
                 Save Smarter with AI
               </span>
             </h1>
@@ -83,12 +83,12 @@ export default function LandingPage() {
                 </Button>
               </Link>
               <Link href="/login">
-                <Button size="lg" variant="outline" className="text-gray-900 border-gray-300 text-lg h-14 w-full sm:w-auto">
+                <Button size="lg" variant="outline" className="text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 text-lg h-14 w-full sm:w-auto">
                   Sign In
                 </Button>
               </Link>
             </div>
-            <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600">
+            <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
               <div className="flex items-center gap-2">
                 <Shield className="w-5 h-5 text-green-600" />
                 100% Secure
@@ -406,12 +406,12 @@ export default function LandingPage() {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-16 lg:py-24 bg-white">
+      <section id="faq" className="py-16 lg:py-24 bg-white dark:bg-gray-900">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-12">
             <p className="text-sm font-semibold text-green-600 uppercase tracking-wide mb-3">FAQ</p>
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
-            <p className="text-lg text-gray-600">Everything you need to know about SubSavvyAI</p>
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">Frequently Asked Questions</h2>
+            <p className="text-lg text-gray-600 dark:text-gray-400">Everything you need to know about SubSavvyAI</p>
           </div>
           <div className="space-y-6">
             {[
@@ -448,9 +448,9 @@ export default function LandingPage() {
                 answer: "No credit card required! Start with the Free plan and upgrade to Pro when you're ready to unlock AI features. We accept UPI, cards, and netbanking for Pro subscriptions."
               },
             ].map((faq, i) => (
-              <Card key={i} className="p-6 border-gray-200 hover:border-green-600 transition">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{faq.question}</h3>
-                <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
+              <Card key={i} className="p-6 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-green-600 dark:hover:border-green-500 transition">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">{faq.question}</h3>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{faq.answer}</p>
               </Card>
             ))}
           </div>
