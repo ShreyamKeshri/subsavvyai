@@ -81,14 +81,16 @@
 
 ## 🐛 Active Issues (Day 3 - Oct 13, 2025)
 
-### 1. 🔴 HIGH: Spotify OAuth `service_not_found` Error
-**Status:** In Progress (Day 3)
+### 1. ✅ FIXED: Spotify OAuth `service_not_found` Error
+**Status:** Fixed (Day 5 - Oct 17, 2025)
 **File:** `app/api/oauth/spotify/callback/route.ts`
+**Fix:** `supabase/seeds/001_indian_services.sql`
 
 **Problem:**
 - After successful Spotify OAuth, redirects to dashboard with error: `oauth_error=service_not_found`
 - Callback route can't find "Spotify" service in database
 - OAuth flow completes but fails at final step
+- **Root Cause:** Services table was empty - seed data needs to be run separately from migrations
 
 **Steps to Reproduce:**
 1. Click "Connect Spotify" on dashboard
@@ -96,13 +98,13 @@
 3. Get redirected back to dashboard
 4. URL shows: `http://localhost:3000/dashboard?oauth_error=service_not_found`
 
-**Proposed Solution:**
-- Check how service lookup is done in callback route
-- Verify "Spotify" exists in `services` table with correct name/slug
-- May need to seed Spotify service if missing
-- Check case sensitivity in service name matching
+**Solution Applied:**
+- Seed data exists in `supabase/seeds/001_indian_services.sql` with 52 popular Indian services
+- Includes Spotify, Netflix, Amazon Prime, and 49+ other services
+- Seed file was run in Supabase to populate services table
+- Spotify OAuth now works correctly
 
-**Priority:** HIGH (blocks Spotify OAuth feature)
+**Priority:** ✅ FIXED
 
 ---
 

@@ -67,7 +67,7 @@ Multi-method authentication via Supabase Auth:
 ### Database (Supabase/PostgreSQL)
 
 **Migrations Applied (8 total):**
-1. `001_initial_schema.sql` - Core tables, RLS policies, triggers, seed data (52 Indian services)
+1. `001_initial_schema.sql` - Core tables, RLS policies, triggers
 2. `002_security_events.sql` - Security audit logging
 3. `003_auto_create_profile.sql` - Auto-create profile on signup
 4. `004_proper_schema.sql` - User preferences & category preferences
@@ -75,6 +75,9 @@ Multi-method authentication via Supabase Auth:
 6. `006_telecom_bundles.sql` - Bundle optimizer tables (telecom_bundles, bundle_recommendations) + 20 bundles
 7. `007_manual_usage_tracking.sql` - Manual usage fields (usage_frequency, last_used_date, is_manual, manual_usage_note)
 8. `008_currency_conversion.sql` - Currency conversion (original_cost, original_currency columns)
+
+**Seed Data (run separately in Supabase):**
+- `supabase/seeds/001_indian_services.sql` - 52 popular Indian services (Netflix, Spotify, etc.)
 
 **Key Tables:**
 - **User Management:**
@@ -197,6 +200,7 @@ unsubscribr/
 │   └── usage/                    # Usage tracking components
 │       └── usage-survey-dialog.tsx  # Manual usage survey
 ├── supabase/migrations/          # Database migrations (8 total)
+├── supabase/seeds/               # Seed data (run separately)
 ├── middleware.ts                 # Next.js middleware (auth + security)
 ├── tsconfig.json                 # TypeScript config
 └── CLAUDE.md                     # This file
@@ -428,7 +432,7 @@ NEXT_PUBLIC_APP_URL=http://127.0.0.1:3000
 6. **Server Actions:** All mutations should be server actions
 7. **TypeScript:** Never use `any`, prefer `unknown` with type guards
 8. **RLS:** All tables must have RLS enabled
-9. **Migrations:** 8 migrations must be applied (001-008)
+9. **Migrations:** 8 migrations applied (001-008). Seed data in `supabase/seeds/` must be run separately
 10. **Subscription Form:** "Last/Current Billing Date" calculates next billing automatically
 11. **Spotify OAuth:** Use 127.0.0.1 not localhost (security requirement)
 12. **Manual Usage Tracking:** For services without OAuth APIs (Netflix, Hotstar, etc.)
