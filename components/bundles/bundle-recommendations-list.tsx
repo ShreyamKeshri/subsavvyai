@@ -50,7 +50,28 @@ export function BundleRecommendationsList() {
   }
 
   useEffect(() => {
-    loadRecommendations()
+    const initializeRecommendations = async () => {
+      await loadRecommendations()
+
+      // Auto-generate if no recommendations exist yet
+      // This will run once on component mount
+      const result = await getBundleRecommendations()
+      if (result.success && (!result.recommendations || result.recommendations.length === 0)) {
+        // Silently generate in the background
+        generateBundleRecommendations()
+          .then(genResult => {
+            if (genResult.success && genResult.count && genResult.count > 0) {
+              // Reload recommendations after generation
+              loadRecommendations()
+            }
+          })
+          .catch(error => {
+            console.error('Failed to auto-generate bundles on mount:', error)
+          })
+      }
+    }
+
+    initializeRecommendations()
   }, [])
 
   // Calculate total potential savings
