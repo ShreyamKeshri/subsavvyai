@@ -26,9 +26,10 @@ export function useAuth() {
   })
 
   const router = useRouter()
-  const supabase = createClient()
 
   useEffect(() => {
+    const supabase = createClient()
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setState({
@@ -55,7 +56,8 @@ export function useAuth() {
     })
 
     return () => subscription.unsubscribe()
-  }, [router, supabase])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Run only once on mount
 
   return state
 }
