@@ -101,10 +101,12 @@ function generateCancelRecommendation(
 
     const confidenceScore = Math.min(0.98, 0.7 + (CANCEL_THRESHOLD - monthlyUsageHours) / CANCEL_THRESHOLD * 0.28)
 
+    const serviceName = subscription.service?.name || subscription.custom_service_name || 'this service'
+
     return {
       subscription_id: subscription.id,
       type: 'cancel',
-      title: `Cancel ${subscription.service?.name || subscription.custom_service_name} Subscription`,
+      title: `Cancel ${serviceName} Subscription`,
       description: `You're barely using this service - only ${monthlyUsageHours.toFixed(1)} hours in the last month. Consider canceling to save ₹${monthlySavings}/month.`,
       current_cost: subscription.cost,
       optimized_cost: 0,
@@ -116,6 +118,50 @@ function generateCancelRecommendation(
         threshold_hours: CANCEL_THRESHOLD,
         reason: 'Extremely low usage',
         last_synced: usageData.last_synced_at
+      }
+    }
+  }
+
+  return null
+}
+
+/**
+ * Generate generic downgrade recommendation for any OTT service
+ */
+function generateGenericOTTDowngradeRecommendation(
+  subscription: Subscription,
+  usageData: ServiceUsage
+): OptimizationRecommendation | null {
+  const monthlyUsageHours = calculateAverageUsageHours(usageData)
+
+  // Generic threshold for OTT services: < 10 hours/month
+  const USAGE_THRESHOLD = 10
+  const serviceName = subscription.service?.name || subscription.custom_service_name || 'this service'
+
+  if (monthlyUsageHours < USAGE_THRESHOLD) {
+    // Estimate potential savings (assume 50% cheaper plan exists or free tier)
+    const estimatedOptimizedCost = Math.max(0, subscription.cost * 0.5)
+    const monthlySavings = subscription.cost - estimatedOptimizedCost
+    const annualSavings = monthlySavings * 12
+
+    // Calculate confidence based on how low the usage is
+    const confidenceScore = Math.min(0.90, 0.5 + (USAGE_THRESHOLD - monthlyUsageHours) / USAGE_THRESHOLD * 0.4)
+
+    return {
+      subscription_id: subscription.id,
+      type: 'downgrade',
+      title: `Consider a Cheaper Plan for ${serviceName}`,
+      description: `You're using ${serviceName} only ${monthlyUsageHours.toFixed(1)} hours/month. Check if there's a cheaper plan or free tier available to save ₹${Math.round(monthlySavings)}/month.`,
+      current_cost: subscription.cost,
+      optimized_cost: estimatedOptimizedCost,
+      monthly_savings: monthlySavings,
+      annual_savings: annualSavings,
+      confidence_score: confidenceScore,
+      details: {
+        usage_hours_monthly: monthlyUsageHours,
+        threshold_hours: USAGE_THRESHOLD,
+        reason: 'Low usage detected',
+        suggestion: 'Look for a cheaper plan or free tier'
       }
     }
   }
@@ -144,13 +190,19 @@ export function generateRecommendationsForSubscription(
     return recommendations // Don't suggest downgrades if we're suggesting cancel
   }
 
-  // Service-specific recommendations
-  const serviceName = subscription.service?.name?.toLowerCase() || ''
+  // Service-specific recommendations (prefer specific over generic)
+  const serviceName = subscription.service?.name?.toLowerCase() || subscription.custom_service_name?.toLowerCase() || ''
 
   if (serviceName.includes('spotify')) {
     const spotifyRec = generateSpotifyDowngradeRecommendation(subscription, usageData)
     if (spotifyRec) {
       recommendations.push(spotifyRec)
+    }
+  } else {
+    // Generic downgrade recommendation for any other service
+    const genericRec = generateGenericOTTDowngradeRecommendation(subscription, usageData)
+    if (genericRec) {
+      recommendations.push(genericRec)
     }
   }
 
