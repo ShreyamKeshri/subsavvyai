@@ -8,6 +8,16 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { generateRecommendations } from '@/lib/recommendations/recommendation-actions'
+import { validateInput, uuidSchema } from '@/lib/validators'
+import { z } from 'zod'
+
+// Manual usage input validation schema
+const manualUsageSchema = z.object({
+  subscription_id: uuidSchema,
+  usage_frequency: z.enum(['daily', 'weekly', 'monthly', 'rarely', 'never']),
+  last_used_date: z.string().optional().nullable(),
+  manual_usage_note: z.string().max(500).optional()
+})
 
 export type UsageFrequency = 'daily' | 'weekly' | 'monthly' | 'rarely' | 'never'
 
@@ -60,6 +70,13 @@ export async function saveManualUsage(input: ManualUsageInput) {
 
     if (authError || !user) {
       return { success: false, error: 'Not authenticated' }
+    }
+
+    // Validate input
+    const validation = validateInput(manualUsageSchema, input)
+    if (!validation.success) {
+      const firstError = Object.values(validation.errors)[0]
+      return { success: false, error: firstError }
     }
 
     // Get subscription details to find service_id
@@ -190,6 +207,12 @@ export async function deleteManualUsage(subscriptionId: string) {
 
     if (authError || !user) {
       return { success: false, error: 'Not authenticated' }
+    }
+
+    // Validate subscription ID
+    const idValidation = validateInput(uuidSchema, subscriptionId)
+    if (!idValidation.success) {
+      return { success: false, error: 'Invalid subscription ID' }
     }
 
     const { error } = await supabase

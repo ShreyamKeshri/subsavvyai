@@ -11,6 +11,7 @@ import { trackServerEvent } from '@/lib/analytics/server-events'
 import { convertToINR } from '@/lib/currency/exchange-rates'
 import { generateBundleRecommendations } from '@/lib/bundles/bundle-actions'
 import { generateRecommendations } from '@/lib/recommendations/recommendation-actions'
+import { validateInput, subscriptionSchema, uuidSchema } from '@/lib/validators'
 
 export type BillingCycle = 'monthly' | 'quarterly' | 'yearly' | 'custom'
 export type SubscriptionStatus = 'active' | 'cancellation_initiated' | 'cancelled' | 'paused' | 'expired'
@@ -106,30 +107,38 @@ export async function createSubscription(
       return { success: false, error: 'Not authenticated' }
     }
 
-    // Validate that either service_id or custom_service_name is provided
-    if (!input.service_id && !input.custom_service_name) {
-      return { success: false, error: 'Either service or custom service name is required' }
+    // Validate input using Zod schema
+    const validation = validateInput(subscriptionSchema, {
+      ...input,
+      currency: input.currency || 'INR'
+    })
+
+    if (!validation.success) {
+      const firstError = Object.values(validation.errors)[0]
+      return { success: false, error: firstError }
     }
 
+    const validatedInput = validation.data
+
     // Convert cost to INR
-    const selectedCurrency = input.currency || 'INR'
-    const costInINR = convertToINR(input.cost, selectedCurrency)
+    const selectedCurrency = validatedInput.currency
+    const costInINR = convertToINR(validatedInput.cost, selectedCurrency)
 
     const { data, error } = await supabase
       .from('subscriptions')
       .insert({
         user_id: user.id,
-        service_id: input.service_id || null,
-        custom_service_name: input.custom_service_name || null,
+        service_id: validatedInput.service_id || null,
+        custom_service_name: validatedInput.custom_service_name || null,
         cost: costInINR,  // Normalized cost in INR
         currency: 'INR',  // Always INR
-        original_cost: input.cost,  // Original amount entered by user
+        original_cost: validatedInput.cost,  // Original amount entered by user
         original_currency: selectedCurrency,  // Original currency selected by user
-        billing_cycle: input.billing_cycle,
-        billing_date: input.billing_date,
-        next_billing_date: input.next_billing_date,
-        payment_method_id: input.payment_method_id || null,
-        notes: input.notes || null,
+        billing_cycle: validatedInput.billing_cycle,
+        billing_date: validatedInput.billing_date.toISOString().split('T')[0],
+        next_billing_date: validatedInput.next_billing_date.toISOString().split('T')[0],
+        payment_method_id: validatedInput.payment_method_id || null,
+        notes: validatedInput.notes || null,
         status: 'active'
       })
       .select()
@@ -199,6 +208,21 @@ export async function updateSubscription(
       return { success: false, error: 'Not authenticated' }
     }
 
+    // Validate subscription ID
+    const idValidation = validateInput(uuidSchema, subscriptionId)
+    if (!idValidation.success) {
+      return { success: false, error: 'Invalid subscription ID' }
+    }
+
+    // Validate input - partial schema for updates
+    if (Object.keys(input).length > 0) {
+      const validation = validateInput(subscriptionSchema.partial(), input)
+      if (!validation.success) {
+        const firstError = Object.values(validation.errors)[0]
+        return { success: false, error: firstError }
+      }
+    }
+
     // If cost or currency is being updated, convert to INR
     const updateData: Record<string, unknown> = { ...input }
     if (input.cost !== undefined && input.currency !== undefined) {
@@ -263,6 +287,12 @@ export async function deleteSubscription(
 
     if (authError || !user) {
       return { success: false, error: 'Not authenticated' }
+    }
+
+    // Validate subscription ID
+    const idValidation = validateInput(uuidSchema, subscriptionId)
+    if (!idValidation.success) {
+      return { success: false, error: 'Invalid subscription ID' }
     }
 
     const { error } = await supabase
