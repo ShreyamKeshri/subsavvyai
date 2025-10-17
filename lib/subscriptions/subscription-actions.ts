@@ -12,6 +12,21 @@ import { convertToINR } from '@/lib/currency/exchange-rates'
 import { generateBundleRecommendations } from '@/lib/bundles/bundle-actions'
 import { generateRecommendations } from '@/lib/recommendations/recommendation-actions'
 import { validateInput, subscriptionSchema, uuidSchema } from '@/lib/validators'
+import { debounce } from '@/lib/utils/debounce'
+
+// Debounced recommendation generators (prevent race conditions)
+// These will only execute once if called multiple times within 2 seconds
+const debouncedBundleRecommendations = debounce(
+  'generate-bundle-recommendations',
+  generateBundleRecommendations,
+  2000
+)
+
+const debouncedAIRecommendations = debounce(
+  'generate-ai-recommendations',
+  generateRecommendations,
+  2000
+)
 
 export type BillingCycle = 'monthly' | 'quarterly' | 'yearly' | 'custom'
 export type SubscriptionStatus = 'active' | 'cancellation_initiated' | 'cancelled' | 'paused' | 'expired'
@@ -171,16 +186,12 @@ export async function createSubscription(
       isCustom: !data.service_id,
     })
 
-    // Auto-generate bundle recommendations (fire-and-forget)
-    // This runs in the background without blocking the response
-    generateBundleRecommendations().catch(error => {
-      console.error('Failed to auto-generate bundle recommendations:', error)
-    })
+    // Auto-generate bundle recommendations (debounced to prevent race conditions)
+    // Will only execute once if called multiple times within 2 seconds
+    debouncedBundleRecommendations()
 
-    // Auto-generate AI recommendations (fire-and-forget)
-    generateRecommendations().catch(error => {
-      console.error('Failed to auto-generate AI recommendations:', error)
-    })
+    // Auto-generate AI recommendations (debounced to prevent race conditions)
+    debouncedAIRecommendations()
 
     // Revalidate dashboard to show updated data
     revalidatePath('/dashboard')
@@ -254,15 +265,11 @@ export async function updateSubscription(
       return { success: false, error: error.message }
     }
 
-    // Auto-generate bundle recommendations (fire-and-forget)
-    generateBundleRecommendations().catch(error => {
-      console.error('Failed to auto-generate bundle recommendations:', error)
-    })
+    // Auto-generate bundle recommendations (debounced to prevent race conditions)
+    debouncedBundleRecommendations()
 
-    // Auto-generate AI recommendations (fire-and-forget)
-    generateRecommendations().catch(error => {
-      console.error('Failed to auto-generate AI recommendations:', error)
-    })
+    // Auto-generate AI recommendations (debounced to prevent race conditions)
+    debouncedAIRecommendations()
 
     // Revalidate dashboard
     revalidatePath('/dashboard')
@@ -311,15 +318,11 @@ export async function deleteSubscription(
       subscriptionId,
     })
 
-    // Auto-generate bundle recommendations (fire-and-forget)
-    generateBundleRecommendations().catch(error => {
-      console.error('Failed to auto-generate bundle recommendations:', error)
-    })
+    // Auto-generate bundle recommendations (debounced to prevent race conditions)
+    debouncedBundleRecommendations()
 
-    // Auto-generate AI recommendations (fire-and-forget)
-    generateRecommendations().catch(error => {
-      console.error('Failed to auto-generate AI recommendations:', error)
-    })
+    // Auto-generate AI recommendations (debounced to prevent race conditions)
+    debouncedAIRecommendations()
 
     // Revalidate dashboard
     revalidatePath('/dashboard')

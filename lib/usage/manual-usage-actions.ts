@@ -10,6 +10,7 @@ import { revalidatePath } from 'next/cache'
 import { generateRecommendations } from '@/lib/recommendations/recommendation-actions'
 import { validateInput, uuidSchema } from '@/lib/validators'
 import { z } from 'zod'
+import { debounce } from '@/lib/utils/debounce'
 
 // Manual usage input validation schema
 const manualUsageSchema = z.object({
@@ -18,6 +19,13 @@ const manualUsageSchema = z.object({
   last_used_date: z.string().optional().nullable(),
   manual_usage_note: z.string().max(500).optional()
 })
+
+// Debounced AI recommendation generator (prevent race conditions)
+const debouncedAIRecommendations = debounce(
+  'generate-ai-recommendations',
+  generateRecommendations,
+  2000
+)
 
 export type UsageFrequency = 'daily' | 'weekly' | 'monthly' | 'rarely' | 'never'
 
@@ -143,11 +151,9 @@ export async function saveManualUsage(input: ManualUsageInput) {
       }
     }
 
-    // Auto-generate AI recommendations (fire-and-forget)
+    // Auto-generate AI recommendations (debounced to prevent race conditions)
     // New usage data means we should check for optimization opportunities
-    generateRecommendations().catch(error => {
-      console.error('Failed to auto-generate AI recommendations:', error)
-    })
+    debouncedAIRecommendations()
 
     revalidatePath('/dashboard')
     return { success: true }
