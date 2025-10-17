@@ -1,6 +1,106 @@
 # Known Bugs & Issues
 
-**Last Updated:** October 13, 2025
+**Last Updated:** October 17, 2025
+
+## ✅ Critical Security Fixes (Day 5 - Oct 17, 2025)
+
+### 1. ✅ FIXED: useAuth Infinite Re-render Bug
+**Fixed in:** PR #25, Commit `4eaa0b5`
+**File:** `hooks/useAuth.ts`
+
+**Problem:**
+- Supabase client created outside useEffect on every render
+- Dependencies `[router, supabase]` caused infinite re-render loop
+- Led to memory leaks and browser freezing
+- Critical performance impact on all authenticated pages
+
+**Solution Applied:**
+- Moved Supabase client creation inside useEffect
+- Changed dependency array from `[router, supabase]` to `[]` (run once on mount)
+- Properly unsubscribe from auth state changes on unmount
+
+---
+
+### 2. ✅ FIXED: Missing Input Validation (CRITICAL)
+**Fixed in:** PR #25, Commit `ed97fc5`
+**Files:** `lib/subscriptions/subscription-actions.ts`, `lib/usage/manual-usage-actions.ts`, `lib/recommendations/recommendation-actions.ts`
+
+**Problem:**
+- All user inputs passed directly to database without validation
+- Risk of SQL injection, XSS, and data corruption
+- Zod schemas existed but were never used
+
+**Solution Applied:**
+- Applied Zod validation to all subscription CRUD operations
+- Added manual usage validation schema
+- Added UUID validation to all ID parameters
+- Returns user-friendly error messages on validation failures
+
+---
+
+### 3. ✅ FIXED: Missing CSRF State Verification (CRITICAL)
+**Fixed in:** PR #25, Commit `a2f2277`
+**Files:** `app/api/oauth/spotify/connect/route.ts`, `app/api/oauth/spotify/callback/route.ts`
+
+**Problem:**
+- Spotify OAuth generated state token but never verified it
+- Exposed to CSRF attacks where attackers could link their Spotify to victim's account
+
+**Solution Applied:**
+- Generate 32-byte random state token in connect route
+- Store state and user ID in httpOnly cookies (10-minute expiry)
+- Verify state matches in callback route (constant-time comparison)
+- Verify user ID matches to prevent session hijacking
+- Clear OAuth cookies after successful verification
+
+---
+
+### 4. ✅ FIXED: Missing Rate Limiting (CRITICAL)
+**Fixed in:** PR #25, Commit `35fb17e`
+**Files:** All API routes
+
+**Problem:**
+- Rate limit utilities existed but were never used
+- All API routes vulnerable to abuse and brute force attacks
+- OAuth routes had no throttling
+
+**Solution Applied:**
+- OAuth routes: 10 attempts per 15 minutes per IP
+- Usage sync API: 30 requests per minute per IP
+- Recommendations API: 30 requests per minute per IP
+- Returns 429 status with resetAt timestamp
+
+---
+
+### 5. ✅ FIXED: Race Conditions in Auto-Generation (HIGH)
+**Fixed in:** PR #25, Commit `4c8ebd6`
+**Files:** `lib/utils/debounce.ts` (NEW), `lib/subscriptions/subscription-actions.ts`, `lib/usage/manual-usage-actions.ts`
+
+**Problem:**
+- Multiple concurrent calls to generateRecommendations() and generateBundleRecommendations()
+- When user adds/updates/deletes multiple subscriptions rapidly, race conditions occurred
+- Multiple concurrent database writes could corrupt recommendations
+
+**Solution Applied:**
+- Created debounce utility with per-key timer management
+- Debounced AI and bundle recommendation generation (2-second delay)
+- Applied to subscription and usage operations
+- Shared debounce keys across files for global deduplication
+
+---
+
+### 📄 Security Audit Documentation
+**Created in:** PR #25, Commit `cfc3b06`
+**File:** `SECURITY_AUDIT.md` (NEW)
+
+**Summary:**
+- Comprehensive audit identified 23 security issues
+- All 5 critical issues fixed
+- Documented 8 remaining issues (2 high, 4 medium, 2 low)
+- Provided actionable recommendations for production readiness
+- Security posture improved from 🟡 Moderate to 🟢 Good
+
+---
 
 ## ✅ Recently Fixed (Day 2 - Oct 12, 2025)
 
