@@ -51,7 +51,7 @@ export default function ForgotPasswordPage() {
     <div className="w-full max-w-md mx-auto">
       {/* Logo/Icon */}
       <div className="flex justify-center mb-8">
-        <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+        <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
           <MailIcon className="w-8 h-8 text-white" />
         </div>
       </div>
@@ -89,7 +89,7 @@ export default function ForgotPasswordPage() {
                     placeholder="you@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="h-12 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-indigo-500"
+                    className="h-12 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-blue-500"
                     autoFocus
                   />
                 </div>
@@ -97,7 +97,7 @@ export default function ForgotPasswordPage() {
                 <Button
                   onClick={handleResetPassword}
                   disabled={loading || !email}
-                  className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-200 transition-all"
+                  className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium shadow-lg shadow-blue-200 transition-all"
                 >
                   {loading ? (
                     <>
@@ -114,7 +114,7 @@ export default function ForgotPasswordPage() {
               <div className="mt-6 text-center">
                 <Link
                   href="/login"
-                  className="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
                 >
                   ← Back to login
                 </Link>
@@ -142,8 +142,8 @@ export default function ForgotPasswordPage() {
                   </p>
                 </div>
 
-                <div className="bg-indigo-50 border border-indigo-200 px-4 py-3 rounded-xl">
-                  <p className="text-sm text-indigo-700">
+                <div className="bg-blue-50 border border-blue-200 px-4 py-3 rounded-xl">
+                  <p className="text-sm text-blue-700">
                     Didn&apos;t receive the email? Check your spam folder or{' '}
                     <button
                       onClick={() => setSuccess(false)}
@@ -156,7 +156,7 @@ export default function ForgotPasswordPage() {
 
                 <Link
                   href="/login"
-                  className="inline-block text-sm text-indigo-600 hover:text-indigo-700 font-medium"
+                  className="inline-block text-sm text-blue-600 hover:text-blue-700 font-medium"
                 >
                   ← Back to login
                 </Link>
