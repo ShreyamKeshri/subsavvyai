@@ -45,7 +45,7 @@ function VerifyEmailContent() {
       <div className="w-full max-w-md">
         {/* Logo/Icon */}
         <div className="flex justify-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
             <Mail className="w-8 h-8 text-white" />
           </div>
         </div>
@@ -68,7 +68,7 @@ function VerifyEmailContent() {
               <p className="text-gray-500 text-sm">
                 We sent a verification link to
               </p>
-              <p className="text-indigo-600 font-medium mt-1">
+              <p className="text-blue-600 font-medium mt-1">
                 {email}
               </p>
             </div>
@@ -104,7 +104,7 @@ function VerifyEmailContent() {
                   <button
                     onClick={handleResendEmail}
                     disabled={resending}
-                    className="text-indigo-600 hover:text-indigo-700 font-medium disabled:opacity-50"
+                    className="text-blue-600 hover:text-blue-700 font-medium disabled:opacity-50"
                   >
                     {resending ? (
                       <span className="inline-flex items-center gap-1">
@@ -146,7 +146,7 @@ export default function VerifyEmailPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     }>
       <VerifyEmailContent />

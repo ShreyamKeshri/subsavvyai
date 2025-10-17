@@ -132,7 +132,7 @@ export default function LoginPage() {
     <div className="w-full max-w-md mx-auto">
       {/* Logo/Icon */}
       <div className="flex justify-center mb-8">
-        <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+        <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
           <MailIcon className="w-8 h-8 text-white" />
         </div>
       </div>
@@ -171,7 +171,7 @@ export default function LoginPage() {
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full h-12 px-4 border border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all text-gray-900"
+                className="w-full h-12 px-4 border border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all text-gray-900"
               />
             </div>
 
@@ -182,7 +182,7 @@ export default function LoginPage() {
                 </Label>
                 <Link
                   href="/forgot-password"
-                  className="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
                 >
                   Forgot Password?
                 </Link>
@@ -193,14 +193,14 @@ export default function LoginPage() {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full h-12 px-4 border border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all text-gray-900"
+                className="w-full h-12 px-4 border border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all text-gray-900"
               />
             </div>
 
             <button
               onClick={handleEmailLogin}
               disabled={loading || !email || !password}
-              className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium shadow-lg shadow-blue-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -236,7 +236,7 @@ export default function LoginPage() {
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, '').slice(0, 10))}
                   disabled={otpSent}
-                  className="flex-1 h-12 px-4 border border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed text-gray-900"
+                  className="flex-1 h-12 px-4 border border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed text-gray-900"
                 />
               </div>
               {otpSent && (
@@ -246,7 +246,7 @@ export default function LoginPage() {
                     setOtpSent(false)
                     setOtp('')
                   }}
-                  className="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
                 >
                   Change number
                 </button>
@@ -266,7 +266,7 @@ export default function LoginPage() {
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                   maxLength={6}
-                  className="h-12 px-4 border border-gray-200 rounded-xl text-center text-2xl tracking-widest font-semibold focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all text-gray-900"
+                  className="h-12 px-4 border border-gray-200 rounded-xl text-center text-2xl tracking-widest font-semibold focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all text-gray-900"
                 />
                 <p className="text-xs text-gray-500 text-center">
                   OTP sent to +91 {phoneNumber}
@@ -278,7 +278,7 @@ export default function LoginPage() {
             <button
               onClick={handlePhoneLogin}
               disabled={loading || (!otpSent && phoneNumber.length !== 10) || (otpSent && otp.length !== 6)}
-              className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium shadow-lg shadow-blue-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -395,7 +395,7 @@ export default function LoginPage() {
       {/* Sign Up Link */}
       <p className="text-center text-sm text-gray-500 mt-6">
         Don&apos;t have an account?{' '}
-        <Link href="/signup" className="text-indigo-600 hover:text-indigo-700 font-medium">
+        <Link href="/signup" className="text-blue-600 hover:text-blue-700 font-medium">
           Sign up
         </Link>
       </p>

@@ -86,7 +86,7 @@ function ResetPasswordContent() {
     <div className="w-full max-w-md mx-auto">
       {/* Logo/Icon */}
       <div className="flex justify-center mb-8">
-        <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+        <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
           <MailIcon className="w-8 h-8 text-white" />
         </div>
       </div>
@@ -115,14 +115,14 @@ function ResetPasswordContent() {
                 </div>
 
                 <Link href="/forgot-password">
-                  <Button className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-200 transition-all">
+                  <Button className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium shadow-lg shadow-blue-200 transition-all">
                     Request a new link
                   </Button>
                 </Link>
 
                 <Link
                   href="/login"
-                  className="inline-block text-sm text-indigo-600 hover:text-indigo-700 font-medium"
+                  className="inline-block text-sm text-blue-600 hover:text-blue-700 font-medium"
                 >
                   ← Back to login
                 </Link>
@@ -179,7 +179,7 @@ function ResetPasswordContent() {
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="h-12 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-indigo-500"
+                    className="h-12 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-blue-500"
                     autoFocus
                   />
                   <p className="text-xs text-gray-500">
@@ -197,14 +197,14 @@ function ResetPasswordContent() {
                     placeholder="••••••••"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="h-12 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-indigo-500"
+                    className="h-12 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-blue-500"
                   />
                 </div>
 
                 <Button
                   onClick={handleResetPassword}
                   disabled={loading || !password || !confirmPassword}
-                  className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-200 transition-all"
+                  className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium shadow-lg shadow-blue-200 transition-all"
                 >
                   {loading ? (
                     <>
@@ -221,7 +221,7 @@ function ResetPasswordContent() {
               <div className="mt-6 text-center">
                 <Link
                   href="/login"
-                  className="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
                 >
                   ← Back to login
                 </Link>
@@ -238,13 +238,13 @@ export default function ResetPasswordPage() {
     <Suspense fallback={
       <div className="w-full max-w-md mx-auto">
         <div className="flex justify-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
             <MailIcon className="w-8 h-8 text-white" />
           </div>
         </div>
         <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
           <div className="text-center space-y-6 py-4">
-            <Loader2 className="w-8 h-8 animate-spin mx-auto text-indigo-600" />
+            <Loader2 className="w-8 h-8 animate-spin mx-auto text-blue-600" />
             <p className="text-gray-500">Loading...</p>
           </div>
         </div>
