@@ -136,10 +136,20 @@
   max-height: 600px !important;
 }
 
-/* Hide intrusive greeting overlay */
+/* Hide intrusive greeting overlay - aggressive selectors */
 div[class*="sleek"][class*="greeting"],
 div[class*="sleek"][class*="hello"],
-.sleek-greeting-overlay {
+div[class*="greeting"],
+[id*="sleek-greeting"],
+.sleek-greeting-overlay,
+.sleek-greeting,
+#sleek-widget-container > div:first-child {
+  display: none !important;
+}
+
+/* Hide any fullscreen overlays from Sleekplan */
+div[style*="position: fixed"][style*="z-index"] div[class*="greeting"],
+div[style*="position: fixed"][style*="top: 0"][style*="left: 0"] {
   display: none !important;
 }
 

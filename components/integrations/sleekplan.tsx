@@ -57,6 +57,9 @@ export function Sleekplan({ projectId, user }: SleekplanProps) {
       // Set product ID
       window.SLEEK_PRODUCT_ID = parseInt(sleekplanId, 10)
 
+      // Disable greeting overlay
+      window.$sleek.push(['greeting', false])
+
       // Set user info if available
       if (user) {
         window.$sleek.push(['identify', {
