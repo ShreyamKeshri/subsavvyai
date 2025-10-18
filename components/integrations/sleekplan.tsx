@@ -52,7 +52,7 @@ export function Sleekplan({ projectId, user }: SleekplanProps) {
       // Load Sleekplan script
       const script = document.createElement('script')
       script.async = true
-      script.src = 'https://cdn.sleekplan.com/sdk/e.js'
+      script.src = 'https://client.sleekplan.com/sdk/e.js'
 
       script.onload = () => {
         if (!window.Sleekplan) {
