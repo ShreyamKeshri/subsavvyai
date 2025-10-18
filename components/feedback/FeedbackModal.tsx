@@ -58,20 +58,11 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
     }
   }, [isOpen])
 
-  // Build Sleekplan URL with user identification parameters
-  const sleekplanUrl = (() => {
-    const baseUrl = `https://embed-${SLEEKPLAN_PROJECT_ID}.sleekplan.app/`
-
-    // Add user identification via hash parameters (privacy-friendly, not sent to server)
-    if (userEmail || userName) {
-      const params = new URLSearchParams()
-      if (userEmail) params.set('email', userEmail)
-      if (userName) params.set('name', userName)
-      return `${baseUrl}#/?${params.toString()}`
-    }
-
-    return baseUrl
-  })()
+  // Build Sleekplan URL
+  // Note: Auto-identification requires Sleekplan SSO (Single Sign-On) with signed JWT tokens
+  // For MVP, users can submit feedback anonymously or sign in manually
+  // Future enhancement: Implement SSO per https://sleekplan.com/docs/single-sign-on/
+  const sleekplanUrl = `https://embed-${SLEEKPLAN_PROJECT_ID}.sleekplan.app/`
 
   const handleIframeLoad = () => {
     setIsLoading(false)
