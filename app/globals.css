@@ -118,22 +118,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-/* Sleekplan Widget - Force inline display in modal */
-/* Hide default floating widget when modal is open */
-[data-sleekplan-modal-open="true"] #sleek-widget-trigger,
-[data-sleekplan-modal-open="true"] #sleek-widget-container {
-  display: none !important;
-}
-
-/* Style Sleekplan widget inside modal container */
-#sleekplan-modal-container #sleek-widget-container,
-#sleekplan-modal-container [id*="sleek"][id*="container"] {
-  position: static !important;
-  max-width: 100% !important;
-  max-height: 100% !important;
-  width: 100% !important;
-  height: 100% !important;
-  border: none !important;
-  box-shadow: none !important;
-}
