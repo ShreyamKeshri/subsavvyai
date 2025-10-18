@@ -43,35 +43,37 @@ export function Sleekplan({ projectId, user }: SleekplanProps) {
       return
     }
 
-    // Initialize Sleekplan widget
+    // Prevent multiple initializations
+    if (window.$sleek || document.querySelector('script[src*="sleekplan"]')) {
+      console.log('Sleekplan already loaded, skipping initialization')
+      return
+    }
+
+    // Initialize Sleekplan widget (official method)
     const initSleekplan = () => {
-      if (window.Sleekplan) {
-        return // Already initialized
+      // Initialize $sleek array
+      window.$sleek = []
+
+      // Set product ID
+      window.SLEEK_PRODUCT_ID = parseInt(sleekplanId, 10)
+
+      // Set user info if available
+      if (user) {
+        window.$sleek.push(['identify', {
+          id: user.id,
+          name: user.name || 'User',
+          email: user.email,
+        }])
       }
 
       // Load Sleekplan script
       const script = document.createElement('script')
       script.async = true
       script.src = 'https://client.sleekplan.com/sdk/e.js'
+      script.setAttribute('data-sleekplan-loaded', 'true')
 
       script.onload = () => {
-        if (!window.Sleekplan) {
-          console.error('Sleekplan failed to load')
-          return
-        }
-
-        // Initialize with project ID
-        window.Sleekplan.initialize({
-          productId: sleekplanId,
-          // Pass user data if available (for better tracking)
-          user: user
-            ? {
-                id: user.id,
-                name: user.name || 'User',
-                email: user.email,
-              }
-            : undefined,
-        })
+        console.log('✅ Sleekplan widget loaded successfully')
 
         // Track widget loaded
         if (posthog) {
@@ -82,6 +84,10 @@ export function Sleekplan({ projectId, user }: SleekplanProps) {
         }
       }
 
+      script.onerror = () => {
+        console.error('❌ Failed to load Sleekplan script')
+      }
+
       document.head.appendChild(script)
     }
 
@@ -89,8 +95,7 @@ export function Sleekplan({ projectId, user }: SleekplanProps) {
 
     // Cleanup
     return () => {
-      // Sleekplan doesn't provide cleanup method
-      // Widget will persist across page navigation (SPA behavior)
+      // Note: Sleekplan widget persists across navigation (intentional for SPA)
     }
   }, [projectId, user, posthog])
 
@@ -101,17 +106,7 @@ export function Sleekplan({ projectId, user }: SleekplanProps) {
 // TypeScript declaration for Sleekplan global
 declare global {
   interface Window {
-    Sleekplan?: {
-      initialize: (config: {
-        productId: string
-        user?: {
-          id: string
-          name: string
-          email?: string
-        }
-      }) => void
-      open?: () => void
-      close?: () => void
-    }
+    $sleek?: Array<[string, unknown]>
+    SLEEK_PRODUCT_ID?: number
   }
 }
