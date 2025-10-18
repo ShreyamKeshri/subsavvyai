@@ -43,17 +43,14 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl h-[90vh] p-0 gap-0">
-        <DialogHeader className="p-6 pb-4 border-b">
-          <DialogTitle className="text-2xl font-semibold">
-            We&apos;d Love Your Feedback
+      <DialogContent className="max-w-5xl h-[90vh] p-0 gap-0 flex flex-col">
+        <DialogHeader className="px-6 py-4 border-b flex-shrink-0">
+          <DialogTitle className="text-xl font-semibold">
+            Feedback & Suggestions
           </DialogTitle>
-          <p className="text-sm text-muted-foreground mt-2">
-            Help us make SubSavvyAI better by sharing your ideas, reporting bugs, or suggesting new features.
-          </p>
         </DialogHeader>
 
-        <div className="flex-1 relative">
+        <div className="flex-1 relative min-h-0">
           {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center bg-background z-10">
               <div className="flex flex-col items-center gap-3">
@@ -65,7 +62,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
 
           <iframe
             src={sleekplanUrl}
-            className="w-full h-full border-0"
+            className="w-full h-full border-0 block"
             title="Sleekplan Feedback Board"
             onLoad={handleIframeLoad}
             allow="clipboard-write"
