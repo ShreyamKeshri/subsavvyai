@@ -38,12 +38,12 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://checkout.razorpay.com https://*.posthog.com https://*.ingest.sentry.io https://client.sleekplan.com https://api-client.sleekplan.com",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://checkout.razorpay.com https://*.posthog.com https://*.ingest.sentry.io",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: https: blob:",
               "font-src 'self' data:",
               "connect-src 'self' https://*.supabase.co https://*.razorpay.com https://fcm.googleapis.com wss://*.supabase.co https://*.posthog.com https://*.ingest.sentry.io https://*.sleekplan.com",
-              "frame-src 'self' https://api.razorpay.com https://sleekplan.com",
+              "frame-src 'self' https://api.razorpay.com https://sleekplan.com https://*.sleekplan.com",
               "frame-ancestors 'none'",
               "base-uri 'self'",
               "form-action 'self'"

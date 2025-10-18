@@ -156,7 +156,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
               className="w-full h-full border-0"
               title="Sleekplan Feedback Widget"
               allow="clipboard-write"
-              sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+              sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation allow-popups-to-escape-sandbox"
             />
           )}
         </div>
