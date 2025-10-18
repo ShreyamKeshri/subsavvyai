@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { MessageSquare } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { FeedbackModal } from './FeedbackModal'
+import { CannyFeedback } from './CannyFeedback'
 import { usePostHog } from 'posthog-js/react'
 import {
   Tooltip,
@@ -98,7 +98,7 @@ export function FeedbackButton() {
         </Tooltip>
       </TooltipProvider>
 
-      <FeedbackModal
+      <CannyFeedback
         isOpen={isModalOpen}
         onClose={handleCloseModal}
       />

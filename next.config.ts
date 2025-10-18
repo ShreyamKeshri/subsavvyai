@@ -38,12 +38,12 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://checkout.razorpay.com https://*.posthog.com https://*.ingest.sentry.io",
-              "style-src 'self' 'unsafe-inline'",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://checkout.razorpay.com https://*.posthog.com https://*.ingest.sentry.io https://canny.io",
+              "style-src 'self' 'unsafe-inline' https://canny.io",
               "img-src 'self' data: https: blob:",
               "font-src 'self' data:",
-              "connect-src 'self' https://*.supabase.co https://*.razorpay.com https://fcm.googleapis.com wss://*.supabase.co https://*.posthog.com https://*.ingest.sentry.io https://*.sleekplan.app",
-              "frame-src 'self' https://api.razorpay.com https://*.sleekplan.app",
+              "connect-src 'self' https://*.supabase.co https://*.razorpay.com https://fcm.googleapis.com wss://*.supabase.co https://*.posthog.com https://*.ingest.sentry.io https://canny.io https://*.canny.io",
+              "frame-src 'self' https://api.razorpay.com https://canny.io https://*.canny.io",
               "frame-ancestors 'none'",
               "base-uri 'self'",
               "form-action 'self'"
