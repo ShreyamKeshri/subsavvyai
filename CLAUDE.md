@@ -169,23 +169,29 @@ unsubscribr/
 │   ├── config/                   # Theme & branding
 │   │   ├── theme.ts              # Centralized theme config
 │   │   └── branding.ts           # SubSavvyAI branding
+│   ├── crypto/                   # Security & encryption (NEW - Day 5)
+│   │   └── encryption.ts         # AES-256-GCM encryption utilities
+│   ├── currency/                 # Currency conversion
+│   │   └── exchange-rates.ts     # Multi-currency support (8 currencies)
 │   ├── oauth/                    # OAuth integrations
-│   │   └── spotify.ts            # Spotify OAuth & usage fetch
+│   │   └── spotify.ts            # Spotify OAuth & usage fetch (with encryption)
 │   ├── recommendations/          # AI recommendation engine
 │   │   ├── recommendation-engine.ts  # Core AI logic
-│   │   └── recommendation-actions.ts # Server actions
+│   │   └── recommendation-actions.ts # Server actions (with validation & debouncing)
 │   ├── settings/                 # Settings management
 │   │   └── settings-actions.ts   # Server actions for user settings
 │   ├── subscriptions/            # Subscription CRUD
-│   │   └── subscription-actions.ts  # Server actions
+│   │   └── subscription-actions.ts  # Server actions (with validation)
 │   ├── supabase/                 # Supabase clients
-│   │   ├── client.ts             # Browser client
+│   │   ├── client.ts             # Browser client (cached, memory leak fixed)
 │   │   ├── server.ts             # Server client
 │   │   └── middleware.ts         # Middleware client
 │   ├── usage/                    # Usage tracking
 │   │   ├── usage-actions.ts      # OAuth-based usage tracking
-│   │   └── manual-usage-actions.ts  # Manual usage tracking
-│   └── validators.ts             # Zod schemas
+│   │   └── manual-usage-actions.ts  # Manual usage tracking (with validation)
+│   ├── utils/                    # Utility functions (NEW - Day 5)
+│   │   └── debounce.ts           # Debounced updates with race condition prevention
+│   └── validators.ts             # Zod validation schemas (NEW - Day 5)
 ├── components/                   # React components
 │   ├── ui/                       # shadcn/ui components
 │   │   └── theme-toggle.tsx      # Dark/light theme toggle
@@ -208,9 +214,29 @@ unsubscribr/
 
 ## Current Status
 
-**Phase:** MVP Launch Sprint - Day 4 Complete! ✅
+**Phase:** MVP Launch Sprint - Day 5 Complete! ✅
+**Security Status:** 🟢 Production-Ready (All critical vulnerabilities fixed)
 
-**Recent Completions (Day 4 - Oct 17, 2025):**
+**Recent Completions (Day 5 - Oct 17, 2025):**
+
+**Critical Security Fixes (PR #25):**
+- ✅ Fixed useAuth infinite re-render (memory leak prevention)
+- ✅ Added comprehensive input validation (Zod schemas for all server actions)
+- ✅ Implemented CSRF protection (Spotify OAuth with state tokens)
+- ✅ Added rate limiting (IP-based API abuse prevention)
+- ✅ Implemented debounced updates (race condition prevention)
+- ✅ OAuth token encryption (AES-256-GCM with graceful fallback)
+- ✅ Fixed Supabase client memory leak (client instance caching)
+- ✅ Created SECURITY_AUDIT.md (comprehensive security documentation)
+
+**New Security Infrastructure:**
+- `lib/crypto/encryption.ts` - AES-256-GCM encryption utilities
+- `lib/utils/debounce.ts` - Debounced function utilities with race condition prevention
+- `lib/validators.ts` - Zod validation schemas for all server actions
+- All 7 critical/high-priority security issues resolved (5 critical + 2 high)
+- Security posture: 🟡 Moderate → 🟢 Production-Ready
+
+**Previous Completions (Day 4 - Oct 17, 2025):**
 
 **Currency Conversion System:**
 - ✅ Automatic conversion to INR for all subscriptions
@@ -354,6 +380,146 @@ await supabase.from('subscriptions').insert({
 )}
 ```
 
+### Input Validation Pattern (NEW - Day 5)
+```typescript
+'use server'
+
+import { validateInput, subscriptionSchema, uuidSchema } from '@/lib/validators'
+
+export async function createSubscription(input: unknown) {
+  // Validate input with Zod schema
+  const validation = validateInput(subscriptionSchema, input)
+
+  if (!validation.success) {
+    return { success: false, error: validation.error }
+  }
+
+  const validData = validation.data
+
+  // Use validated data safely
+  await supabase.from('subscriptions').insert({
+    service_id: validData.service_id,  // Validated UUID
+    cost: validData.cost,               // Validated positive number
+    billing_cycle: validData.billing_cycle,  // Validated enum
+    // ... rest of validated fields
+  })
+}
+
+// Available validators in lib/validators.ts:
+// - uuidSchema
+// - subscriptionSchema
+// - usageSchema
+// - recommendationIdSchema
+// - bundleRecommendationSchema
+// - manualUsageSchema
+```
+
+### OAuth Token Encryption Pattern (NEW - Day 5)
+```typescript
+import { encrypt, decrypt, isEncryptionConfigured } from '@/lib/crypto/encryption'
+
+// Encrypt sensitive data before storing
+async function storeOAuthTokens(accessToken: string, refreshToken: string) {
+  let encryptedAccess = accessToken
+  let encryptedRefresh = refreshToken
+
+  if (isEncryptionConfigured()) {
+    encryptedAccess = encrypt(accessToken)
+    encryptedRefresh = encrypt(refreshToken)
+  } else {
+    console.warn('⚠️ ENCRYPTION_KEY not configured - storing in plaintext (INSECURE)')
+  }
+
+  await supabase.from('oauth_tokens').insert({
+    access_token: encryptedAccess,
+    refresh_token: encryptedRefresh
+  })
+}
+
+// Decrypt when retrieving
+async function getAccessToken() {
+  const { data } = await supabase.from('oauth_tokens').select('*').single()
+
+  if (isEncryptionConfigured()) {
+    return decrypt(data.access_token)
+  }
+
+  return data.access_token  // Return as-is if not encrypted
+}
+
+// Features:
+// - AES-256-GCM authenticated encryption
+// - Graceful fallback if ENCRYPTION_KEY not set
+// - Backward compatible with existing plaintext tokens
+// - Console warnings for insecure storage
+```
+
+### Debounced Updates Pattern (NEW - Day 5)
+```typescript
+import { debounce } from '@/lib/utils/debounce'
+
+// Prevent race conditions in concurrent updates
+export async function generateRecommendations() {
+  const userId = await getCurrentUserId()
+
+  // Create debounced version with unique key
+  const debouncedGenerate = debounce(
+    `generate-recommendations-${userId}`,  // Unique key per user
+    async () => {
+      // Actual recommendation generation logic
+      const recommendations = await generateAllRecommendations(...)
+      await storeRecommendations(recommendations)
+    },
+    500  // 500ms delay
+  )
+
+  // Call debounced function (fire-and-forget)
+  debouncedGenerate()
+
+  return { success: true }
+}
+
+// Features:
+// - Prevents duplicate/conflicting database writes
+// - Fire-and-forget pattern (doesn't block user actions)
+// - Unique keys prevent collisions across different operations
+// - Cancellable with debouncedFn.cancel()
+```
+
+### Client Caching Pattern (NEW - Day 5)
+```typescript
+// lib/supabase/client.ts
+import { createBrowserClient } from '@supabase/ssr'
+import type { SupabaseClient } from '@supabase/supabase-js'
+
+let cachedClient: SupabaseClient | null = null
+
+export function createClient() {
+  // Return cached client if exists (prevents memory leak)
+  if (cachedClient) {
+    return cachedClient
+  }
+
+  // Create new client and cache it
+  cachedClient = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+
+  return cachedClient
+}
+
+// Reset cache (for testing or auth state changes)
+export function resetClient() {
+  cachedClient = null
+}
+
+// Benefits:
+// - Before: 100 calls = 100 WebSocket connections (memory leak)
+// - After: 100 calls = 1 WebSocket connection (stable)
+// - Prevents browser freezing in long-running sessions
+```
+
 ## Environment Variables
 
 Required in `.env.local`:
@@ -367,6 +533,12 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 SPOTIFY_CLIENT_ID=your_client_id
 SPOTIFY_CLIENT_SECRET=your_client_secret
 SPOTIFY_REDIRECT_URI=http://127.0.0.1:3000/api/oauth/spotify/callback
+
+# Security - Encryption (NEW - Day 5)
+# Generate with: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+# Must be exactly 64 hex characters (32 bytes)
+# Optional but HIGHLY RECOMMENDED for production
+ENCRYPTION_KEY=your_64_character_hex_encryption_key_here
 
 # Analytics (Optional - graceful fallback if not set)
 NEXT_PUBLIC_POSTHOG_KEY=your_posthog_key
@@ -439,6 +611,11 @@ NEXT_PUBLIC_APP_URL=http://127.0.0.1:3000
 13. **Analytics:** PostHog & Sentry are optional (graceful fallback)
 14. **Currency Conversion:** All costs stored in INR, original currency preserved for transparency
 15. **Delete Confirmation:** Use toast with action buttons, not native confirm() dialogs
+16. **Input Validation (NEW - Day 5):** Always validate server action inputs with Zod schemas from `lib/validators.ts`
+17. **Token Encryption (NEW - Day 5):** OAuth tokens automatically encrypted if ENCRYPTION_KEY is set
+18. **Client Caching (NEW - Day 5):** Never create new Supabase client in hooks/components (use cached `createClient()`)
+19. **Debouncing (NEW - Day 5):** Use `debounce()` for fire-and-forget updates to prevent race conditions
+20. **Security Status:** 🟢 Production-Ready (all critical/high-priority vulnerabilities fixed)
 
 ## Next Steps
 
