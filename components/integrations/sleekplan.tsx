@@ -57,8 +57,10 @@ export function Sleekplan({ projectId, user }: SleekplanProps) {
       // Set product ID
       window.SLEEK_PRODUCT_ID = parseInt(sleekplanId, 10)
 
-      // Disable greeting overlay
-      window.$sleek.push(['greeting', false])
+      // CRITICAL: Disable all greeting/hello messages
+      window.$sleek.push(['widget', 'trigger-only']) // Show only button, no auto-open
+      window.$sleek.push(['greeting', 'hide']) // Hide greeting completely
+      window.$sleek.push(['hello', false]) // Disable hello message
 
       // Set user info if available
       if (user) {

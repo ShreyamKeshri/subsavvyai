@@ -119,44 +119,56 @@
   }
 }
 
-/* Sleekplan Widget - Fix positioning and appearance */
-#sleek-widget-trigger {
+/* Sleekplan Widget - CRITICAL: Force proper positioning */
+/* Hide ALL greeting/hello overlays that block content */
+div[class*="sleek"]:has(> div:contains("Hi there")),
+div[class*="sleek"]:has(> h1),
+div[class*="sleek"]:has(> button:contains("Create a Post")),
+[class*="greeting"],
+[class*="hello"],
+div[style*="position"][style*="fixed"]:has(h1:contains("Hi there")) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Force widget trigger to bottom-right corner ONLY */
+#sleek-widget-trigger,
+[id*="sleek"][id*="trigger"],
+[class*="sleek"][class*="trigger"] {
   position: fixed !important;
   bottom: 24px !important;
   right: 24px !important;
+  left: auto !important;
+  top: auto !important;
   z-index: 9999 !important;
 }
 
-#sleek-widget-container {
+/* When widget opens, show in bottom-right */
+#sleek-widget-container,
+[id*="sleek"][id*="container"] {
   position: fixed !important;
   bottom: 90px !important;
   right: 24px !important;
+  left: auto !important;
+  top: auto !important;
   z-index: 9998 !important;
   max-width: 400px !important;
   max-height: 600px !important;
 }
 
-/* Hide intrusive greeting overlay - aggressive selectors */
-div[class*="sleek"][class*="greeting"],
-div[class*="sleek"][class*="hello"],
-div[class*="greeting"],
-[id*="sleek-greeting"],
-.sleek-greeting-overlay,
-.sleek-greeting,
-#sleek-widget-container > div:first-child {
-  display: none !important;
-}
-
-/* Hide any fullscreen overlays from Sleekplan */
-div[style*="position: fixed"][style*="z-index"] div[class*="greeting"],
-div[style*="position: fixed"][style*="top: 0"][style*="left: 0"] {
-  display: none !important;
-}
-
-/* Style the feedback button nicely */
-#sleek-widget-trigger button {
+/* Style the feedback button */
+#sleek-widget-trigger button,
+[id*="sleek-trigger"] button {
   border-radius: 50% !important;
   width: 56px !important;
   height: 56px !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Nuclear option: Hide EVERYTHING on the left side from Sleekplan */
+body > div[style*="left: 0"],
+body > div[style*="left:0"] {
+  display: none !important;
 }
