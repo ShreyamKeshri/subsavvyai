@@ -22,7 +22,6 @@ import { AddSubscriptionDialog } from '@/components/subscriptions/add-subscripti
 import { EditSubscriptionDialog } from '@/components/subscriptions/edit-subscription-dialog'
 import { BundleRecommendationsList } from '@/components/bundles/bundle-recommendations-list'
 import { UsageSurveyDialog } from '@/components/usage/usage-survey-dialog'
-import { Sleekplan } from '@/components/integrations/sleekplan'
 import { toast } from 'sonner'
 import { trackDashboardViewed, trackSessionStarted } from '@/lib/analytics/events'
 import { getSessionMetadata } from '@/lib/analytics/utils'
@@ -438,19 +437,6 @@ export default function DashboardPage() {
           }}
         />
       )}
-
-      {/* Sleekplan Feedback Widget */}
-      <Sleekplan
-        user={
-          user
-            ? {
-                id: user.id,
-                name: user.user_metadata?.name || user.email?.split('@')[0],
-                email: user.email,
-              }
-            : undefined
-        }
-      />
     </DashboardLayout>
   )
 }
