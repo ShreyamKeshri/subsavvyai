@@ -118,3 +118,35 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Sleekplan Widget - Fix positioning and appearance */
+#sleek-widget-trigger {
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  z-index: 9999 !important;
+}
+
+#sleek-widget-container {
+  position: fixed !important;
+  bottom: 90px !important;
+  right: 24px !important;
+  z-index: 9998 !important;
+  max-width: 400px !important;
+  max-height: 600px !important;
+}
+
+/* Hide intrusive greeting overlay */
+div[class*="sleek"][class*="greeting"],
+div[class*="sleek"][class*="hello"],
+.sleek-greeting-overlay {
+  display: none !important;
+}
+
+/* Style the feedback button nicely */
+#sleek-widget-trigger button {
+  border-radius: 50% !important;
+  width: 56px !important;
+  height: 56px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
