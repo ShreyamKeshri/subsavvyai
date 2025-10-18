@@ -186,6 +186,21 @@ export async function createSubscription(
       isCustom: !data.service_id,
     })
 
+    // Track activation funnel: Check if this is user's first subscription
+    const { count } = await supabase
+      .from('subscriptions')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .is('deleted_at', null)
+
+    if (count === 1) {
+      // This is the first subscription - track onboarding step
+      await trackServerEvent(user.id, 'onboarding_step_completed', {
+        step: 'first_subscription_added',
+        subscriptionCount: 1,
+      })
+    }
+
     // Auto-generate bundle recommendations (debounced to prevent race conditions)
     // Will only execute once if called multiple times within 2 seconds
     debouncedBundleRecommendations()
@@ -264,6 +279,13 @@ export async function updateSubscription(
       console.error('Error updating subscription:', error)
       return { success: false, error: error.message }
     }
+
+    // Track subscription edited event
+    await trackServerEvent(user.id, 'subscription_edited', {
+      subscriptionId: data.id,
+      serviceName: data.service?.name || data.custom_service_name || 'Unknown',
+      fieldsUpdated: Object.keys(input),
+    })
 
     // Auto-generate bundle recommendations (debounced to prevent race conditions)
     debouncedBundleRecommendations()
