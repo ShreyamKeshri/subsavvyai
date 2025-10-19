@@ -4,7 +4,6 @@ import { Search, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { NotificationBell } from "@/components/ui/notification-bell"
 import { ProfileDropdown } from "@/components/ui/profile-dropdown"
-import { FeedbackButton } from "@/components/feedback/FeedbackButton"
 import { useState } from "react"
 
 export function DashboardHeader() {
@@ -34,7 +33,6 @@ export function DashboardHeader() {
 
         {/* Actions */}
         <div className="flex items-center gap-3 ml-6">
-          <FeedbackButton />
           <NotificationBell />
           <ProfileDropdown />
         </div>

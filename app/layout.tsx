@@ -3,6 +3,7 @@ import { Toaster } from 'sonner'
 import { branding } from '@/lib/config/branding'
 import { PHProvider } from '@/lib/analytics/posthog-provider'
 import { ThemeProvider } from 'next-themes'
+import { FloatingFeedbackButton } from '@/components/feedback/FloatingFeedbackButton'
 
 export const metadata = {
   title: branding.meta.title,
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <PHProvider>
             {children}
             <Toaster position="top-right" richColors />
+            <FloatingFeedbackButton />
           </PHProvider>
         </ThemeProvider>
       </body>
