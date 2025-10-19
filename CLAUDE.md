@@ -149,13 +149,15 @@ unsubscribr/
 ├── app/                          # Next.js app directory
 │   ├── (auth)/                   # Auth routes (login, signup, verify-email)
 │   ├── api/                      # API routes
+│   │   ├── canny/sso/            # Canny SSO token generation (NEW - Day 6)
 │   │   ├── oauth/spotify/        # Spotify OAuth endpoints
 │   │   ├── usage/sync/           # Usage sync endpoint
 │   │   └── recommendations/      # Generate recommendations
 │   ├── dashboard/                # Main dashboard (protected)
+│   │   └── feedback/             # Dedicated feedback page (NEW - Day 6)
 │   ├── onboarding/               # User onboarding flow
 │   ├── page.tsx                  # Landing page
-│   ├── layout.tsx                # Root layout (with Toaster)
+│   ├── layout.tsx                # Root layout (with Toaster + FloatingFeedbackButton)
 │   └── globals.css               # Global styles (Tailwind v4)
 ├── lib/                          # Core utilities
 │   ├── analytics/                # Analytics tracking
@@ -194,10 +196,14 @@ unsubscribr/
 │   └── validators.ts             # Zod validation schemas (NEW - Day 5)
 ├── components/                   # React components
 │   ├── ui/                       # shadcn/ui components
+│   │   ├── notification-bell.tsx # Notification bell with localStorage persistence (Day 6)
 │   │   └── theme-toggle.tsx      # Dark/light theme toggle
 │   ├── bundles/                  # Bundle optimizer components
 │   │   ├── bundle-recommendation-card.tsx
 │   │   └── bundle-recommendations-list.tsx
+│   ├── feedback/                 # Feedback system (NEW - Day 6)
+│   │   ├── CannyModal.tsx        # Canny feedback modal with SSO
+│   │   └── FloatingFeedbackButton.tsx  # Floating feedback button
 │   ├── subscriptions/            # Subscription components
 │   │   ├── add-subscription-dialog.tsx
 │   │   └── edit-subscription-dialog.tsx
@@ -214,10 +220,26 @@ unsubscribr/
 
 ## Current Status
 
-**Phase:** MVP Launch Sprint - Day 5 Complete! ✅
+**Phase:** MVP Launch Sprint - Day 6 Complete! ✅
 **Security Status:** 🟢 Production-Ready (All critical vulnerabilities fixed)
 
-**Recent Completions (Day 5 - Oct 17, 2025):**
+**Recent Completions (Day 6 - Oct 19, 2025):**
+
+**Canny Feedback Integration (PR #26):**
+- ✅ JWT-based SSO authentication for seamless user experience
+- ✅ Canny feedback modal with aggressive storage cleanup
+- ✅ Floating feedback button with SubSavvyAI branding
+- ✅ PostHog analytics tracking for feedback interactions
+- ✅ Public board configuration for free tier
+- ✅ Complete user identity management (name, email, avatar)
+- ✅ Dedicated feedback page at `/dashboard/feedback`
+
+**Notification Persistence Fix:**
+- ✅ localStorage-based state management for read/unread status
+- ✅ Persistent across page navigation and browser sessions
+- ✅ Graceful error handling for localStorage failures
+
+**Previous Completions (Day 5 - Oct 17, 2025):**
 
 **Critical Security Fixes (PR #25):**
 - ✅ Fixed useAuth infinite re-render (memory leak prevention)
@@ -284,9 +306,10 @@ unsubscribr/
 - ✅ SubSavvyAI rebranding
 
 **Next Steps:**
-- Integrate usage survey into dashboard workflow
-- Run migration 007 in Supabase
-- Test end-to-end recommendation flow with manual data
+- Pre-launch testing and bug fixes
+- Content overlap detector (JustWatch API)
+- Bundle optimizer enhancements
+- Price monitoring and alerts
 
 ## Key Implementation Patterns
 
@@ -540,6 +563,12 @@ SPOTIFY_REDIRECT_URI=http://127.0.0.1:3000/api/oauth/spotify/callback
 # Optional but HIGHLY RECOMMENDED for production
 ENCRYPTION_KEY=your_64_character_hex_encryption_key_here
 
+# Canny Feedback (NEW - Day 6)
+# Get these from Canny dashboard: https://canny.io/admin
+NEXT_PUBLIC_CANNY_APP_ID=your_canny_app_id
+NEXT_PUBLIC_CANNY_BOARD_TOKEN=your_canny_board_token
+CANNY_SSO_SECRET=your_canny_sso_secret
+
 # Analytics (Optional - graceful fallback if not set)
 NEXT_PUBLIC_POSTHOG_KEY=your_posthog_key
 NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
@@ -616,6 +645,8 @@ NEXT_PUBLIC_APP_URL=http://127.0.0.1:3000
 18. **Client Caching (NEW - Day 5):** Never create new Supabase client in hooks/components (use cached `createClient()`)
 19. **Debouncing (NEW - Day 5):** Use `debounce()` for fire-and-forget updates to prevent race conditions
 20. **Security Status:** 🟢 Production-Ready (all critical/high-priority vulnerabilities fixed)
+21. **Canny Feedback (NEW - Day 6):** JWT-based SSO for seamless user authentication, board set to Public for free tier
+22. **Notification Persistence (NEW - Day 6):** Read/unread state persists via localStorage across sessions
 
 ## Next Steps
 

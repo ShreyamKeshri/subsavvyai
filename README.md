@@ -56,12 +56,18 @@ subsavvyai/
 ├── app/                          # Next.js 15 app directory
 │   ├── (auth)/                   # Auth pages (login, signup, verify-email)
 │   ├── dashboard/                # Protected dashboard
+│   │   └── feedback/             # Dedicated feedback page (NEW)
 │   ├── api/                      # API routes
+│   │   ├── canny/sso/            # Canny SSO token generation (NEW)
 │   │   ├── oauth/spotify/        # Spotify OAuth endpoints
 │   │   └── recommendations/      # AI recommendation API
-│   └── layout.tsx                # Root layout with theme provider
+│   └── layout.tsx                # Root layout with theme provider + FloatingFeedbackButton
 ├── components/
 │   ├── ui/                       # shadcn/ui components
+│   │   └── notification-bell.tsx # Notification bell with localStorage persistence
+│   ├── feedback/                 # Feedback system (NEW)
+│   │   ├── CannyModal.tsx        # Canny feedback modal with SSO
+│   │   └── FloatingFeedbackButton.tsx  # Floating feedback button
 │   ├── subscriptions/            # Subscription CRUD components
 │   ├── bundles/                  # Bundle optimizer components
 │   ├── recommendations/          # AI recommendation components
@@ -147,11 +153,11 @@ Open [http://127.0.0.1:3000](http://127.0.0.1:3000)
 
 ## 📊 Development Progress
 
-### Current Status: **MVP LAUNCH SPRINT - DAY 5 COMPLETE!** 🚀
+### Current Status: **MVP LAUNCH SPRINT - DAY 6 COMPLETE!** 🚀
 
 **Security Status:** 🟢 Production-Ready
 
-**Launch Date:** October 31, 2025 (14 days remaining)
+**Launch Date:** October 31, 2025 (12 days remaining)
 
 | Phase | Status | Progress |
 |-------|--------|----------|
@@ -166,10 +172,12 @@ Open [http://127.0.0.1:3000](http://127.0.0.1:3000)
 | **Edit/Delete Subscriptions** | ✅ Complete | 100% |
 | **Error Boundaries** | ✅ Complete | 100% |
 | **Security Audit & Fixes** | ✅ Complete | 100% |
+| **Canny Feedback Integration** | ✅ Complete | 100% |
+| **Notification Persistence** | ✅ Complete | 100% |
 | **Content Overlap Detector** | ⏳ POST-MVP | 0% |
 | **Price Monitoring** | ⏳ POST-MVP | 0% |
 
-**Overall Progress:** 65% → 95% MVP features complete
+**Overall Progress:** 65% → 96% MVP features complete
 
 ---
 
@@ -230,6 +238,21 @@ Open [http://127.0.0.1:3000](http://127.0.0.1:3000)
 - ✅ Works for non-OAuth services (Netflix, Hotstar, Prime Video, etc.)
 - ✅ Hybrid system: OAuth (Spotify) + Manual (all others)
 
+### 💬 Feedback System
+- ✅ Canny feedback integration with JWT-based SSO
+- ✅ Floating feedback button with SubSavvyAI branding
+- ✅ Seamless user authentication (auto-login)
+- ✅ PostHog analytics tracking for feedback interactions
+- ✅ Dedicated feedback page at /dashboard/feedback
+- ✅ Public board configuration for free tier
+
+### 🔔 Notification System
+- ✅ Notification bell with read/unread indicators
+- ✅ localStorage persistence across page navigation
+- ✅ Savings opportunity alerts
+- ✅ Billing reminder notifications
+- ✅ Manual mark as read/unread functionality
+
 ### 💱 Currency Conversion System
 - ✅ Automatic conversion to INR for all subscriptions
 - ✅ Support for 8 currencies with real-time rates
@@ -281,6 +304,47 @@ Open [http://127.0.0.1:3000](http://127.0.0.1:3000)
 ---
 
 ## 🎯 Recent Accomplishments
+
+### Day 6 (Oct 19, 2025): Canny Feedback Integration + Notification Persistence ✅
+
+**Status:** ✅ Feedback system fully operational
+
+**Canny Feedback Integration (PR #26):**
+- ✅ **JWT-based SSO authentication** - Seamless single sign-on using jsonwebtoken
+- ✅ **Canny modal component** - Full-screen modal with aggressive storage cleanup
+- ✅ **Floating feedback button** - SubSavvyAI branded (#2a9d8f Persian Green)
+- ✅ **User identity management** - Auto-populates name, email, avatar from Supabase
+- ✅ **PostHog tracking** - Analytics for feedback modal interactions
+- ✅ **Public board configuration** - Free tier setup (no Custom plan needed)
+- ✅ **Dedicated feedback page** - Available at `/dashboard/feedback`
+
+**Notification Persistence Fix:**
+- ✅ **localStorage state management** - Read/unread status persists across sessions
+- ✅ **Multi-user support** - Aggressive Canny storage cleanup prevents user caching
+- ✅ **Error handling** - Graceful fallback for localStorage failures
+
+**Files Created:**
+- `app/api/canny/sso/route.ts` - Server-side JWT token generation
+- `components/feedback/CannyModal.tsx` - Feedback modal with SSO
+- `components/feedback/FloatingFeedbackButton.tsx` - Floating action button
+- `app/dashboard/feedback/page.tsx` - Dedicated feedback page
+
+**Files Modified:**
+- `components/ui/notification-bell.tsx` - Added localStorage persistence
+- `app/layout.tsx` - Added FloatingFeedbackButton
+- `package.json` - Added jsonwebtoken dependency
+- `.env.example` - Added Canny environment variables
+
+**Dependencies Added:**
+- `jsonwebtoken` v9.0.2 - JWT generation for Canny SSO
+
+**Impact:**
+- Users can now submit feedback without creating separate Canny account
+- Read/unread notification state persists across page navigation and browser sessions
+- Seamless user experience with auto-authentication
+- Foundation for user feedback-driven product iteration
+
+---
 
 ### Day 5 (Oct 17, 2025): Critical Security Audit & Fixes ✅
 
@@ -501,6 +565,9 @@ Add these in Vercel Dashboard → Settings → Environment Variables:
 - `SPOTIFY_CLIENT_SECRET`
 - `SPOTIFY_REDIRECT_URI` (use production URL)
 - `ENCRYPTION_KEY` (generate with: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`)
+- `NEXT_PUBLIC_CANNY_APP_ID`
+- `NEXT_PUBLIC_CANNY_BOARD_TOKEN`
+- `CANNY_SSO_SECRET`
 - `NEXT_PUBLIC_POSTHOG_KEY`
 - `NEXT_PUBLIC_SENTRY_DSN`
 - `RESEND_API_KEY`
@@ -577,11 +644,11 @@ Special thanks to Claude Code for development assistance! 🤖
 
 ---
 
-**Status:** 🚀 MVP Launch Sprint (Day 5/21 Complete) | **Branch:** `main` | **Progress:** 95%
+**Status:** 🚀 MVP Launch Sprint (Day 6/21 Complete) | **Branch:** `main` | **Progress:** 96%
 
-**Security:** 🟢 Production-Ready | **Next Milestone:** Beta Testing & Iteration (Week 2)
+**Security:** 🟢 Production-Ready | **Next Milestone:** Beta Testing & Iteration (Week 3)
 
-**Critical Bugs:** 0 🎉 | **Critical Security Issues:** 0 🔒 | **Lines of Code:** 9,500+
+**Critical Bugs:** 0 🎉 | **Critical Security Issues:** 0 🔒 | **Lines of Code:** 10,000+
 
 ---
 
