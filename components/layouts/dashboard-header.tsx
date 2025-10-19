@@ -32,7 +32,7 @@ export function DashboardHeader() {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-4 ml-6">
+        <div className="flex items-center gap-3 ml-6">
           <NotificationBell />
           <ProfileDropdown />
         </div>

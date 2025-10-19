@@ -11,6 +11,7 @@ import { getAllUserUsageData } from '@/lib/usage/usage-actions'
 import { generateAllRecommendations, calculateTotalSavings } from './recommendation-engine'
 import { revalidatePath } from 'next/cache'
 import { validateInput, uuidSchema } from '@/lib/validators'
+import { trackServerEvent } from '@/lib/analytics/server-events'
 
 export interface OptimizationRecommendation {
   id: string
@@ -114,6 +115,34 @@ export async function generateRecommendations(): Promise<{
     if (error) {
       console.error('Error storing recommendations:', error)
       return { success: false, error: error.message }
+    }
+
+    // Track recommendation generation (North Star + AI Performance metrics)
+    const totalSavings = calculateTotalSavings(data as OptimizationRecommendation[])
+    const savingsByType = (data as OptimizationRecommendation[]).reduce((acc, rec) => {
+      acc[rec.type] = (acc[rec.type] || 0) + rec.annual_savings
+      return acc
+    }, {} as Record<string, number>)
+
+    await trackServerEvent(user.id, 'recommendations_generated', {
+      recommendationsCount: data.length,
+      totalAnnualSavings: totalSavings.annual,
+      totalMonthlySavings: totalSavings.monthly,
+      byType: savingsByType,
+    })
+
+    // Track if this is user's first recommendation (activation funnel)
+    const { count: totalRecsCount } = await supabase
+      .from('optimization_recommendations')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+
+    if (totalRecsCount && totalRecsCount <= recommendations.length) {
+      await trackServerEvent(user.id, 'onboarding_step_completed', {
+        step: 'first_recommendation_generated',
+        recommendationsCount: data.length,
+        totalSavings: totalSavings.annual,
+      })
     }
 
     revalidatePath('/dashboard')
@@ -228,6 +257,14 @@ export async function acceptRecommendation(
       return { success: false, error: 'Invalid recommendation ID' }
     }
 
+    // Fetch recommendation details before updating (for tracking)
+    const { data: recommendation } = await supabase
+      .from('optimization_recommendations')
+      .select('*')
+      .eq('id', recommendationId)
+      .eq('user_id', user.id)
+      .single()
+
     const { error } = await supabase
       .from('optimization_recommendations')
       .update({
@@ -240,6 +277,16 @@ export async function acceptRecommendation(
     if (error) {
       console.error('Error accepting recommendation:', error)
       return { success: false, error: error.message }
+    }
+
+    // Track recommendation acceptance (KEY METRIC for AI performance)
+    if (recommendation) {
+      await trackServerEvent(user.id, 'recommendation_action_taken', {
+        recommendationId,
+        recommendationType: recommendation.type,
+        action: 'accepted',
+        savingsRealized: recommendation.annual_savings,
+      })
     }
 
     revalidatePath('/dashboard')
@@ -272,6 +319,14 @@ export async function dismissRecommendation(
       return { success: false, error: 'Invalid recommendation ID' }
     }
 
+    // Fetch recommendation details before updating (for tracking)
+    const { data: recommendation } = await supabase
+      .from('optimization_recommendations')
+      .select('*')
+      .eq('id', recommendationId)
+      .eq('user_id', user.id)
+      .single()
+
     const { error } = await supabase
       .from('optimization_recommendations')
       .update({
@@ -284,6 +339,15 @@ export async function dismissRecommendation(
     if (error) {
       console.error('Error dismissing recommendation:', error)
       return { success: false, error: error.message }
+    }
+
+    // Track recommendation dismissal (helps improve AI recommendations)
+    if (recommendation) {
+      await trackServerEvent(user.id, 'recommendation_action_taken', {
+        recommendationId,
+        recommendationType: recommendation.type,
+        action: 'dismissed',
+      })
     }
 
     revalidatePath('/dashboard')

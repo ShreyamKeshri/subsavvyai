@@ -23,6 +23,8 @@ import { EditSubscriptionDialog } from '@/components/subscriptions/edit-subscrip
 import { BundleRecommendationsList } from '@/components/bundles/bundle-recommendations-list'
 import { UsageSurveyDialog } from '@/components/usage/usage-survey-dialog'
 import { toast } from 'sonner'
+import { trackDashboardViewed, trackSessionStarted } from '@/lib/analytics/events'
+import { getSessionMetadata } from '@/lib/analytics/utils'
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -73,6 +75,19 @@ export default function DashboardPage() {
 
     setLoadingData(false)
   }
+
+  // Track session start (engagement metrics)
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      const sessionMetadata = getSessionMetadata()
+      if (sessionMetadata) {
+        trackSessionStarted(user.id, sessionMetadata)
+      }
+
+      // Track dashboard view
+      trackDashboardViewed()
+    }
+  }, [isAuthenticated, user])
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -225,6 +240,7 @@ export default function DashboardPage() {
             <RecommendationsFeedCard
               recommendations={recommendations}
               onDismiss={handleDismissRecommendation}
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
               onView={(_id) => {
                 toast.info('View recommendation details')
                 // TODO: Open recommendation details modal
