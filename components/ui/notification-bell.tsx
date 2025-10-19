@@ -24,6 +24,8 @@ interface Notification {
   type: 'recommendation' | 'billing' | 'system'
 }
 
+const STORAGE_KEY = 'subsavvyai_notification_state'
+
 export function NotificationBell() {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [isOpen, setIsOpen] = useState(false)
@@ -73,21 +75,69 @@ export function NotificationBell() {
       })
     }
 
-    setNotifications(newNotifications.slice(0, 10))
+    // Load saved notification state from localStorage
+    const savedState = loadNotificationState()
+
+    // Merge saved state with new notifications
+    const mergedNotifications = newNotifications.map(notification => {
+      const saved = savedState[notification.id]
+      if (saved) {
+        return { ...notification, read: saved.read }
+      }
+      return notification
+    })
+
+    setNotifications(mergedNotifications.slice(0, 10))
+  }
+
+  const loadNotificationState = () => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY)
+      if (saved) {
+        return JSON.parse(saved) as Record<string, { read: boolean; deletedAt?: string }>
+      }
+    } catch (error) {
+      console.error('Failed to load notification state:', error)
+    }
+    return {}
+  }
+
+  const saveNotificationState = (notifs: Notification[]) => {
+    try {
+      const state: Record<string, { read: boolean }> = {}
+      notifs.forEach(n => {
+        state[n.id] = { read: n.read }
+      })
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+    } catch (error) {
+      console.error('Failed to save notification state:', error)
+    }
   }
 
   const unreadCount = notifications.filter((n) => !n.read).length
 
   const handleMarkAsRead = (id: string) => {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)))
+    setNotifications((prev) => {
+      const updated = prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+      saveNotificationState(updated)
+      return updated
+    })
   }
 
   const handleMarkAsUnread = (id: string) => {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: false } : n)))
+    setNotifications((prev) => {
+      const updated = prev.map((n) => (n.id === id ? { ...n, read: false } : n))
+      saveNotificationState(updated)
+      return updated
+    })
   }
 
   const handleDelete = (id: string) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id))
+    setNotifications((prev) => {
+      const updated = prev.filter((n) => n.id !== id)
+      saveNotificationState(updated)
+      return updated
+    })
   }
 
   const handleClearAll = () => {
