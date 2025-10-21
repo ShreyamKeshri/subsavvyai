@@ -109,19 +109,24 @@ export function RecommendationsFeedCard({
                 <div>
                   <p className="font-medium text-foreground">Unlock Smarter Recommendations</p>
                   <p className="text-sm text-muted-foreground mt-2">
-                    Connect Spotify to get usage-based savings recommendations
+                    Add usage data to get personalized downgrade and cancel recommendations
                   </p>
                 </div>
-                {onConnectService && (
-                  <Button
-                    onClick={onConnectService}
-                    variant="outline"
-                    className="border-indigo-500 text-indigo-600 hover:bg-indigo-50"
-                  >
-                    <Plug className="w-4 h-4 mr-2" />
-                    Connect Spotify
-                  </Button>
-                )}
+                <div className="flex flex-col gap-2">
+                  {onConnectService && (
+                    <Button
+                      onClick={onConnectService}
+                      variant="outline"
+                      className="border-indigo-500 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
+                    >
+                      <Plug className="w-4 h-4 mr-2" />
+                      Connect Spotify
+                    </Button>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    or track usage manually from subscription cards
+                  </p>
+                </div>
               </div>
             ) : (
               // All caught up state

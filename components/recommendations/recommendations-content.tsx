@@ -1,36 +1,66 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card } from '@/components/ui/card'
-import { TrendingDown, X, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { TrendingDown, X, CheckCircle2, AlertCircle, Loader2, Plus, Plug, Activity } from 'lucide-react'
 import { getPendingRecommendations, dismissRecommendation, type OptimizationRecommendation } from '@/lib/recommendations/recommendation-actions'
 import { getUserSubscriptions, type Subscription } from '@/lib/subscriptions/subscription-actions'
+import { getAllUserUsageData, getConnectedServices } from '@/lib/usage/usage-actions'
 import { toast } from 'sonner'
 
 type FilterType = 'all' | 'downgrade' | 'cancel' | 'bundle' | 'upgrade'
 type SortType = 'savings' | 'confidence'
 
 export function RecommendationsContent() {
+  const router = useRouter()
   const [recommendations, setRecommendations] = useState<OptimizationRecommendation[]>([])
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
   const [loading, setLoading] = useState(true)
   const [sortBy, setSortBy] = useState<SortType>('savings')
   const [filterType, setFilterType] = useState<FilterType>('all')
   const [totalSavings, setTotalSavings] = useState<{ monthly: number; annual: number } | null>(null)
+  const [hasUsageData, setHasUsageData] = useState(false)
+  const [hasConnectedServices, setHasConnectedServices] = useState(false)
+  const [subscriptionsWithoutUsage, setSubscriptionsWithoutUsage] = useState(0)
 
   const fetchData = async () => {
     setLoading(true)
-    const [recsResult, subsResult] = await Promise.all([
+    const [recsResult, subsResult, usageResult, servicesResult] = await Promise.all([
       getPendingRecommendations(),
       getUserSubscriptions(),
+      getAllUserUsageData(),
+      getConnectedServices(),
     ])
+
     if (recsResult.success && recsResult.data) {
       setRecommendations(recsResult.data)
       setTotalSavings(recsResult.totalSavings || null)
     }
+
     if (subsResult.success && subsResult.data) {
       setSubscriptions(subsResult.data)
+
+      // Count subscriptions without usage data
+      const activeSubscriptions = subsResult.data.filter(s => s.status === 'active')
+      const usageDataMap = new Set(
+        usageResult.success && usageResult.data
+          ? usageResult.data.map(u => u.subscription_id)
+          : []
+      )
+      const withoutUsage = activeSubscriptions.filter(s => !usageDataMap.has(s.id)).length
+      setSubscriptionsWithoutUsage(withoutUsage)
     }
+
+    if (usageResult.success && usageResult.data) {
+      setHasUsageData(usageResult.data.length > 0)
+    }
+
+    if (servicesResult.success && servicesResult.data) {
+      setHasConnectedServices(servicesResult.data.length > 0)
+    }
+
     setLoading(false)
   }
 
@@ -207,13 +237,123 @@ export function RecommendationsContent() {
           ))
         ) : (
           <Card className="p-12 text-center">
-            <CheckCircle2 className="w-12 h-12 text-green-500 mx-auto mb-4" />
-            <p className="text-foreground font-semibold">All caught up!</p>
-            <p className="text-muted-foreground mt-1">
-              {recommendations.length === 0
-                ? 'Add subscriptions and connect services to get AI recommendations'
-                : 'No recommendations match your filters'}
-            </p>
+            {recommendations.length === 0 ? (
+              subscriptions.length === 0 ? (
+                // No subscriptions at all
+                <div className="space-y-4">
+                  <div className="w-16 h-16 mx-auto rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                    <Plus className="w-8 h-8 text-blue-500" />
+                  </div>
+                  <div>
+                    <p className="text-foreground font-semibold text-lg">Get Started with AI Recommendations</p>
+                    <p className="text-muted-foreground mt-2 max-w-md mx-auto">
+                      Add your first subscription to unlock personalized savings opportunities powered by AI
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => router.push('/dashboard')}
+                    className="bg-blue-500 hover:bg-blue-600 text-white"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Your First Subscription
+                  </Button>
+                </div>
+              ) : !hasUsageData && !hasConnectedServices ? (
+                // Has subscriptions but no usage data at all
+                <div className="space-y-4">
+                  <div className="w-16 h-16 mx-auto rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
+                    <Activity className="w-8 h-8 text-indigo-500" />
+                  </div>
+                  <div>
+                    <p className="text-foreground font-semibold text-lg">Unlock Smarter Recommendations</p>
+                    <p className="text-muted-foreground mt-2 max-w-md mx-auto">
+                      To get personalized downgrade and cancel recommendations, we need usage data for your subscriptions
+                    </p>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center mt-4">
+                    <Button
+                      onClick={() => router.push('/api/oauth/spotify/connect')}
+                      variant="outline"
+                      className="border-indigo-500 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
+                    >
+                      <Plug className="w-4 h-4 mr-2" />
+                      Connect Spotify
+                    </Button>
+                    <Button
+                      onClick={() => router.push('/dashboard')}
+                      className="bg-indigo-500 hover:bg-indigo-600 text-white"
+                    >
+                      <Activity className="w-4 h-4 mr-2" />
+                      Add Manual Usage Data
+                    </Button>
+                  </div>
+                  <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-200 dark:border-blue-800 max-w-lg mx-auto">
+                    <p className="text-sm text-blue-900 dark:text-blue-100 font-medium mb-2">
+                      💡 How it works:
+                    </p>
+                    <ul className="text-xs text-blue-800 dark:text-blue-200 text-left space-y-1">
+                      <li>• <strong>Connect services like Spotify</strong> - We analyze your actual usage automatically</li>
+                      <li>• <strong>Add manual usage</strong> - Tell us how often you use services like Netflix, Hotstar, etc.</li>
+                      <li>• <strong>Get AI recommendations</strong> - We suggest downgrades or cancellations to save you money</li>
+                    </ul>
+                  </div>
+                </div>
+              ) : subscriptionsWithoutUsage > 0 ? (
+                // Has some usage data but missing for some subscriptions
+                <div className="space-y-4">
+                  <div className="w-16 h-16 mx-auto rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
+                    <Activity className="w-8 h-8 text-yellow-500" />
+                  </div>
+                  <div>
+                    <p className="text-foreground font-semibold text-lg">Add More Usage Data</p>
+                    <p className="text-muted-foreground mt-2 max-w-md mx-auto">
+                      You have <strong>{subscriptionsWithoutUsage} subscription{subscriptionsWithoutUsage > 1 ? 's' : ''}</strong> without usage data. Add usage information to unlock more savings recommendations.
+                    </p>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center mt-4">
+                    <Button
+                      onClick={() => router.push('/dashboard')}
+                      className="bg-yellow-500 hover:bg-yellow-600 text-white"
+                    >
+                      <Activity className="w-4 h-4 mr-2" />
+                      Add Usage Data
+                    </Button>
+                    {!hasConnectedServices && (
+                      <Button
+                        onClick={() => router.push('/api/oauth/spotify/connect')}
+                        variant="outline"
+                        className="border-indigo-500 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
+                      >
+                        <Plug className="w-4 h-4 mr-2" />
+                        Connect Spotify
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                // All caught up - has subscriptions and usage data but no recommendations
+                <div className="space-y-4">
+                  <CheckCircle2 className="w-12 h-12 text-green-500 mx-auto" />
+                  <div>
+                    <p className="text-foreground font-semibold">All Caught Up!</p>
+                    <p className="text-muted-foreground mt-1">
+                      Your subscriptions are optimized. We&apos;ll notify you when we find new savings opportunities.
+                    </p>
+                  </div>
+                </div>
+              )
+            ) : (
+              // Filtered state - has recommendations but none match filter
+              <div className="space-y-4">
+                <CheckCircle2 className="w-12 h-12 text-green-500 mx-auto" />
+                <div>
+                  <p className="text-foreground font-semibold">No Matching Recommendations</p>
+                  <p className="text-muted-foreground mt-1">
+                    No recommendations match your current filters. Try selecting &quot;All&quot; to see all opportunities.
+                  </p>
+                </div>
+              </div>
+            )}
           </Card>
         )}
       </div>
