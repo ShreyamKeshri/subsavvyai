@@ -14,7 +14,7 @@ import { OnboardingChecklistCard } from '@/components/dashboard/onboarding-check
 import { RecommendationsFeedCard } from '@/components/dashboard/recommendations-feed-card'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Plus, Loader2, Edit2, Trash2 } from 'lucide-react'
+import { Plus, Loader2, Edit2, Trash2, Mail } from 'lucide-react'
 import { getUserSubscriptions, deleteSubscription, type Subscription } from '@/lib/subscriptions/subscription-actions'
 import { getPendingRecommendations, dismissRecommendation, generateRecommendations, type OptimizationRecommendation } from '@/lib/recommendations/recommendation-actions'
 import { getConnectedServices, getAllUserUsageData, type ServiceUsage } from '@/lib/usage/usage-actions'
@@ -22,6 +22,8 @@ import { AddSubscriptionDialog } from '@/components/subscriptions/add-subscripti
 import { EditSubscriptionDialog } from '@/components/subscriptions/edit-subscription-dialog'
 import { BundleRecommendationsList } from '@/components/bundles/bundle-recommendations-list'
 import { UsageSurveyDialog } from '@/components/usage/usage-survey-dialog'
+import { GmailScanDialog } from '@/components/gmail/gmail-scan-dialog'
+import { isGmailConnected } from '@/lib/gmail/import-actions'
 import { toast } from 'sonner'
 import { trackDashboardViewed, trackSessionStarted } from '@/lib/analytics/events'
 import { getSessionMetadata } from '@/lib/analytics/utils'
@@ -38,6 +40,8 @@ export default function DashboardPage() {
   const [showChecklist, setShowChecklist] = useState(true)
   const [selectedSubscriptionForUsage, setSelectedSubscriptionForUsage] = useState<Subscription | null>(null)
   const [selectedSubscriptionForEdit, setSelectedSubscriptionForEdit] = useState<Subscription | null>(null)
+  const [showGmailScanDialog, setShowGmailScanDialog] = useState(false)
+  const [gmailConnected, setGmailConnected] = useState(false)
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -49,11 +53,12 @@ export default function DashboardPage() {
     setLoadingData(true)
 
     // Fetch all data in parallel
-    const [subsResult, recsResult, servicesResult, usageResult] = await Promise.all([
+    const [subsResult, recsResult, servicesResult, usageResult, gmailResult] = await Promise.all([
       getUserSubscriptions(),
       getPendingRecommendations(),
       getConnectedServices(),
       getAllUserUsageData(),
+      isGmailConnected(),
     ])
 
     if (subsResult.success && subsResult.data) {
@@ -71,6 +76,10 @@ export default function DashboardPage() {
 
     if (usageResult.success && usageResult.data) {
       setUsageData(usageResult.data)
+    }
+
+    if (gmailResult.success) {
+      setGmailConnected(gmailResult.connected)
     }
 
     setLoadingData(false)
@@ -175,6 +184,20 @@ export default function DashboardPage() {
       }
     },
     {
+      id: 'connect_gmail',
+      title: 'Connect Gmail for auto-detection',
+      description: 'Find subscriptions automatically from your inbox',
+      completed: gmailConnected,
+      action: () => router.push('/api/gmail/connect')
+    },
+    {
+      id: 'scan_gmail',
+      title: 'Scan your first subscriptions',
+      description: 'Auto-detect subscriptions from last 90 days',
+      completed: false, // TODO: Track if user has scanned before
+      action: () => setShowGmailScanDialog(true)
+    },
+    {
       id: 'connect_spotify',
       title: 'Connect Spotify for AI recommendations',
       description: 'Get smart downgrade alerts based on your listening habits',
@@ -267,13 +290,39 @@ export default function DashboardPage() {
             {/* Quick Add Subscription */}
             <Card className="p-6">
               <h3 className="font-semibold text-foreground mb-4">Quick Actions</h3>
+
+              {/* Gmail Scan Button (if connected) */}
+              {gmailConnected && (
+                <Button
+                  data-scan-gmail
+                  className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
+                  onClick={() => setShowGmailScanDialog(true)}
+                >
+                  <Mail className="w-4 h-4 mr-2" />
+                  Scan Gmail
+                </Button>
+              )}
+
+              {/* Connect Gmail (if not connected) */}
+              {!gmailConnected && (
+                <Button
+                  className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
+                  onClick={() => router.push('/api/gmail/connect')}
+                >
+                  <Mail className="w-4 h-4 mr-2" />
+                  Connect Gmail
+                </Button>
+              )}
+
+              {/* Manual Add */}
               <AddSubscriptionDialog onSuccess={fetchData}>
                 <Button
                   data-add-subscription
-                  className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+                  variant="outline"
+                  className={`w-full ${gmailConnected ? 'mt-3' : 'mt-3'}`}
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Subscription
+                  Add Manually
                 </Button>
               </AddSubscriptionDialog>
 
@@ -437,6 +486,15 @@ export default function DashboardPage() {
           }}
         />
       )}
+
+      {/* Gmail Scan Dialog */}
+      <GmailScanDialog
+        open={showGmailScanDialog}
+        onOpenChange={setShowGmailScanDialog}
+        onSuccess={() => {
+          fetchData()
+        }}
+      />
     </DashboardLayout>
   )
 }
