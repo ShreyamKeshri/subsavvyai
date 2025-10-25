@@ -42,7 +42,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline' https://canny.io",
               "img-src 'self' data: https: blob:",
               "font-src 'self' data:",
-              "connect-src 'self' https://*.supabase.co https://*.razorpay.com https://fcm.googleapis.com wss://*.supabase.co https://*.posthog.com https://*.ingest.sentry.io https://canny.io https://*.canny.io",
+              "connect-src 'self' https://*.supabase.co https://*.razorpay.com https://fcm.googleapis.com https://accounts.google.com https://oauth2.googleapis.com wss://*.supabase.co https://*.posthog.com https://*.ingest.sentry.io https://canny.io https://*.canny.io",
               "frame-src 'self' https://api.razorpay.com https://canny.io https://*.canny.io",
               "frame-ancestors 'none'",
               "base-uri 'self'",

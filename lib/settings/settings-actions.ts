@@ -10,7 +10,6 @@ import { revalidatePath } from 'next/cache'
 
 export interface ProfileData {
   full_name?: string
-  phone_number?: string
 }
 
 export interface PreferencesData {
@@ -21,7 +20,6 @@ export interface PreferencesData {
 export interface NotificationPreferencesData {
   email_notifications?: boolean
   push_notifications?: boolean
-  sms_notifications?: boolean
 }
 
 /**
@@ -37,9 +35,9 @@ export async function getUserProfile() {
     }
 
     // Fetch profile data
-    const { data: profile, error: profileError } = await supabase
+    const { data: profile, error: profileError} = await supabase
       .from('profiles')
-      .select('full_name, phone_number, avatar_url, timezone, currency_preference')
+      .select('full_name, avatar_url, timezone, currency_preference')
       .eq('id', user.id)
       .single()
 
@@ -50,7 +48,7 @@ export async function getUserProfile() {
     // Fetch user preferences
     const { data: preferences, error: preferencesError } = await supabase
       .from('user_preferences')
-      .select('theme, language, currency')
+      .select('theme, language, gmail_scan_completed')
       .eq('user_id', user.id)
       .single()
 
@@ -61,7 +59,7 @@ export async function getUserProfile() {
     // Fetch notification preferences
     const { data: notifications, error: notificationsError } = await supabase
       .from('notification_preferences')
-      .select('email_enabled, sms_enabled, push_enabled')
+      .select('email_enabled, push_enabled')
       .eq('user_id', user.id)
       .single()
 
@@ -99,7 +97,6 @@ export async function updateProfile(data: ProfileData) {
       .from('profiles')
       .update({
         full_name: data.full_name,
-        phone_number: data.phone_number,
         updated_at: new Date().toISOString(),
       })
       .eq('id', user.id)
@@ -166,7 +163,6 @@ export async function updateNotificationPreferences(data: NotificationPreference
       .update({
         email_enabled: data.email_notifications,
         push_enabled: data.push_notifications,
-        sms_enabled: data.sms_notifications,
         updated_at: new Date().toISOString(),
       })
       .eq('user_id', user.id)

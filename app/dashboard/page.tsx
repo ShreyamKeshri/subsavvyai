@@ -18,6 +18,7 @@ import { Plus, Loader2, Edit2, Trash2, Mail } from 'lucide-react'
 import { getUserSubscriptions, deleteSubscription, type Subscription } from '@/lib/subscriptions/subscription-actions'
 import { getPendingRecommendations, dismissRecommendation, generateRecommendations, type OptimizationRecommendation } from '@/lib/recommendations/recommendation-actions'
 import { getConnectedServices, getAllUserUsageData, type ServiceUsage } from '@/lib/usage/usage-actions'
+import { getUserProfile } from '@/lib/settings/settings-actions'
 import { AddSubscriptionDialog } from '@/components/subscriptions/add-subscription-dialog'
 import { EditSubscriptionDialog } from '@/components/subscriptions/edit-subscription-dialog'
 import { BundleRecommendationsList } from '@/components/bundles/bundle-recommendations-list'
@@ -42,6 +43,7 @@ export default function DashboardPage() {
   const [selectedSubscriptionForEdit, setSelectedSubscriptionForEdit] = useState<Subscription | null>(null)
   const [showGmailScanDialog, setShowGmailScanDialog] = useState(false)
   const [gmailConnected, setGmailConnected] = useState(false)
+  const [gmailScanCompleted, setGmailScanCompleted] = useState(false)
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -53,12 +55,13 @@ export default function DashboardPage() {
     setLoadingData(true)
 
     // Fetch all data in parallel
-    const [subsResult, recsResult, servicesResult, usageResult, gmailResult] = await Promise.all([
+    const [subsResult, recsResult, servicesResult, usageResult, gmailResult, profileResult] = await Promise.all([
       getUserSubscriptions(),
       getPendingRecommendations(),
       getConnectedServices(),
       getAllUserUsageData(),
       isGmailConnected(),
+      getUserProfile(),
     ])
 
     if (subsResult.success && subsResult.data) {
@@ -80,6 +83,10 @@ export default function DashboardPage() {
 
     if (gmailResult.success) {
       setGmailConnected(gmailResult.connected)
+    }
+
+    if (profileResult.success && profileResult.data) {
+      setGmailScanCompleted(profileResult.data.preferences?.gmail_scan_completed || false)
     }
 
     setLoadingData(false)
@@ -171,6 +178,9 @@ export default function DashboardPage() {
     return sum + monthlyCost
   }, 0)
 
+  // Check if user signed in with Google (auto-connected Gmail)
+  const isGoogleOAuth = user?.app_metadata?.provider === 'google'
+
   // Onboarding checklist tasks
   const checklistTasks = [
     {
@@ -183,18 +193,21 @@ export default function DashboardPage() {
         addButton?.click()
       }
     },
-    {
+    // Only show "Connect Gmail" for non-Google OAuth users
+    ...(!isGoogleOAuth ? [{
       id: 'connect_gmail',
       title: 'Connect Gmail for auto-detection',
       description: 'Find subscriptions automatically from your inbox',
       completed: gmailConnected,
-      action: () => router.push('/api/gmail/connect')
-    },
+      action: () => window.location.href = '/api/gmail/connect'
+    }] : []),
     {
       id: 'scan_gmail',
       title: 'Scan your first subscriptions',
-      description: 'Auto-detect subscriptions from last 90 days',
-      completed: false, // TODO: Track if user has scanned before
+      description: isGoogleOAuth
+        ? 'Auto-detect subscriptions from your Gmail (last 90 days)'
+        : 'Auto-detect subscriptions from last 90 days',
+      completed: gmailScanCompleted,
       action: () => setShowGmailScanDialog(true)
     },
     {
@@ -307,7 +320,7 @@ export default function DashboardPage() {
               {!gmailConnected && (
                 <Button
                   className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
-                  onClick={() => router.push('/api/gmail/connect')}
+                  onClick={() => window.location.href = '/api/gmail/connect'}
                 >
                   <Mail className="w-4 h-4 mr-2" />
                   Connect Gmail

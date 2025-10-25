@@ -5,7 +5,7 @@
 
 import { createClient } from '@/lib/supabase/client'
 
-export type SignUpMethod = 'phone' | 'google' | 'email'
+export type SignUpMethod = 'google' | 'email'
 
 /**
  * Send welcome email asynchronously (non-blocking)
@@ -36,100 +36,11 @@ export interface LoginResult {
 }
 
 /**
- * Phone OTP Authentication
- */
-export const authWithPhone = {
-  /**
-   * Send OTP to phone number
-   */
-  async sendOTP(phoneNumber: string): Promise<{ success: boolean; error?: string }> {
-    try {
-      const supabase = createClient()
-
-      // Format phone number to E.164 format (+91XXXXXXXXXX)
-      const formattedPhone = phoneNumber.startsWith('+')
-        ? phoneNumber
-        : `+91${phoneNumber.replace(/^0+/, '')}`
-
-      const { error } = await supabase.auth.signInWithOtp({
-        phone: formattedPhone,
-        options: {
-          channel: 'sms',
-        }
-      })
-
-      if (error) {
-        return { success: false, error: error.message }
-      }
-
-      return { success: true }
-    } catch (error: unknown) {
-      return { success: false, error: error instanceof Error ? error.message : 'Failed to send OTP' }
-    }
-  },
-
-  /**
-   * Verify OTP and sign in/up
-   */
-  async verifyOTP(
-    phoneNumber: string,
-    otp: string
-  ): Promise<SignUpResult> {
-    try {
-      const supabase = createClient()
-
-      const formattedPhone = phoneNumber.startsWith('+')
-        ? phoneNumber
-        : `+91${phoneNumber.replace(/^0+/, '')}`
-
-      const { data, error } = await supabase.auth.verifyOtp({
-        phone: formattedPhone,
-        token: otp,
-        type: 'sms'
-      })
-
-      if (error) {
-        return {
-          success: false,
-          error: error.message,
-          method: 'phone'
-        }
-      }
-
-      if (!data.user) {
-        return {
-          success: false,
-          error: 'No user returned after verification',
-          method: 'phone'
-        }
-      }
-
-      // Create or update profile with phone number
-      await createOrUpdateProfile(data.user.id, {
-        phone_number: formattedPhone
-      })
-
-      return {
-        success: true,
-        user: data.user,
-        method: 'phone'
-      }
-    } catch (error: unknown) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Failed to verify OTP',
-        method: 'phone'
-      }
-    }
-  }
-}
-
-/**
  * Google OAuth Authentication
  */
 export const authWithGoogle = {
   /**
-   * Sign in with Google OAuth
+   * Sign in with Google OAuth (includes Gmail scope for auto-detection)
    */
   async signIn(): Promise<{ success: boolean; error?: string }> {
     try {
@@ -143,6 +54,8 @@ export const authWithGoogle = {
             access_type: 'offline',
             prompt: 'consent',
           },
+          // Include Gmail scope for seamless subscription auto-detection
+          scopes: 'openid email profile https://www.googleapis.com/auth/gmail.readonly',
         }
       })
 
@@ -479,33 +392,6 @@ async function createOrUpdateProfile(
   } catch (error) {
     console.error('Error creating/updating profile:', error)
   }
-}
-
-/**
- * Phone number validation
- */
-export function validatePhoneNumber(phone: string): { valid: boolean; message?: string } {
-  // Remove all non-digit characters
-  const cleaned = phone.replace(/\D/g, '')
-
-  // Check if it's a valid Indian mobile number (10 digits)
-  if (cleaned.length === 10) {
-    // Must start with 6, 7, 8, or 9
-    if (/^[6-9]/.test(cleaned)) {
-      return { valid: true }
-    }
-    return { valid: false, message: 'Mobile number must start with 6, 7, 8, or 9' }
-  }
-
-  // Check if it includes country code (+91 or 91)
-  if (cleaned.length === 12 && cleaned.startsWith('91')) {
-    if (/^91[6-9]/.test(cleaned)) {
-      return { valid: true }
-    }
-    return { valid: false, message: 'Invalid mobile number' }
-  }
-
-  return { valid: false, message: 'Please enter a valid 10-digit mobile number' }
 }
 
 /**

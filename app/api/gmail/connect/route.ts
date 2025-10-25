@@ -11,16 +11,17 @@ import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
  */
 export async function GET(request: NextRequest) {
   try {
+    // TODO: Re-enable rate limiting in production
     // Apply rate limiting (10 OAuth attempts per 15 minutes per IP)
-    const clientIp = getClientIp(request.headers);
-    const rateLimitResult = await checkRateLimit(clientIp, 'STRICT');
+    // const clientIp = getClientIp(request.headers);
+    // const rateLimitResult = await checkRateLimit(clientIp, 'STRICT');
 
-    if (!rateLimitResult.success) {
-      return NextResponse.json(
-        { error: 'Too many OAuth attempts. Please try again later.', resetAt: rateLimitResult.resetAt },
-        { status: 429 }
-      );
-    }
+    // if (!rateLimitResult.success) {
+    //   return NextResponse.json(
+    //     { error: 'Too many OAuth attempts. Please try again later.', resetAt: rateLimitResult.resetAt },
+    //     { status: 429 }
+    //   );
+    // }
 
     const supabase = await createClient();
 

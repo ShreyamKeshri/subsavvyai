@@ -121,9 +121,9 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString(),
     });
 
-    // Redirect to scan page
+    // Redirect to dashboard with success message
     return NextResponse.redirect(
-      new URL('/dashboard/scan?gmail_connected=true', request.url)
+      new URL('/dashboard?gmail_connected=true', request.url)
     );
   } catch (error) {
     console.error('Gmail OAuth callback error:', error);

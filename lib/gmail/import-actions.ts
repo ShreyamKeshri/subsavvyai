@@ -71,6 +71,8 @@ export async function bulkImportSubscriptions(subscriptions: ImportSubscriptionD
     for (const sub of subscriptions) {
       try {
         // Prepare subscription data
+        const billingDate = sub.startDate || new Date().toISOString().split('T')[0];
+
         const subscriptionData = {
           user_id: user.id,
           service_id: sub.serviceId,
@@ -81,11 +83,8 @@ export async function bulkImportSubscriptions(subscriptions: ImportSubscriptionD
           original_currency: sub.originalCurrency,
           billing_cycle: sub.billingCycle,
           status: sub.status,
-          start_date: sub.startDate || new Date().toISOString().split('T')[0],
-          next_billing_date: calculateNextBillingDate(
-            sub.startDate || new Date().toISOString().split('T')[0],
-            sub.billingCycle
-          ),
+          billing_date: billingDate,
+          next_billing_date: calculateNextBillingDate(billingDate, sub.billingCycle),
           notes: sub.notes
             ? `${sub.notes} (Auto-imported from Gmail)`
             : 'Auto-imported from Gmail',
@@ -114,6 +113,14 @@ export async function bulkImportSubscriptions(subscriptions: ImportSubscriptionD
       failed: errors.length,
       timestamp: new Date().toISOString(),
     });
+
+    // Mark Gmail scan as completed in user preferences (if at least 1 subscription imported)
+    if (imported > 0) {
+      await supabase
+        .from('user_preferences')
+        .update({ gmail_scan_completed: true })
+        .eq('user_id', user.id);
+    }
 
     // Revalidate paths
     revalidatePath('/dashboard');
@@ -160,6 +167,7 @@ function calculateNextBillingDate(startDate: string, cycle: 'monthly' | 'yearly'
 
 /**
  * Check if Gmail is connected for current user
+ * Returns connection status and the authentication method used
  */
 export async function isGmailConnected() {
   const supabase = await createClient();
@@ -170,19 +178,23 @@ export async function isGmailConnected() {
   } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    return { success: false, connected: false };
+    return { success: false, connected: false, method: null };
   }
 
-  // Check if user has Gmail tokens
+  // Check if user has Gmail tokens (either from Google OAuth or separate Gmail OAuth)
   const { data, error } = await supabase
     .from('gmail_tokens')
-    .select('id')
+    .select('id, created_at')
     .eq('user_id', user.id)
     .single();
 
   if (error || !data) {
-    return { success: true, connected: false };
+    return { success: true, connected: false, method: null };
   }
 
-  return { success: true, connected: true };
+  // Determine authentication method
+  const isGoogleOAuth = user.app_metadata?.provider === 'google';
+  const method = isGoogleOAuth ? 'google_oauth' : 'gmail_oauth';
+
+  return { success: true, connected: true, method };
 }
