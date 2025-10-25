@@ -10,6 +10,7 @@ import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { trackServerEvent, identifyUser } from '@/lib/analytics/server-events'
+import { storeGmailTokens } from '@/lib/gmail/oauth'
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
@@ -66,6 +67,33 @@ export async function GET(request: NextRequest) {
 
       if (data.session) {
         const { user } = data.session
+
+        // Extract provider tokens if available (for Google OAuth with Gmail scope)
+        const providerToken = data.session.provider_token
+        const providerRefreshToken = data.session.provider_refresh_token
+
+        // Check if this is a Google OAuth login with Gmail scope
+        const isGoogleOAuth = user.app_metadata?.provider === 'google'
+
+        // If we have provider tokens from Google OAuth, store them for Gmail access
+        if (isGoogleOAuth && providerToken && providerRefreshToken) {
+          try {
+            // Calculate token expiry (Google tokens typically expire in 1 hour)
+            const expiryDate = Date.now() + (3600 * 1000) // 1 hour from now
+
+            await storeGmailTokens(
+              user.id,
+              providerToken,
+              providerRefreshToken,
+              expiryDate
+            )
+
+            console.log('✅ Automatically stored Gmail tokens from Google OAuth')
+          } catch (error) {
+            // Don't fail the login if Gmail token storage fails
+            console.error('Failed to store Gmail tokens from Google OAuth:', error)
+          }
+        }
 
         // Check if profile exists, create if not
         const { data: profile, error: profileError } = await supabase

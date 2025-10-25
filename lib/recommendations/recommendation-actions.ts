@@ -9,7 +9,6 @@ import { createClient } from '@/lib/supabase/server'
 import { getUserSubscriptions } from '@/lib/subscriptions/subscription-actions'
 import { getAllUserUsageData } from '@/lib/usage/usage-actions'
 import { generateAllRecommendations, calculateTotalSavings } from './recommendation-engine'
-import { revalidatePath } from 'next/cache'
 import { validateInput, uuidSchema } from '@/lib/validators'
 import { trackServerEvent } from '@/lib/analytics/server-events'
 
@@ -145,7 +144,8 @@ export async function generateRecommendations(): Promise<{
       })
     }
 
-    revalidatePath('/dashboard')
+    // Note: revalidatePath removed because this action is called from client components
+    // Client components handle their own data refetching after calling this action
 
     return { success: true, data: data as OptimizationRecommendation[] }
   } catch (error) {
@@ -289,7 +289,7 @@ export async function acceptRecommendation(
       })
     }
 
-    revalidatePath('/dashboard')
+    // Note: revalidatePath removed - client components handle their own data refetching
 
     return { success: true }
   } catch (error) {
@@ -350,7 +350,7 @@ export async function dismissRecommendation(
       })
     }
 
-    revalidatePath('/dashboard')
+    // Note: revalidatePath removed - client components handle their own data refetching
 
     return { success: true }
   } catch (error) {

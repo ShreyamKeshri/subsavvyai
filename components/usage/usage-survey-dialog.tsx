@@ -65,6 +65,7 @@ export function UsageSurveyDialog({
   const [lastUsedDate, setLastUsedDate] = React.useState<Date | undefined>(new Date())
   const [note, setNote] = React.useState('')
   const [isSubmitting, setIsSubmitting] = React.useState(false)
+  const [calendarOpen, setCalendarOpen] = React.useState(false)
 
   const serviceName = subscription.services?.name || subscription.custom_service_name || 'this service'
 
@@ -126,7 +127,7 @@ export function UsageSurveyDialog({
           {frequency !== 'never' && (
             <div className="space-y-2">
               <Label>When did you last use it?</Label>
-              <Popover>
+              <Popover modal={true} open={calendarOpen} onOpenChange={setCalendarOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -136,11 +137,20 @@ export function UsageSurveyDialog({
                     {lastUsedDate ? format(lastUsedDate, 'PPP') : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent
+                  className="w-auto p-0"
+                  align="center"
+                  side="bottom"
+                  sideOffset={4}
+                  avoidCollisions={false}
+                >
                   <Calendar
                     mode="single"
                     selected={lastUsedDate}
-                    onSelect={setLastUsedDate}
+                    onSelect={(date) => {
+                      setLastUsedDate(date)
+                      setCalendarOpen(false)
+                    }}
                     disabled={(date) => date > new Date() || date < new Date('2020-01-01')}
                     initialFocus
                   />

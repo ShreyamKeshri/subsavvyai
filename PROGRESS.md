@@ -1,9 +1,9 @@
 # SubSavvyAI - Development Progress
 
-**Last Updated:** October 19, 2025
-**Current Phase:** MVP Launch Sprint - Post-Security Cleanup ✅
-**Overall Progress:** 96% Complete (96% MVP ready)
-**Launch Date:** October 31, 2025 (12 days remaining)
+**Last Updated:** October 25, 2025
+**Current Phase:** MVP Launch Sprint - Gmail Integration Complete ✅
+**Overall Progress:** 97% Complete (97% MVP ready)
+**Launch Date:** October 31, 2025 (6 days remaining)
 **Security Status:** 🟢 Production-Ready (All critical vulnerabilities fixed)
 
 ---
@@ -38,7 +38,77 @@
 
 ---
 
-## 🎯 Current Status: Feedback System + Notification Fixes Complete
+## 🎯 Current Status: Gmail OAuth Integration + Onboarding Tracking Complete
+
+### Day 7 (Oct 25, 2025): Gmail OAuth Fixes + Onboarding Checklist Tracking ✅
+
+**Time:** 4 hours
+
+**Completed:**
+
+**Gmail OAuth Fixes:**
+- ✅ **Fixed Gmail OAuth Flow** - Resolved authentication and redirect issues
+  - Fixed Spotify redirect URI vs App URL separation (127.0.0.1 for Spotify compatibility)
+  - Created migration 009: `gmail_tokens` table for encrypted token storage
+  - Fixed Google OAuth "redirect_uri_mismatch" errors
+  - Tested end-to-end Gmail connection and disconnection flow
+  - Working multi-auth support (email/password + Gmail OAuth)
+
+**Onboarding Checklist Tracking:**
+- ✅ **Gmail Scan Completion Tracking** - Dynamic checklist updates
+  - Created migration 010: Added `gmail_scan_completed` field to `user_preferences`
+  - Updated `bulkImportSubscriptions()` to mark scan as completed
+  - Dashboard now fetches and displays actual completion status
+  - Fixed hardcoded `completed: false` in onboarding checklist
+  - Proper UPDATE query to avoid RLS policy issues
+
+**Calendar UX Improvements:**
+- ✅ **Auto-Close Calendar on Date Selection** - Better UX
+  - Added state management to calendar popover
+  - Popover automatically closes when user selects a date
+  - Fixed calendar position bouncing when navigating months
+  - Added `modal={true}`, `sideOffset={4}`, `avoidCollisions={false}` for stability
+
+**Database Query Fixes:**
+- ✅ **Removed Non-Existent Columns** - Fixed console errors
+  - Removed `currency` from `user_preferences` SELECT (doesn't exist)
+  - Removed `sms_enabled` from `notification_preferences` SELECT (doesn't exist)
+  - Fixed all TypeScript compilation errors
+
+**SMS/Phone Cleanup:**
+- ✅ **Removed SMS Notification References** - Cleaner codebase
+  - Removed `sms_notifications` from notification preferences UI
+  - Removed `phone_number` from profile settings UI
+  - Kept `phone_number` in database schema (minimal disruption)
+  - Only removed what causes issues per user's request
+
+**Migrations Applied:**
+- Migration 009: `gmail_tokens` table (encrypted access_token, refresh_token)
+- Migration 010: `gmail_scan_completed` field tracking
+
+**Files Modified:**
+- `supabase/migrations/010_gmail_scan_tracking.sql` - New migration
+- `lib/gmail/import-actions.ts` - Mark scan as completed
+- `lib/settings/settings-actions.ts` - Fixed column errors, removed phone/SMS
+- `app/dashboard/page.tsx` - Fetch and display scan completion status
+- `components/usage/usage-survey-dialog.tsx` - Calendar auto-close
+- `components/settings/appearance-section.tsx` - Removed SMS references
+- `components/settings/profile-section.tsx` - Removed phone_number field
+- `CLAUDE.md` - Updated migration count to 10
+
+**Impact:**
+- Onboarding checklist now accurately tracks user progress
+- Calendar provides better UX with auto-close functionality
+- No more console errors from non-existent database columns
+- Cleaner codebase without SMS-related code
+- Gmail OAuth flow working properly for subscription scanning
+- Ready for production testing
+
+**Next:** Final polish and pre-launch testing
+
+---
+
+## 🎯 Previous Progress: Day 6 Complete
 
 ### Day 6 (Oct 19, 2025): Canny Feedback Integration + Notification Persistence ✅
 
@@ -99,8 +169,6 @@
 - Multi-user support without identity caching issues
 - Notifications persist across page navigation (UX improvement)
 - Ready for user feedback collection at beta launch
-
-**Next:** Final testing and polish for beta launch
 
 ---
 
@@ -675,7 +743,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
 ## 🗄️ Database Status
 
-### Migrations Applied: 8/8 ✅
+### Migrations Applied: 10/10 ✅
 
 1. `001_initial_schema.sql` - Core tables + 52 services
 2. `002_security_events.sql` - Audit logging
@@ -685,15 +753,19 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 6. `006_telecom_bundles.sql` - Bundle Optimizer tables + 20 bundles
 7. `007_manual_usage_tracking.sql` - Manual usage fields for non-OAuth services
 8. `008_currency_conversion.sql` - Currency conversion (original_cost, original_currency columns)
+9. `009_gmail_tokens.sql` - Gmail OAuth tokens table (encrypted access_token, refresh_token)
+10. `010_gmail_scan_tracking.sql` - Gmail scan completion tracking (gmail_scan_completed field)
 
 ### Schema Ready For:
 
 - ✅ User management
 - ✅ Subscriptions
 - ✅ AI recommendations
-- ✅ OAuth tokens
+- ✅ OAuth tokens (Spotify + Gmail)
 - ✅ Usage tracking
 - ✅ Telecom bundles matching
+- ✅ Gmail subscription scanning
+- ✅ Onboarding progress tracking
 - ⏳ Content catalog (future - Week 4)
 
 ---

@@ -31,9 +31,9 @@ export function AppearanceSection() {
       const { notifications: notifPrefs } = result.data
       setNotifications({
         emailReminders: notifPrefs.email_enabled || false,
-        savingsAlerts: notifPrefs.sms_enabled || false,
+        savingsAlerts: notifPrefs.push_enabled || false,
         weeklyDigest: notifPrefs.push_enabled || false,
-        newFeatures: notifPrefs.email_enabled || false, // Fallback since weekly_digest_enabled doesn't exist
+        newFeatures: notifPrefs.email_enabled || false,
       })
     }
   }
@@ -56,9 +56,9 @@ export function AppearanceSection() {
     // Map UI keys to database fields
     const mapping: Record<string, string> = {
       emailReminders: 'email_notifications',
-      savingsAlerts: 'sms_notifications',
+      savingsAlerts: 'push_notifications',
       weeklyDigest: 'push_notifications',
-      newFeatures: 'weekly_digest',
+      newFeatures: 'email_notifications',
     }
 
      

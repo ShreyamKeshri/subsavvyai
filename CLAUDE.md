@@ -66,7 +66,7 @@ Multi-method authentication via Supabase Auth:
 
 ### Database (Supabase/PostgreSQL)
 
-**Migrations Applied (8 total):**
+**Migrations Applied (10 total):**
 1. `001_initial_schema.sql` - Core tables, RLS policies, triggers
 2. `002_security_events.sql` - Security audit logging
 3. `003_auto_create_profile.sql` - Auto-create profile on signup
@@ -75,6 +75,8 @@ Multi-method authentication via Supabase Auth:
 6. `006_telecom_bundles.sql` - Bundle optimizer tables (telecom_bundles, bundle_recommendations) + 20 bundles
 7. `007_manual_usage_tracking.sql` - Manual usage fields (usage_frequency, last_used_date, is_manual, manual_usage_note)
 8. `008_currency_conversion.sql` - Currency conversion (original_cost, original_currency columns)
+9. `009_gmail_tokens.sql` - Gmail OAuth tokens table (encrypted access_token, refresh_token)
+10. `010_gmail_scan_tracking.sql` - Gmail scan completion tracking (gmail_scan_completed field)
 
 **Seed Data (run separately in Supabase):**
 - `supabase/seeds/001_indian_services.sql` - 52 popular Indian services (Netflix, Spotify, etc.)

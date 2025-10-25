@@ -15,7 +15,6 @@ import { toast } from 'sonner'
 
 interface ProfileFormData {
   full_name: string
-  phone_number: string
 }
 
 export function ProfileSection() {
@@ -24,7 +23,6 @@ export function ProfileSection() {
   const [isSaving, setIsSaving] = useState(false)
   const [formData, setFormData] = useState<ProfileFormData>({
     full_name: '',
-    phone_number: '',
   })
 
   useEffect(() => {
@@ -36,7 +34,6 @@ export function ProfileSection() {
     if (result.success && result.data) {
       setFormData({
         full_name: result.data.profile.full_name || '',
-        phone_number: result.data.profile.phone_number || '',
       })
     }
   }
@@ -96,20 +93,6 @@ export function ProfileSection() {
             onChange={handleInputChange}
             disabled={!isEditing}
             placeholder="Enter your full name"
-            className="w-full px-4 py-2 rounded-lg bg-muted text-foreground border border-input disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-ring"
-          />
-        </div>
-
-        {/* Phone Field */}
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-2">Phone Number (Optional)</label>
-          <input
-            type="tel"
-            name="phone_number"
-            value={formData.phone_number}
-            onChange={handleInputChange}
-            disabled={!isEditing}
-            placeholder="+91 9876543210"
             className="w-full px-4 py-2 rounded-lg bg-muted text-foreground border border-input disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-ring"
           />
         </div>
