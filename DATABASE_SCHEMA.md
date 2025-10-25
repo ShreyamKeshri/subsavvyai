@@ -2,7 +2,7 @@
 
 **Version:** 1.1
 **Database:** PostgreSQL (Supabase)
-**Last Updated:** October 11, 2025
+**Last Updated:** October 25, 2025
 
 ---
 
@@ -1135,6 +1135,72 @@ The `subscriptions` table has been extended to support **automatic currency conv
 
 ---
 
+---
+
+## Gmail OAuth Integration (Migration 009)
+
+### 14. `gmail_tokens`
+
+Stores encrypted Gmail OAuth tokens for subscription auto-detection.
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| id | UUID | PRIMARY KEY | Token record ID |
+| user_id | UUID | UNIQUE, NOT NULL, FK to auth.users(id) | User ID |
+| access_token | TEXT | NOT NULL | Encrypted Gmail access token |
+| refresh_token | TEXT | NOT NULL | Encrypted Gmail refresh token |
+| expires_at | TIMESTAMPTZ | NOT NULL | Token expiration timestamp |
+| scope | TEXT | NOT NULL | OAuth scopes granted |
+| created_at | TIMESTAMPTZ | DEFAULT NOW() | Record creation timestamp |
+| updated_at | TIMESTAMPTZ | DEFAULT NOW() | Last update timestamp |
+
+**Security:**
+- Tokens encrypted using AES-256-GCM (via `lib/crypto/encryption.ts`)
+- Graceful fallback if `ENCRYPTION_KEY` not configured
+- Separate from Google OAuth (in case user uses email/password auth)
+
+**Relationships:**
+- 1:1 with `auth.users` (user_id → auth.users.id)
+
+**Indexes:**
+- Primary key on `id`
+- Unique index on `user_id`
+- Index on `expires_at`
+
+**RLS Policies:**
+- Users can insert/select/update/delete own tokens only
+- Enforced via `auth.uid() = user_id`
+
+**Use Cases:**
+1. **Gmail Subscription Scanning** - Auto-detect subscriptions from emails
+2. **OAuth Token Refresh** - Automatic token renewal before expiry
+3. **Multi-Auth Support** - Works with email/password or Google OAuth
+
+---
+
+## Gmail Scan Tracking (Migration 010)
+
+### Extended: `user_preferences` - Gmail Scan Completion
+
+The `user_preferences` table has been extended to track Gmail scan completion for onboarding checklist.
+
+**New Column Added:**
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| gmail_scan_completed | BOOLEAN | DEFAULT FALSE, NOT NULL | Whether user has completed at least one Gmail scan |
+
+**Use Cases:**
+1. **Onboarding Checklist** - Track if user has scanned Gmail for subscriptions
+2. **Progress Tracking** - Show completion status on dashboard
+3. **User Engagement** - Encourage users to complete initial setup
+
+**Updated By:**
+- `bulkImportSubscriptions()` in `lib/gmail/import-actions.ts` sets to `true` when subscriptions imported
+- Dashboard reads value to display checklist completion
+
+---
+
 ## Changelog
 
 | Version | Date | Changes |
@@ -1143,11 +1209,13 @@ The `subscriptions` table has been extended to support **automatic currency conv
 | 1.1 | Oct 11, 2025 | Added Bundle Optimizer tables (migration 006) |
 | 1.2 | Oct 11, 2025 | Extended service_usage for manual tracking (migration 007) |
 | 1.3 | Oct 17, 2025 | Extended subscriptions for currency conversion (migration 008) |
+| 1.4 | Oct 25, 2025 | Added Gmail OAuth tables (migration 009) |
+| 1.5 | Oct 25, 2025 | Added Gmail scan tracking (migration 010) |
 
 ---
 
 **Next Steps:**
-1. ✅ Execute migration 008 SQL in Supabase
+1. ✅ Execute migrations 009 and 010 SQL in Supabase
 2. ✅ Reload PostgREST schema: `NOTIFY pgrst, 'reload schema';`
-3. Test currency conversion with different currencies
-4. Update exchange rates periodically (future enhancement)
+3. Test Gmail OAuth flow end-to-end
+4. Test onboarding checklist completion tracking
