@@ -86,7 +86,7 @@ subsavvyai/
 │   ├── utils/                    # Debounce & race condition prevention (NEW)
 │   └── validators.ts             # Zod validation schemas (NEW)
 ├── supabase/
-│   └── migrations/               # 8 database migrations (ALL APPLIED)
+│   └── migrations/               # 10 database migrations (ALL APPLIED)
 │       ├── 001_initial_schema.sql
 │       ├── 002_security_events.sql
 │       ├── 003_auto_create_profile.sql
@@ -94,7 +94,9 @@ subsavvyai/
 │       ├── 005_smart_downgrade_alerts.sql
 │       ├── 006_telecom_bundles.sql
 │       ├── 007_manual_usage_tracking.sql
-│       └── 008_currency_conversion.sql
+│       ├── 008_currency_conversion.sql
+│       ├── 009_gmail_tokens.sql
+│       └── 010_gmail_scan_tracking.sql
 └── docs/                         # Core documentation (8 files)
     ├── BUGS.md
     ├── CLAUDE.md
@@ -139,7 +141,7 @@ cp .env.example .env.local
 # - NEXT_PUBLIC_SENTRY_DSN (optional)
 
 # Run database migrations in Supabase SQL Editor
-# Execute each file in supabase/migrations/ in order (001 → 007)
+# Execute each file in supabase/migrations/ in order (001 → 010)
 
 # Start development server
 npm run dev
@@ -153,11 +155,11 @@ Open [http://127.0.0.1:3000](http://127.0.0.1:3000)
 
 ## 📊 Development Progress
 
-### Current Status: **MVP LAUNCH SPRINT - DAY 6 COMPLETE!** 🚀
+### Current Status: **MVP LAUNCH SPRINT - DAY 7 COMPLETE!** 🚀
 
 **Security Status:** 🟢 Production-Ready
 
-**Launch Date:** October 31, 2025 (12 days remaining)
+**Launch Date:** October 31, 2025 (6 days remaining)
 
 | Phase | Status | Progress |
 |-------|--------|----------|
@@ -174,10 +176,12 @@ Open [http://127.0.0.1:3000](http://127.0.0.1:3000)
 | **Security Audit & Fixes** | ✅ Complete | 100% |
 | **Canny Feedback Integration** | ✅ Complete | 100% |
 | **Notification Persistence** | ✅ Complete | 100% |
+| **Gmail OAuth Integration** | ✅ Complete | 100% |
+| **Onboarding Tracking** | ✅ Complete | 100% |
 | **Content Overlap Detector** | ⏳ POST-MVP | 0% |
 | **Price Monitoring** | ⏳ POST-MVP | 0% |
 
-**Overall Progress:** 65% → 96% MVP features complete
+**Overall Progress:** 65% → 97% MVP features complete
 
 ---
 
@@ -294,16 +298,68 @@ Open [http://127.0.0.1:3000](http://127.0.0.1:3000)
 - ✅ CSP headers configured
 
 ### 🗄️ Database
-- ✅ 8 migrations applied
-- ✅ 17 tables with RLS policies
+- ✅ 10 migrations applied
+- ✅ 18 tables with RLS policies
 - ✅ Auto-triggers for analytics cache
 - ✅ Materialized views for performance
 - ✅ 52 Indian services seeded
 - ✅ 20 telecom bundles seeded
+- ✅ Gmail OAuth token storage (encrypted)
 
 ---
 
 ## 🎯 Recent Accomplishments
+
+### Day 7 (Oct 25, 2025): Gmail OAuth Integration + Onboarding Tracking ✅
+
+**Status:** ✅ Gmail integration and onboarding tracking complete
+
+**Gmail OAuth Fixes:**
+- ✅ **Fixed Gmail OAuth Flow** - Resolved authentication and redirect issues
+- ✅ **Migration 009: gmail_tokens table** - Encrypted token storage (AES-256-GCM)
+- ✅ **Google OAuth compatibility** - Fixed "redirect_uri_mismatch" errors
+- ✅ **Multi-auth support** - Works with email/password + Gmail OAuth
+- ✅ **Tested end-to-end** - Connection and disconnection flows working
+
+**Onboarding Checklist Tracking:**
+- ✅ **Migration 010: gmail_scan_completed** - Dynamic checklist tracking
+- ✅ **Automatic status updates** - Marks complete when subscriptions imported
+- ✅ **Dashboard integration** - Fetches and displays actual completion status
+- ✅ **Fixed hardcoded values** - No more static `completed: false`
+- ✅ **RLS-compliant queries** - UPDATE instead of UPSERT to avoid policy issues
+
+**Calendar UX Improvements:**
+- ✅ **Auto-close on date selection** - Better user experience
+- ✅ **Fixed position bouncing** - Stable popover positioning
+- ✅ **State management** - Proper open/close handling
+
+**Database Query Fixes:**
+- ✅ **Removed non-existent columns** - Fixed console errors
+  - Removed `currency` from user_preferences
+  - Removed `sms_enabled` from notification_preferences
+- ✅ **TypeScript compilation** - All errors resolved
+
+**SMS/Phone Cleanup:**
+- ✅ **Removed SMS notification UI** - Cleaner interface
+- ✅ **Removed phone_number field** - From profile settings
+- ✅ **Database schema preserved** - Kept for minimal disruption
+
+**Files Modified:**
+- `supabase/migrations/010_gmail_scan_tracking.sql` - New migration
+- `lib/gmail/import-actions.ts` - Mark scan as completed
+- `lib/settings/settings-actions.ts` - Fixed column errors, removed phone/SMS
+- `app/dashboard/page.tsx` - Fetch and display scan completion
+- `components/usage/usage-survey-dialog.tsx` - Calendar auto-close
+- `components/settings/*` - Removed SMS/phone references
+
+**Impact:**
+- Onboarding checklist now accurately tracks progress
+- Gmail OAuth ready for subscription auto-detection
+- Better UX with calendar auto-close
+- Cleaner codebase without unused features
+- No more console errors
+
+---
 
 ### Day 6 (Oct 19, 2025): Canny Feedback Integration + Notification Persistence ✅
 
@@ -512,7 +568,7 @@ npm run format       # Format code with Prettier (if configured)
 ### Core Documentation (Always maintained):
 - **[CLAUDE.md](./CLAUDE.md)** - AI assistant guidelines & architecture
 - **[PROGRESS.md](./PROGRESS.md)** - Detailed development log & sprint status
-- **[DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md)** - Complete database schema (8 migrations)
+- **[DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md)** - Complete database schema (10 migrations)
 - **[TESTING_GUIDE.md](./TESTING_GUIDE.md)** - Comprehensive test plan
 - **[BUGS.md](./BUGS.md)** - Known issues tracker (0 critical bugs!)
 - **[SECURITY.md](./SECURITY.md)** - Security measures & policies (v1.2)
@@ -644,11 +700,11 @@ Special thanks to Claude Code for development assistance! 🤖
 
 ---
 
-**Status:** 🚀 MVP Launch Sprint (Day 6/21 Complete) | **Branch:** `main` | **Progress:** 96%
+**Status:** 🚀 MVP Launch Sprint (Day 7/21 Complete) | **Branch:** `main` | **Progress:** 97%
 
-**Security:** 🟢 Production-Ready | **Next Milestone:** Beta Testing & Iteration (Week 3)
+**Security:** 🟢 Production-Ready | **Next Milestone:** Final Polish & Pre-Launch Testing
 
-**Critical Bugs:** 0 🎉 | **Critical Security Issues:** 0 🔒 | **Lines of Code:** 10,000+
+**Critical Bugs:** 0 🎉 | **Critical Security Issues:** 0 🔒 | **Lines of Code:** 10,500+
 
 ---
 
