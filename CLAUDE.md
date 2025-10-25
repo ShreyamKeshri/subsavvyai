@@ -78,6 +78,11 @@ Multi-method authentication via Supabase Auth:
 9. `009_gmail_tokens.sql` - Gmail OAuth tokens table (encrypted access_token, refresh_token)
 10. `010_gmail_scan_tracking.sql` - Gmail scan completion tracking (gmail_scan_completed field)
 
+**Upcoming Migrations (Final Sprint):**
+11. `011_payment_system.sql` - Add tier field to profiles, payment_transactions table for Razorpay
+
+**Note:** Savings tracking fields (`cancelled_at`, `cancellation_reason`) and `cancellation_guides` table already exist in migration 001!
+
 **Seed Data (run separately in Supabase):**
 - `supabase/seeds/001_indian_services.sql` - 52 popular Indian services (Netflix, Spotify, etc.)
 
@@ -222,10 +227,61 @@ unsubscribr/
 
 ## Current Status
 
-**Phase:** MVP Launch Sprint - Day 6 Complete! ✅
+**Phase:** MVP Final Sprint (Days 7-16) - In Progress 🚀
 **Security Status:** 🟢 Production-Ready (All critical vulnerabilities fixed)
+**Completion:** 72% → Target 95%
+**Target Launch:** November 5, 2025
 
-**Recent Completions (Day 6 - Oct 19, 2025):**
+## MVP Final Sprint Overview
+
+After completing Gmail OAuth integration (PR #27), we are now in the **Final Sprint** to complete 4 critical features before MVP launch:
+
+### Sprint Phases (10 days / 80 hours)
+
+**Phase 1: Savings Tracker (Days 7-8)** - Track savings from cancelled subscriptions
+- Use existing `cancelled_at`, `cancellation_reason` fields (already in schema!)
+- Cancel subscription dialog with reason selection
+- Savings progress card (total saved, monthly savings rate)
+- Cancelled subscriptions timeline
+- Dedicated `/dashboard/savings` page
+
+**Phase 2: Razorpay Payment System (Days 9-10)** - Free vs Pro tier with gating
+- Migration 011: Add `tier` field to profiles, `payment_transactions` table
+- Free tier: 5 subscriptions max
+- Pro tier: ₹99/month or ₹999/year (7-day trial)
+- Premium feature gating middleware
+- Razorpay checkout integration
+- Webhook handlers for payment events
+- Upgrade prompts and paywall UI
+
+**Phase 3: Cancellation Guides (Days 11-13)** - Step-by-step cancellation instructions
+- Use existing `cancellation_guides` table (already in schema!)
+- Populate guides for 20 services (10 deep + 10 basic)
+- Deep guides: Netflix, Prime, Hotstar, Spotify, YouTube Premium, Zee5, SonyLIV, Zomato Pro, Swiggy One, JioSaavn
+- Basic guides: Voot, Gaana, MakeMyTrip, BookMyShow, etc.
+- UPI mandate cancellation instructions
+- Guide difficulty ratings and time estimates
+- Dedicated `/dashboard/guides` page (Pro feature)
+
+**Phase 4: Email Notification System (Days 14-15)** - Automated reminders and alerts
+- React Email templates (billing reminders, unused alerts, welcome emails)
+- Resend API integration
+- Vercel Cron jobs (daily billing reminders, monthly unused alerts)
+- Email preference management
+- Notification preview and testing
+
+**Day 16: Testing & Polish** - Final QA and bug fixes
+
+**Recent Completions (Day 7 - Gmail OAuth & Onboarding Tracking):**
+
+**Gmail OAuth Integration (PR #27):**
+- ✅ Gmail OAuth flow with proper token management
+- ✅ OAuth token encryption (AES-256-GCM)
+- ✅ Gmail scan completion tracking (prevents re-prompting)
+- ✅ Migration 009: gmail_tokens table
+- ✅ Migration 010: gmail_scan_completed field in profiles
+
+**Previous Completions (Day 6 - Oct 19, 2025):**
 
 **Canny Feedback Integration (PR #26):**
 - ✅ JWT-based SSO authentication for seamless user experience
@@ -251,7 +307,7 @@ unsubscribr/
 - ✅ Implemented debounced updates (race condition prevention)
 - ✅ OAuth token encryption (AES-256-GCM with graceful fallback)
 - ✅ Fixed Supabase client memory leak (client instance caching)
-- ✅ Created SECURITY_AUDIT.md (comprehensive security documentation)
+- ✅ Comprehensive security documentation in SECURITY.md
 
 **New Security Infrastructure:**
 - `lib/crypto/encryption.ts` - AES-256-GCM encryption utilities
@@ -635,7 +691,8 @@ NEXT_PUBLIC_APP_URL=http://127.0.0.1:3000
 6. **Server Actions:** All mutations should be server actions
 7. **TypeScript:** Never use `any`, prefer `unknown` with type guards
 8. **RLS:** All tables must have RLS enabled
-9. **Migrations:** 8 migrations applied (001-008). Seed data in `supabase/seeds/` must be run separately
+9. **Migrations:** 10 migrations applied (001-010). Only 1 more needed (011: payment_system). Seed data in `supabase/seeds/` must be run separately
+23. **Existing Schema Features:** The initial schema (001) already includes `cancelled_at`, `cancellation_reason` in subscriptions table, and `cancellation_guides` table - no new migrations needed for these!
 10. **Subscription Form:** "Last/Current Billing Date" calculates next billing automatically
 11. **Spotify OAuth:** Use 127.0.0.1 not localhost (security requirement)
 12. **Manual Usage Tracking:** For services without OAuth APIs (Netflix, Hotstar, etc.)
@@ -697,7 +754,6 @@ SubSavvyAI maintains only **8 essential markdown files** in the repository. Thes
    - MVP feature list and priorities
    - Week-by-week implementation plan
    - Decision-making framework
-   - **Should merge PIVOT_PLAN.md into this file**
    - All decisions must align with this plan
    - Update after completing major features
 
@@ -717,12 +773,11 @@ SubSavvyAI maintains only **8 essential markdown files** in the repository. Thes
    - Recommended improvements
    - Update when security changes are made
 
-7. **TESTING_GUIDE.md** - Comprehensive Test Plan
-   - Test cases for all features
-   - Manual testing procedures
-   - Expected results and validation
-   - Edge cases and error scenarios
-   - Update after implementing new features
+7. **EVENTS.md** - Analytics Event Tracking
+   - PostHog event definitions
+   - Event tracking implementation
+   - Analytics best practices
+   - Update when adding new events
 
 8. **Thoughts.md** - Developer Scratchpad
    - Observations and ideas
@@ -753,26 +808,29 @@ When working on specific features or tasks, you may create temporary markdown fi
 **After Completing a Feature:**
 1. Update **PROGRESS.md** with completion status
 2. Update **DATABASE_SCHEMA.md** if schema changed
-3. Update **TESTING_GUIDE.md** with new test cases
-4. Update **MVP_ROADMAP.md** if plans changed
-5. Add any bugs found to **BUGS.md**
+3. Update **MVP_ROADMAP.md** if plans changed
+4. Add any bugs found to **BUGS.md**
+5. Update **EVENTS.md** if adding new analytics events
 6. Remove temporary docs created during implementation
 
 ### Core Files Summary
 
 ```
 SubSavvyAI Root/
-├── BUGS.md              [Known issues tracker]
-├── DATABASE_SCHEMA.md   [Complete schema documentation]
-├── EMAIL_TEMPLATES.md   [Email template repository]
-├── MVP_ROADMAP.md       [Project plan & timeline]
-├── PROGRESS.md          [Development progress]
-├── SECURITY.md          [Security documentation]
-├── TESTING_GUIDE.md     [Comprehensive test plan]
-├── Thoughts.md          [Developer scratchpad]
-├── CLAUDE.md            [This file - AI guidelines]
-└── README.md            [Project overview - not actively maintained]
+├── BUGS.md                  [Known issues tracker]
+├── DATABASE_SCHEMA.md       [Complete schema documentation]
+├── EMAIL_TEMPLATES.md       [Email template repository]
+├── MVP_ROADMAP.md           [Project plan & timeline]
+├── PROGRESS.md              [Development progress]
+├── SECURITY.md              [Security documentation]
+├── EVENTS.md                [Analytics event tracking]
+├── Thoughts.md              [Developer scratchpad]
+├── CLAUDE.md                [This file - AI guidelines]
+├── MVP_FINAL_SPRINT.md      [Final Sprint implementation guide]
+├── POSTHOG_SETUP_GUIDE.md   [PostHog analytics setup]
+└── README.md                [Project overview - not actively maintained]
 ```
 
 **Rule:** Only these files should exist in the repository root. Any other `.md` files are temporary and must be removed before merging.
 - Don't delete feature branches.
+- Always read the migrations folder so you are always aware of the database tables and their structures.

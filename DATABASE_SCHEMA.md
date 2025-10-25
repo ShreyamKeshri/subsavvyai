@@ -1209,13 +1209,51 @@ The `user_preferences` table has been extended to track Gmail scan completion fo
 | 1.1 | Oct 11, 2025 | Added Bundle Optimizer tables (migration 006) |
 | 1.2 | Oct 11, 2025 | Extended service_usage for manual tracking (migration 007) |
 | 1.3 | Oct 17, 2025 | Extended subscriptions for currency conversion (migration 008) |
-| 1.4 | Oct 25, 2025 | Added Gmail OAuth tables (migration 009) |
+| .4 | Oct 25, 2025 | Added Gmail OAuth tables (migration 009) |
 | 1.5 | Oct 25, 2025 | Added Gmail scan tracking (migration 010) |
+| 1.6 | Oct 26, 2025 | MVP Final Sprint - Upcoming migration 011 (payment_transactions + tier field) |
+
+---
+
+## MVP Final Sprint - Upcoming Schema Changes
+
+### Migration 011: Payment System & Tiering (Days 9-10)
+
+**New Table: `payment_transactions`**
+- Transaction history for Razorpay payments
+- Columns: id, user_id, tier, amount, currency, razorpay_order_id, razorpay_payment_id, status, created_at
+
+**Modify Table: `profiles`**
+- Add `tier` field (ENUM: 'free', 'pro')
+- Add `tier_expires_at` TIMESTAMPTZ for trial tracking
+- Add `stripe_customer_id` TEXT for future Stripe integration
+
+**New ENUM: `user_tier`**
+- Values: 'free', 'pro'
+
+**New ENUM: `transaction_status`**
+- Values: 'pending', 'completed', 'failed', 'refunded'
+
+**Free Tier Limits:**
+- Max 5 subscriptions
+- Basic recommendations only
+- No access to `/dashboard/savings` or `/dashboard/guides`
+
+**Pro Tier Benefits:**
+- Unlimited subscriptions
+- Full AI recommendations
+- Cancellation guides
+- Savings tracker
+- Priority support
 
 ---
 
 **Next Steps:**
-1. ✅ Execute migrations 009 and 010 SQL in Supabase
-2. ✅ Reload PostgREST schema: `NOTIFY pgrst, 'reload schema';`
-3. Test Gmail OAuth flow end-to-end
-4. Test onboarding checklist completion tracking
+1. ✅ All 10 migrations applied
+2. 📅 **Phase 1 (Days 7-8):** Implement Savings Tracker (uses existing `cancelled_at`, `cancellation_reason`)
+3. 📅 **Phase 2 (Days 9-10):** Create migration 011 + implement Razorpay payment system
+4. 📅 **Phase 3 (Days 11-13):** Populate `cancellation_guides` table with 20 guides
+5. 📅 **Phase 4 (Days 14-15):** Implement email notification system
+6. 🎯 **Day 16:** Testing & Launch Prep
+
+**Note:** `cancelled_at`, `cancellation_reason` (savings tracker) and `cancellation_guides` table already exist in migration 001!
