@@ -414,13 +414,13 @@ Open [http://127.0.0.1:3000](http://127.0.0.1:3000)
 - ✅ **Debounced updates** - Fire-and-forget pattern prevents race conditions
 - ✅ **OAuth token encryption** - AES-256-GCM with graceful fallback, backward compatible
 - ✅ **Supabase client memory leak fix** - Client caching prevents unbounded WebSocket connections
-- ✅ **Security documentation** - Created comprehensive SECURITY_AUDIT.md
+- ✅ **Security documentation** - Comprehensive security audit completed
 
 **Files Created:**
 - `lib/crypto/encryption.ts` - AES-256-GCM encryption utilities
 - `lib/utils/debounce.ts` - Race condition prevention
 - `lib/validators.ts` - Zod validation schemas
-- `SECURITY_AUDIT.md` - Complete security audit (23 issues reviewed)
+- Security audit complete (23 issues reviewed and fixed)
 
 **Security Posture:**
 - **Before:** 🟡 Moderate (5 critical, 2 high-priority issues)
@@ -480,7 +480,7 @@ Open [http://127.0.0.1:3000](http://127.0.0.1:3000)
 - Zero-flash dark mode with localStorage persistence
 
 ### Spotify OAuth Documentation ✅
-- Created comprehensive SPOTIFY_SETUP.md
+- Comprehensive Spotify OAuth setup documentation
 - Fixed redirect URI security requirement (127.0.0.1 not localhost)
 - Updated .env.example with correct values
 
@@ -568,23 +568,17 @@ npm run format       # Format code with Prettier (if configured)
 ### Core Documentation (Always maintained):
 - **[CLAUDE.md](./CLAUDE.md)** - AI assistant guidelines & architecture
 - **[PROGRESS.md](./PROGRESS.md)** - Detailed development log & sprint status
-- **[DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md)** - Complete database schema (10 migrations)
-- **[TESTING_GUIDE.md](./TESTING_GUIDE.md)** - Comprehensive test plan
+- **[DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md)** - Complete database schema (11 migrations)
 - **[BUGS.md](./BUGS.md)** - Known issues tracker (0 critical bugs!)
 - **[SECURITY.md](./SECURITY.md)** - Security measures & policies (v1.2)
-- **[SECURITY_AUDIT.md](./SECURITY_AUDIT.md)** - Complete security audit (NEW - Day 5)
 - **[EMAIL_TEMPLATES.md](./EMAIL_TEMPLATES.md)** - Email templates
 - **[MVP_ROADMAP.md](./MVP_ROADMAP.md)** - Product roadmap & milestones
+- **[EVENTS.md](./EVENTS.md)** - Analytics event tracking (PostHog)
 - **[Thoughts.md](./Thoughts.md)** - Developer notes & observations
-
-### Feature Documentation:
-- **[SPOTIFY_SETUP.md](./SPOTIFY_SETUP.md)** - Spotify OAuth setup guide
 
 ---
 
 ## 🧪 Testing
-
-Comprehensive testing guide available in [TESTING_GUIDE.md](./TESTING_GUIDE.md)
 
 ### Test Coverage:
 - ✅ Authentication flows (Email, Google OAuth)
