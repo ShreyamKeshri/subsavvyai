@@ -1228,13 +1228,14 @@ The `user_preferences` table has been extended to track Gmail scan completion fo
 | 1.3 | Oct 17, 2025 | Extended subscriptions for currency conversion (migration 008) |
 | .4 | Oct 25, 2025 | Added Gmail OAuth tables (migration 009) |
 | 1.5 | Oct 25, 2025 | Added Gmail scan tracking (migration 010) |
-| 1.6 | Oct 26, 2025 | MVP Final Sprint - Upcoming migration 011 (payment_transactions + tier field) |
+| 1.6 | Oct 27, 2025 | Migration 011: Savings optimization types (optimization_type, previous_cost, monthly_savings, optimization_date, optimization_notes) |
+| 1.7 | TBD | MVP Final Sprint - Upcoming migration 012 (payment_transactions + tier field) |
 
 ---
 
 ## MVP Final Sprint - Upcoming Schema Changes
 
-### Migration 011: Payment System & Tiering (Days 9-10)
+### Migration 012: Payment System & Tiering (Days 9-10)
 
 **New Table: `payment_transactions`**
 - Transaction history for Razorpay payments

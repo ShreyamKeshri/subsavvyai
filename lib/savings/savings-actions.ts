@@ -280,13 +280,18 @@ export async function reactivateSubscription(
       return { success: false, error: 'Subscription not found' }
     }
 
-    // Reactivate subscription
+    // Reactivate subscription - clear all optimization tracking
     const { error: updateError } = await supabase
       .from('subscriptions')
       .update({
         status: 'active',
         cancelled_at: null,
         cancellation_reason: null,
+        optimization_type: null,
+        previous_cost: null,
+        monthly_savings: null,
+        optimization_date: null,
+        optimization_notes: null,
       })
       .eq('id', subscriptionId)
       .eq('user_id', user.id)
