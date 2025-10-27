@@ -28,9 +28,10 @@ const debouncedAIRecommendations = debounce(
   2000
 )
 
+import type { OptimizationType } from '@/lib/savings/savings-utils'
+
 export type BillingCycle = 'monthly' | 'quarterly' | 'yearly' | 'custom'
 export type SubscriptionStatus = 'active' | 'cancellation_initiated' | 'cancelled' | 'paused' | 'expired'
-export type OptimizationType = 'cancel' | 'downgrade' | 'upgrade' | 'bundle'
 
 export interface Subscription {
   id: string

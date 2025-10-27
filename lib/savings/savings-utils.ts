@@ -36,7 +36,8 @@ export function calculateMonthlyCost(cost: number, billingCycle: BillingCycle): 
 }
 
 /**
- * Calculate months since cancellation
+ * Calculate complete months since cancellation
+ * Only counts full months - subtracts 1 if current day hasn't reached cancellation day yet
  */
 export function calculateMonthsSince(cancelledAt: string): number {
   const now = new Date()
@@ -44,8 +45,15 @@ export function calculateMonthsSince(cancelledAt: string): number {
 
   const yearsDiff = now.getFullYear() - cancelled.getFullYear()
   const monthsDiff = now.getMonth() - cancelled.getMonth()
+  let totalMonths = yearsDiff * 12 + monthsDiff
 
-  return yearsDiff * 12 + monthsDiff
+  // If current day is before cancellation day, we haven't completed this month yet
+  if (now.getDate() < cancelled.getDate()) {
+    totalMonths -= 1
+  }
+
+  // Ensure non-negative result
+  return Math.max(0, totalMonths)
 }
 
 /**
@@ -60,23 +68,27 @@ export function calculateMonthlySavings(
   const monthlyCurrentCost = calculateMonthlyCost(currentCost, billingCycle)
 
   switch (optimizationType) {
-    case 'cancel':
+    case 'cancel': {
       // Full monthly cost is saved
       return monthlyCurrentCost
+    }
 
-    case 'downgrade':
+    case 'downgrade': {
       // Difference between previous and current
       if (!previousCost) return 0
       const monthlyPreviousCost = calculateMonthlyCost(previousCost, billingCycle)
       return Math.max(0, monthlyPreviousCost - monthlyCurrentCost)
+    }
 
-    case 'upgrade':
+    case 'upgrade': {
       // Negative savings (spending more) - we don't track this in savings
       return 0
+    }
 
-    case 'bundle':
+    case 'bundle': {
       // Bundle savings are stored directly (calculated externally)
       return 0
+    }
 
     default:
       return 0

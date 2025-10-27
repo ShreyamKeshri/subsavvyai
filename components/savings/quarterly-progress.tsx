@@ -12,7 +12,6 @@ import { formatINR } from '@/lib/savings/savings-utils'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 interface QuarterlyProgressProps {
-  totalYearToDateSavings: number
   monthlySavingsRate: number
 }
 

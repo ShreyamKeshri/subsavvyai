@@ -79,7 +79,6 @@ export function SavingsContent({ savingsData }: SavingsContentProps) {
 
       {/* Quarterly Progress */}
       <QuarterlyProgress
-        totalYearToDateSavings={totalYearToDateSavings}
         monthlySavingsRate={monthlySavingsRate}
       />
 

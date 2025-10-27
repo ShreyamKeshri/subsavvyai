@@ -70,14 +70,9 @@ BEGIN
       monthly_previous := calculate_monthly_cost(p_previous_cost, p_billing_cycle);
       RETURN GREATEST(monthly_previous - monthly_current, 0);
 
-    -- Upgrade: typically negative savings (spending more)
+    -- Upgrade: not counted as savings (per documentation)
     WHEN 'upgrade' THEN
-      IF p_previous_cost IS NULL THEN
-        RETURN 0;
-      END IF;
-      monthly_previous := calculate_monthly_cost(p_previous_cost, p_billing_cycle);
-      -- Return negative to show increased spending
-      RETURN monthly_previous - monthly_current;
+      RETURN 0;
 
     -- Bundle: calculated externally, stored in monthly_savings
     WHEN 'bundle' THEN
@@ -100,7 +95,8 @@ CREATE OR REPLACE FUNCTION auto_calculate_savings()
 RETURNS TRIGGER AS $$
 BEGIN
   -- Only calculate if optimization_type is set and monthly_savings is not manually set
-  IF NEW.optimization_type IS NOT NULL AND (NEW.monthly_savings IS NULL OR NEW.monthly_savings = 0) THEN
+  -- Don't overwrite intentional zero values for bundles (use IS NULL only)
+  IF NEW.optimization_type IS NOT NULL AND NEW.monthly_savings IS NULL THEN
     NEW.monthly_savings := calculate_optimization_savings(
       NEW.optimization_type,
       NEW.cost,
