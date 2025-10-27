@@ -1,0 +1,900 @@
+[
+  {
+    "serviceId": "netflix",
+    "serviceName": "Netflix",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Open Netflix Account Settings",
+        "description": "Go to www.netflix.com and sign in. Click on your profile icon in the top right corner and select 'Account'.",
+        "imageUrl": "/guides/netflix/step1.png",
+        "deepLink": "https://www.netflix.com/account"
+      },
+      {
+        "step": 2,
+        "title": "Find Membership & Billing",
+        "description": "Scroll down to the 'Membership & Billing' section.",
+        "imageUrl": "/guides/netflix/step2.png"
+      },
+      {
+        "step": 3,
+        "title": "Click 'Cancel Membership'",
+        "description": "Click on the 'Cancel Membership' button.",
+        "imageUrl": "/guides/netflix/step3.png"
+      },
+      {
+        "step": 4,
+        "title": "Confirm Cancellation",
+        "description": "Click 'Finish Cancellation' to confirm. You'll have access until your current billing period ends.",
+        "imageUrl": "/guides/netflix/step4.png"
+      },
+      {
+        "step": 5,
+        "title": "Cancel UPI Auto-Pay",
+        "description": "IMPORTANT: Also cancel your UPI mandate to stop future charges.",
+        "deepLink": "#upi-instructions"
+      }
+    ],
+    "upiMandateInstructions": [
+      {
+        "provider": "gpay",
+        "steps": [
+          "Open Google Pay app",
+          "Tap on your profile picture",
+          "Select 'Autopay'",
+          "Find 'Netflix' in the list",
+          "Tap 'Cancel autopay'",
+          "Confirm cancellation"
+        ]
+      },
+      {
+        "provider": "phonepe",
+        "steps": [
+          "Open PhonePe app",
+          "Go to 'My Account'",
+          "Select 'AutoPay'",
+          "Find 'Netflix'",
+          "Tap 'Disable'"
+        ]
+      }
+    ],
+    "estimatedTimeMinutes": 8,
+    "difficulty": "easy",
+    "lastVerified": "2025-10-26"
+  },
+  {
+    "serviceId": "amazon_prime_video",
+    "serviceName": "Amazon Prime Video",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Go to Account & Settings",
+        "description": "Visit https://www.primevideo.com and sign in. Hover over your profile name and select 'Account & Settings'.",
+        "imageUrl": "/guides/amazon_prime_video/step1.png",
+        "deepLink": "https://www.primevideo.com"
+      },
+      {
+        "step": 2,
+        "title": "Select 'Your Account' Tab",
+        "description": "In the 'Account & Settings' menu, click on the 'Your Account' tab.",
+        "imageUrl": "/guides/amazon_prime_video/step2.png"
+      },
+      {
+        "step": 3,
+        "title": "Click 'End Subscription'",
+        "description": "Under 'Prime Video Channels', find the subscription you want to cancel and click 'End Subscription'.",
+        "imageUrl": "/guides/amazon_prime_video/step3.png"
+      },
+      {
+        "step": 4,
+        "title": "Confirm Cancellation",
+        "description": "Follow the prompts to confirm the cancellation of your subscription.",
+        "imageUrl": "/guides/amazon_prime_video/step4.png"
+      },
+      {
+        "step": 5,
+        "title": "Cancel UPI Auto-Pay",
+        "description": "IMPORTANT: Also cancel your UPI mandate to stop future charges.",
+        "deepLink": "#upi-instructions"
+      }
+    ],
+    "upiMandateInstructions": [
+      {
+        "provider": "gpay",
+        "steps": [
+          "Open Google Pay app",
+          "Tap on your profile picture",
+          "Select 'Autopay'",
+          "Find 'Amazon Prime Video' in the list",
+          "Tap 'Cancel autopay'",
+          "Confirm cancellation"
+        ]
+      },
+      {
+        "provider": "phonepe",
+        "steps": [
+          "Open PhonePe app",
+          "Go to 'My Account'",
+          "Select 'AutoPay'",
+          "Find 'Amazon Prime Video'",
+          "Tap 'Disable'"
+        ]
+      }
+    ],
+    "estimatedTimeMinutes": 7,
+    "difficulty": "easy",
+    "lastVerified": "2025-10-26"
+  },
+  {
+    "serviceId": "disney_plus_hotstar",
+    "serviceName": "Disney+ Hotstar",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Access 'My Space'",
+        "description": "Open the Disney+ Hotstar app or website and sign in. Click on 'My Space'.",
+        "imageUrl": "/guides/disney_plus_hotstar/step1.png",
+        "deepLink": "https://www.hotstar.com"
+      },
+      {
+        "step": 2,
+        "title": "Navigate to 'Help & Settings'",
+        "description": "In 'My Space', click on 'Help & Settings'.",
+        "imageUrl": "/guides/disney_plus_hotstar/step2.png"
+      },
+      {
+        "step": 3,
+        "title": "Select 'Subscription & Devices'",
+        "description": "Under 'Help & Settings', click on 'Subscription & Devices'.",
+        "imageUrl": "/guides/disney_plus_hotstar/step3.png"
+      },
+      {
+        "step": 4,
+        "title": "Click 'Cancel'",
+        "description": "Click on 'Cancel' to initiate the cancellation process.",
+        "imageUrl": "/guides/disney_plus_hotstar/step4.png"
+      },
+      {
+        "step": 5,
+        "title": "Confirm Cancellation",
+        "description": "Follow the prompts to confirm the cancellation of your subscription.",
+        "imageUrl": "/guides/disney_plus_hotstar/step5.png"
+      },
+      {
+        "step": 6,
+        "title": "Cancel UPI Auto-Pay",
+        "description": "IMPORTANT: Also cancel your UPI mandate to stop future charges.",
+        "deepLink": "#upi-instructions"
+      }
+    ],
+    "upiMandateInstructions": [
+      {
+        "provider": "gpay",
+        "steps": [
+          "Open Google Pay app",
+          "Tap on your profile picture",
+          "Select 'Autopay'",
+          "Find 'Disney+ Hotstar' in the list",
+          "Tap 'Cancel autopay'",
+          "Confirm cancellation"
+        ]
+      },
+      {
+        "provider": "phonepe",
+        "steps": [
+          "Open PhonePe app",
+          "Go to 'My Account'",
+          "Select 'AutoPay'",
+          "Find 'Disney+ Hotstar'",
+          "Tap 'Disable'"
+        ]
+      }
+    ],
+    "estimatedTimeMinutes": 10,
+    "difficulty": "medium",
+    "lastVerified": "2025-10-26"
+  },
+  {
+    "serviceId": "spotify",
+    "serviceName": "Spotify",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Log into Your Account",
+        "description": "Visit https://www.spotify.com and sign in to your account.",
+        "imageUrl": "/guides/spotify/step1.png",
+        "deepLink": "https://www.spotify.com"
+      },
+      {
+        "step": 2,
+        "title": "Go to 'Your Plan'",
+        "description": "Click on 'Your Plan' under your account settings.",
+        "imageUrl": "/guides/spotify/step2.png"
+      },
+      {
+        "step": 3,
+        "title": "Click 'Change Plan'",
+        "description": "Click on 'Change Plan'.",
+        "imageUrl": "/guides/spotify/step3.png"
+      },
+      {
+        "step": 4,
+        "title": "Select 'Cancel Premium'",
+        "description": "Scroll down and click on 'Cancel Premium'.",
+        "imageUrl": "/guides/spotify/step4.png"
+      },
+      {
+        "step": 5,
+        "title": "Confirm Cancellation",
+        "description": "Follow the prompts to confirm the cancellation of your subscription.",
+        "imageUrl": "/guides/spotify/step5.png"
+      },
+      {
+        "step": 6,
+        "title": "Cancel UPI Auto-Pay",
+        "description": "IMPORTANT: Also cancel your UPI mandate to stop future charges.",
+        "deepLink": "#upi-instructions"
+      }
+    ],
+    "upiMandateInstructions": [
+      {
+        "provider": "gpay",
+        "steps": [
+          "Open Google Pay app",
+          "Tap on your profile picture",
+          "Select 'Autopay'",
+          "Find 'Spotify' in the list",
+          "Tap 'Cancel autopay'",
+          "Confirm cancellation"
+        ]
+      },
+      {
+        "provider": "phonepe",
+        "steps": [
+          "Open PhonePe app",
+          "Go to 'My Account'",
+          "Select 'AutoPay'",
+          "Find 'Spotify'",
+          "Tap 'Disable'"
+        ]
+      }
+    ],
+    "estimatedTimeMinutes": 8,
+    "difficulty": "easy",
+    "lastVerified": "2025-10-26"
+  },
+  {
+    "serviceId": "youtube_premium",
+    "serviceName": "YouTube Premium",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Go to YouTube Settings",
+        "description": "Open the YouTube app or website and sign in. Click on your profile picture and select 'Settings'.",
+        "imageUrl": "/guides/youtube_premium/step1.png",
+        "deepLink": "https://www.youtube.com"
+      },
+      {
+        "step": 2,
+        "title": "Select 'Purchases and Memberships'",
+        "description": "In 'Settings', click on 'Purchases and Memberships'.",
+        "imageUrl": "/guides/youtube_premium/step2.png"
+      },
+      {
+        "step": 3,
+        "title": "Click 'Manage Membership'",
+        "description": "Under 'Memberships', click on 'Manage Membership'.",
+        "imageUrl": "/guides/youtube_premium/step3.png"
+      },
+      {
+        "step": 4,
+        "title": "Click 'Deactivate'",
+        "description": "Click on 'Deactivate' or 'Cancel Membership' and follow the prompts to confirm.",
+        "imageUrl": "/guides/youtube_premium/step4.png"
+      },
+      {
+        "step": 5,
+        "title": "Cancel UPI Auto-Pay",
+        "description": "Cancel your UPI mandate to stop future automatic payments.",
+        "deepLink": "#upi-instructions"
+      }
+    ],
+    "upiMandateInstructions": [
+      {
+        "provider": "gpay",
+        "steps": [
+          "Open Google Pay app",
+          "Tap on profile picture",
+          "Select 'Autopay'",
+          "Find 'YouTube Premium'",
+          "Tap 'Cancel autopay'",
+          "Confirm cancellation"
+        ]
+      },
+      {
+        "provider": "phonepe",
+        "steps": [
+          "Open PhonePe app",
+          "Go to 'My Account'",
+          "Select 'AutoPay'",
+          "Find 'YouTube Premium'",
+          "Tap 'Disable'"
+        ]
+      }
+    ],
+    "estimatedTimeMinutes": 6,
+    "difficulty": "easy",
+    "lastVerified": "2025-10-26"
+  },
+  {
+    "serviceId": "zee5",
+    "serviceName": "Zee5",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Login to Zee5",
+        "description": "Go to https://www.zee5.com and log in with your account.",
+        "imageUrl": "/guides/zee5/step1.png",
+        "deepLink": "https://www.zee5.com"
+      },
+      {
+        "step": 2,
+        "title": "Access Account Settings",
+        "description": "Click on your profile picture and select 'Account'.",
+        "imageUrl": "/guides/zee5/step2.png"
+      },
+      {
+        "step": 3,
+        "title": "Select 'Subscription'",
+        "description": "Go to 'Subscription' to see your active plan.",
+        "imageUrl": "/guides/zee5/step3.png"
+      },
+      {
+        "step": 4,
+        "title": "Click 'Cancel Subscription'",
+        "description": "Click 'Cancel Subscription' and confirm the action.",
+        "imageUrl": "/guides/zee5/step4.png"
+      },
+      {
+        "step": 5,
+        "title": "Cancel UPI Auto-Pay",
+        "description": "Cancel UPI auto-pay to avoid future charges.",
+        "deepLink": "#upi-instructions"
+      }
+    ],
+    "upiMandateInstructions": [
+      {
+        "provider": "gpay",
+        "steps": [
+          "Open Google Pay app",
+          "Tap profile picture",
+          "Select 'Autopay'",
+          "Find 'Zee5'",
+          "Tap 'Cancel autopay'",
+          "Confirm cancellation"
+        ]
+      },
+      {
+        "provider": "phonepe",
+        "steps": [
+          "Open PhonePe app",
+          "Go to 'My Account'",
+          "Select 'AutoPay'",
+          "Find 'Zee5'",
+          "Tap 'Disable'"
+        ]
+      }
+    ],
+    "estimatedTimeMinutes": 7,
+    "difficulty": "easy",
+    "lastVerified": "2025-10-26"
+  },
+  {
+    "serviceId": "sonyliv",
+    "serviceName": "SonyLIV",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Sign in to SonyLIV",
+        "description": "Visit https://www.sonyliv.com and log in.",
+        "imageUrl": "/guides/sonyliv/step1.png",
+        "deepLink": "https://www.sonyliv.com"
+      },
+      {
+        "step": 2,
+        "title": "Go to 'Account'",
+        "description": "Click on profile icon > 'Account'.",
+        "imageUrl": "/guides/sonyliv/step2.png"
+      },
+      {
+        "step": 3,
+        "title": "Select Subscription",
+        "description": "Click on your subscription plan.",
+        "imageUrl": "/guides/sonyliv/step3.png"
+      },
+      {
+        "step": 4,
+        "title": "Click 'Cancel'",
+        "description": "Click 'Cancel Subscription' and follow the confirmation steps.",
+        "imageUrl": "/guides/sonyliv/step4.png"
+      },
+      {
+        "step": 5,
+        "title": "Cancel UPI Auto-Pay",
+        "description": "Cancel UPI mandate to stop recurring payments.",
+        "deepLink": "#upi-instructions"
+      }
+    ],
+    "upiMandateInstructions": [
+      {
+        "provider": "gpay",
+        "steps": [
+          "Open Google Pay app",
+          "Tap profile picture",
+          "Select 'Autopay'",
+          "Find 'SonyLIV'",
+          "Tap 'Cancel autopay'",
+          "Confirm cancellation"
+        ]
+      },
+      {
+        "provider": "phonepe",
+        "steps": [
+          "Open PhonePe app",
+          "Go to 'My Account'",
+          "Select 'AutoPay'",
+          "Find 'SonyLIV'",
+          "Tap 'Disable'"
+        ]
+      }
+    ],
+    "estimatedTimeMinutes": 6,
+    "difficulty": "medium",
+    "lastVerified": "2025-10-26"
+  },
+  {
+    "serviceId": "zomato_pro",
+    "serviceName": "Zomato Pro",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Open Zomato App",
+        "description": "Sign in and go to your profile.",
+        "imageUrl": "/guides/zomato_pro/step1.png",
+        "deepLink": "https://www.zomato.com"
+      },
+      {
+        "step": 2,
+        "title": "Go to 'Pro Membership'",
+        "description": "Click on 'Pro Membership' under profile.",
+        "imageUrl": "/guides/zomato_pro/step2.png"
+      },
+      {
+        "step": 3,
+        "title": "Select 'Cancel Membership'",
+        "description": "Click 'Cancel Membership' and confirm.",
+        "imageUrl": "/guides/zomato_pro/step3.png"
+      },
+      {
+        "step": 4,
+        "title": "Cancel UPI Auto-Pay",
+        "description": "Cancel UPI mandate to prevent future deductions.",
+        "deepLink": "#upi-instructions"
+      }
+    ],
+    "upiMandateInstructions": [
+      {
+        "provider": "gpay",
+        "steps": [
+          "Open Google Pay app",
+          "Tap profile picture",
+          "Select 'Autopay'",
+          "Find 'Zomato Pro'",
+          "Tap 'Cancel autopay'",
+          "Confirm cancellation"
+        ]
+      },
+      {
+        "provider": "phonepe",
+        "steps": [
+          "Open PhonePe app",
+          "Go to 'My Account'",
+          "Select 'AutoPay'",
+          "Find 'Zomato Pro'",
+          "Tap 'Disable'"
+        ]
+      }
+    ],
+    "estimatedTimeMinutes": 5,
+    "difficulty": "easy",
+    "lastVerified": "2025-10-26"
+  },
+  {
+    "serviceId": "swiggy_one",
+    "serviceName": "Swiggy One",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Open Swiggy App",
+        "description": "Sign in to your Swiggy account and tap on your profile.",
+        "imageUrl": "/guides/swiggy_one/step1.png",
+        "deepLink": "https://www.swiggy.com"
+      },
+      {
+        "step": 2,
+        "title": "Go to 'Swiggy One Membership'",
+        "description": "Select 'Swiggy One' from profile menu.",
+        "imageUrl": "/guides/swiggy_one/step2.png"
+      },
+      {
+        "step": 3,
+        "title": "Tap 'Cancel Membership'",
+        "description": "Click 'Cancel Membership' and follow prompts.",
+        "imageUrl": "/guides/swiggy_one/step3.png"
+      },
+      {
+        "step": 4,
+        "title": "Cancel UPI Auto-Pay",
+        "description": "Cancel UPI mandate to avoid further charges.",
+        "deepLink": "#upi-instructions"
+      }
+    ],
+    "upiMandateInstructions": [
+      {
+        "provider": "gpay",
+        "steps": ["Open Google Pay app", "Tap profile", "Select 'Autopay'", "Find 'Swiggy One'", "Cancel autopay", "Confirm"]
+      },
+      {
+        "provider": "phonepe",
+        "steps": ["Open PhonePe app", "Go to 'AutoPay'", "Find 'Swiggy One'", "Disable autopay"]
+      }
+    ],
+    "estimatedTimeMinutes": 5,
+    "difficulty": "easy",
+    "lastVerified": "2025-10-26"
+  },
+  {
+    "serviceId": "jiosaavn",
+    "serviceName": "JioSaavn",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Open JioSaavn App",
+        "description": "Sign in and go to 'Settings'.",
+        "imageUrl": "/guides/jiosaavn/step1.png",
+        "deepLink": "https://www.jiosaavn.com"
+      },
+      {
+        "step": 2,
+        "title": "Go to 'My Subscription'",
+        "description": "Click on 'Subscription' to view plan.",
+        "imageUrl": "/guides/jiosaavn/step2.png"
+      },
+      {
+        "step": 3,
+        "title": "Select 'Cancel Subscription'",
+        "description": "Tap 'Cancel Subscription' and confirm.",
+        "imageUrl": "/guides/jiosaavn/step3.png"
+      },
+      {
+        "step": 4,
+        "title": "Cancel UPI Auto-Pay",
+        "description": "Cancel UPI mandate to avoid auto-charges.",
+        "deepLink": "#upi-instructions"
+      }
+    ],
+    "upiMandateInstructions": [
+      {
+        "provider": "gpay",
+        "steps": ["Open GPay", "Tap profile", "Select 'Autopay'", "Find 'JioSaavn'", "Cancel autopay", "Confirm"]
+      },
+      {
+        "provider": "phonepe",
+        "steps": ["Open PhonePe", "Go to 'AutoPay'", "Find 'JioSaavn'", "Disable autopay"]
+      }
+    ],
+    "estimatedTimeMinutes": 5,
+    "difficulty": "easy",
+    "lastVerified": "2025-10-26"
+  },
+  {
+    "serviceId": "voot",
+    "serviceName": "Voot",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Login to Voot",
+        "description": "Go to https://www.voot.com and sign in.",
+        "imageUrl": "/guides/voot/step1.png",
+        "deepLink": "https://www.voot.com"
+      },
+      {
+        "step": 2,
+        "title": "Go to 'My Account'",
+        "description": "Click on profile > 'Account'.",
+        "imageUrl": "/guides/voot/step2.png"
+      },
+      {
+        "step": 3,
+        "title": "Select 'Cancel Subscription'",
+        "description": "Click 'Cancel Subscription' and follow confirmation.",
+        "imageUrl": "/guides/voot/step3.png"
+      }
+    ],
+    "upiMandateInstructions": [
+      {
+        "provider": "gpay",
+        "steps": ["Open GPay", "Tap profile", "Select 'Autopay'", "Find 'Voot'", "Cancel autopay", "Confirm"]
+      }
+    ],
+    "estimatedTimeMinutes": 4,
+    "difficulty": "easy",
+    "lastVerified": "2025-10-26"
+  },
+  {
+    "serviceId": "gaana",
+    "serviceName": "Gaana",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Open Gaana App",
+        "description": "Sign in and navigate to 'Settings'.",
+        "imageUrl": "/guides/gaana/step1.png",
+        "deepLink": "https://gaana.com"
+      },
+      {
+        "step": 2,
+        "title": "Select 'Subscription'",
+        "description": "Go to 'Subscription' to view active plan.",
+        "imageUrl": "/guides/gaana/step2.png"
+      },
+      {
+        "step": 3,
+        "title": "Cancel Subscription",
+        "description": "Click 'Cancel Subscription' and confirm.",
+        "imageUrl": "/guides/gaana/step3.png"
+      }
+    ],
+    "upiMandateInstructions": [
+      {
+        "provider": "gpay",
+        "steps": ["Open GPay", "Tap profile", "Autopay", "Find 'Gaana'", "Cancel autopay"]
+      }
+    ],
+    "estimatedTimeMinutes": 4,
+    "difficulty": "easy",
+    "lastVerified": "2025-10-26"
+  },
+  {
+    "serviceId": "makemytrip",
+    "serviceName": "MakeMyTrip",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Login to MakeMyTrip",
+        "description": "Go to https://www.makemytrip.com and sign in.",
+        "imageUrl": "/guides/makemytrip/step1.png",
+        "deepLink": "https://www.makemytrip.com"
+      },
+      {
+        "step": 2,
+        "title": "Go to 'Profile' > 'My Bookings'",
+        "description": "Click 'Profile' > 'My Bookings' to find active plans.",
+        "imageUrl": "/guides/makemytrip/step2.png"
+      },
+      {
+        "step": 3,
+        "title": "Cancel Subscription",
+        "description": "Select the subscription or membership and click 'Cancel'.",
+        "imageUrl": "/guides/makemytrip/step3.png"
+      }
+    ],
+    "upiMandateInstructions": [],
+    "estimatedTimeMinutes": 5,
+    "difficulty": "medium",
+    "lastVerified": "2025-10-26"
+  },
+  {
+    "serviceId": "bookmyshow",
+    "serviceName": "BookMyShow",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Open BookMyShow App",
+        "description": "Sign in and go to your profile.",
+        "imageUrl": "/guides/bookmyshow/step1.png",
+        "deepLink": "https://in.bookmyshow.com"
+      },
+      {
+        "step": 2,
+        "title": "Go to 'BMS Wallet / Membership'",
+        "description": "Select your membership plan.",
+        "imageUrl": "/guides/bookmyshow/step2.png"
+      },
+      {
+        "step": 3,
+        "title": "Cancel Membership",
+        "description": "Click 'Cancel Membership' and confirm.",
+        "imageUrl": "/guides/bookmyshow/step3.png"
+      }
+    ],
+    "upiMandateInstructions": [],
+    "estimatedTimeMinutes": 5,
+    "difficulty": "medium",
+    "lastVerified": "2025-10-26"
+  },
+  {
+    "serviceId": "times_prime",
+    "serviceName": "Times Prime",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Login to Times Prime",
+        "description": "Visit https://www.timesprime.com and log in.",
+        "imageUrl": "/guides/times_prime/step1.png",
+        "deepLink": "https://www.timesprime.com"
+      },
+      {
+        "step": 2,
+        "title": "Go to 'My Account' > 'Membership'",
+        "description": "Select 'Membership' to see active plans.",
+        "imageUrl": "/guides/times_prime/step2.png"
+      },
+      {
+        "step": 3,
+        "title": "Cancel Membership",
+        "description": "Click 'Cancel Membership' and follow confirmation steps.",
+        "imageUrl": "/guides/times_prime/step3.png"
+      }
+    ],
+    "upiMandateInstructions": [],
+    "estimatedTimeMinutes": 5,
+    "difficulty": "medium",
+    "lastVerified": "2025-10-26"
+  },
+  {
+    "serviceId": "ola_money",
+    "serviceName": "Ola Money",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Open Ola App",
+        "description": "Sign in and navigate to 'Wallet'.",
+        "imageUrl": "/guides/ola_money/step1.png",
+        "deepLink": "https://www.olacabs.com"
+      },
+      {
+        "step": 2,
+        "title": "Go to 'Ola Money Subscription'",
+        "description": "Click on your subscription plan.",
+        "imageUrl": "/guides/ola_money/step2.png"
+      },
+      {
+        "step": 3,
+        "title": "Cancel Subscription",
+        "description": "Click 'Cancel' and confirm.",
+        "imageUrl": "/guides/ola_money/step3.png"
+      }
+    ],
+    "upiMandateInstructions": [],
+    "estimatedTimeMinutes": 4,
+    "difficulty": "easy",
+    "lastVerified": "2025-10-26"
+  },
+  {
+    "serviceId": "tata_play_binge",
+    "serviceName": "TATA Play Binge",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Login to TATA Play Account",
+        "description": "Visit https://www.tataplaybinge.com and sign in.",
+        "imageUrl": "/guides/tata_play_binge/step1.png",
+        "deepLink": "https://www.tataplaybinge.com"
+      },
+      {
+        "step": 2,
+        "title": "Go to 'My Subscriptions'",
+        "description": "Navigate to 'My Subscriptions'.",
+        "imageUrl": "/guides/tata_play_binge/step2.png"
+      },
+      {
+        "step": 3,
+        "title": "Cancel Subscription",
+        "description": "Click 'Cancel Subscription' and confirm.",
+        "imageUrl": "/guides/tata_play_binge/step3.png"
+      }
+    ],
+    "upiMandateInstructions": [],
+    "estimatedTimeMinutes": 5,
+    "difficulty": "medium",
+    "lastVerified": "2025-10-26"
+  },
+  {
+    "serviceId": "audible",
+    "serviceName": "Audible",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Login to Audible",
+        "description": "Go to https://www.audible.in and log in.",
+        "imageUrl": "/guides/audible/step1.png",
+        "deepLink": "https://www.audible.in"
+      },
+      {
+        "step": 2,
+        "title": "Go to 'Account Details'",
+        "description": "Click profile > 'Account Details'.",
+        "imageUrl": "/guides/audible/step2.png"
+      },
+      {
+        "step": 3,
+        "title": "Cancel Membership",
+        "description": "Click 'Cancel Membership' and confirm.",
+        "imageUrl": "/guides/audible/step3.png"
+      }
+    ],
+    "upiMandateInstructions": [],
+    "estimatedTimeMinutes": 5,
+    "difficulty": "medium",
+    "lastVerified": "2025-10-26"
+  },
+  {
+    "serviceId": "kindle_unlimited",
+    "serviceName": "Kindle Unlimited",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Login to Amazon Account",
+        "description": "Visit https://www.amazon.in/kindleunlimited and sign in.",
+        "imageUrl": "/guides/kindle_unlimited/step1.png",
+        "deepLink": "https://www.amazon.in/kindleunlimited"
+      },
+      {
+        "step": 2,
+        "title": "Go to 'Manage Subscription'",
+        "description": "Click 'Manage Subscription'.",
+        "imageUrl": "/guides/kindle_unlimited/step2.png"
+      },
+      {
+        "step": 3,
+        "title": "Cancel Membership",
+        "description": "Select 'Cancel Subscription' and confirm.",
+        "imageUrl": "/guides/kindle_unlimited/step3.png"
+      }
+    ],
+    "upiMandateInstructions": [],
+    "estimatedTimeMinutes": 5,
+    "difficulty": "medium",
+    "lastVerified": "2025-10-26"
+  },
+  {
+    "serviceId": "cult_fit",
+    "serviceName": "Cult.fit",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Login to Cult.fit App",
+        "description": "Sign in and navigate to 'Profile'.",
+        "imageUrl": "/guides/cult_fit/step1.png",
+        "deepLink": "https://www.cult.fit"
+      },
+      {
+        "step": 2,
+        "title": "Go to 'Memberships'",
+        "description": "Select your active membership plan.",
+        "imageUrl": "/guides/cult_fit/step2.png"
+      },
+      {
+        "step": 3,
+        "title": "Cancel Membership",
+        "description": "Click 'Cancel Membership' and follow prompts.",
+        "imageUrl": "/guides/cult_fit/step3.png"
+      }
+    ],
+    "upiMandateInstructions": [],
+    "estimatedTimeMinutes": 5,
+    "difficulty": "medium",
+    "lastVerified": "2025-10-26"
+  }
+]

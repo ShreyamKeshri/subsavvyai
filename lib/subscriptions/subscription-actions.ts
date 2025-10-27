@@ -30,6 +30,7 @@ const debouncedAIRecommendations = debounce(
 
 export type BillingCycle = 'monthly' | 'quarterly' | 'yearly' | 'custom'
 export type SubscriptionStatus = 'active' | 'cancellation_initiated' | 'cancelled' | 'paused' | 'expired'
+export type OptimizationType = 'cancel' | 'downgrade' | 'upgrade' | 'bundle'
 
 export interface Subscription {
   id: string
@@ -48,6 +49,12 @@ export interface Subscription {
   notes: string | null
   created_at: string
   updated_at: string
+  // Optimization tracking fields
+  optimization_type: OptimizationType | null
+  previous_cost: number | null
+  monthly_savings: number | null
+  optimization_date: string | null
+  optimization_notes: string | null
   service?: {
     id: string
     name: string
