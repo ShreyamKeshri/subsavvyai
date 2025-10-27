@@ -736,6 +736,7 @@ NEXT_PUBLIC_APP_URL=http://127.0.0.1:3000
 20. **Security Status:** 🟢 Production-Ready (all critical/high-priority vulnerabilities fixed)
 21. **Canny Feedback (NEW - Day 6):** JWT-based SSO for seamless user authentication, board set to Public for free tier
 22. **Notification Persistence (NEW - Day 6):** Read/unread state persists via localStorage across sessions
+25. **NEVER DELETE FEATURE BRANCHES:** Feature branches should be kept after merging PRs for reference and history. DO NOT run `git branch -d` commands.
 
 ## Next Steps
 
