@@ -211,6 +211,18 @@ export const updateRecommendationStatusSchema = z.object({
 })
 
 /**
+ * Cancellation reason validation schema
+ */
+export const cancellationReasonSchema = z.enum([
+  'not_using',
+  'too_expensive',
+  'found_alternative',
+  'downgraded',
+  'temporary',
+  'other'
+])
+
+/**
  * Safe parse helper with detailed error messages
  */
 export function validateInput<T>(

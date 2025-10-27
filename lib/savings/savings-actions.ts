@@ -8,7 +8,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { trackServerEvent } from '@/lib/analytics/server-events'
-import { validateInput, uuidSchema } from '@/lib/validators'
+import { validateInput, uuidSchema, cancellationReasonSchema } from '@/lib/validators'
 import {
   projectAnnualSavings,
   calculateGoalProgress,
@@ -58,6 +58,13 @@ export async function cancelSubscription(
     const idValidation = validateInput(uuidSchema, subscriptionId)
     if (!idValidation.success) {
       return { success: false, error: 'Invalid subscription ID' }
+    }
+
+    // Validate cancellation reason
+    const reasonValidation = validateInput(cancellationReasonSchema, reason)
+    if (!reasonValidation.success) {
+      const firstError = Object.values(reasonValidation.errors)[0]
+      return { success: false, error: firstError }
     }
 
     // Get subscription details for tracking

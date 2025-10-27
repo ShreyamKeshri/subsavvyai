@@ -46,7 +46,6 @@ export function QuarterlyProgress({
   ]
 
   const quarterlyData = quarters.map((q) => {
-    const isCurrentOrPast = currentMonth >= q.months[0]
     const monthsInQuarter = q.months.filter((m) => m <= currentMonth).length
     const saved = monthlySavingsRate * monthsInQuarter
     const progress = q.target > 0 ? Math.min(100, (saved / q.target) * 100) : 0
@@ -55,7 +54,6 @@ export function QuarterlyProgress({
       ...q,
       saved,
       progress,
-      isCurrentOrPast,
     }
   })
 
