@@ -154,7 +154,12 @@ export async function getBundleRecommendations(): Promise<{
       .select(
         `
         *,
-        bundle:bundle_id (*)
+        bundle:bundle_id (
+          *,
+          sources,
+          is_verified,
+          last_verified
+        )
       `
       )
       .eq('user_id', user.id)
