@@ -11,9 +11,9 @@ INSERT INTO public.services (name, category, typical_price_inr, is_active) VALUE
   ('Disney+ Hotstar', 'OTT', 124.92, true),
   ('SonyLIV', 'OTT', 299.00, true),
   ('ZEE5', 'OTT', 299.00, true),
-  ('Voot', 'OTT', 299.00, true),
-  ('MX Player', 'OTT', 149.00, true),
-  ('Eros Now', 'OTT', 79.00, true),
+  -- ('Voot', 'OTT', 299.00, true), -- REMOVED: Merged with JioCinema/Disney+ Hotstar in 2023
+  -- ('MX Player', 'OTT', 149.00, true), -- REMOVED: Premium discontinued, now free with ads only
+  -- ('Eros Now', 'OTT', 79.00, true), -- REMOVED: Merged into Eros One, subscription unclear
   ('ALTBalaji', 'OTT', 100.00, true),
   ('hoichoi', 'OTT', 116.33, true),
   ('Sun NXT', 'OTT', 33.25, true),
@@ -26,7 +26,7 @@ INSERT INTO public.services (name, category, typical_price_inr, is_active) VALUE
   ('Gaana Plus', 'Music', 99.00, true),
   ('JioSaavn Pro', 'Music', 99.00, true),
   ('Amazon Music Unlimited', 'Music', 149.00, true),
-  ('Wynk Music', 'Music', 99.00, true),
+  -- ('Wynk Music', 'Music', 99.00, true), -- REMOVED: Airtel shutting down, migrating to Apple Music
 
   -- Food Delivery
   ('Zomato Gold', 'Food Delivery', 300.00, true),
@@ -48,7 +48,7 @@ INSERT INTO public.services (name, category, typical_price_inr, is_active) VALUE
   ('Cult.fit', 'Fitness', 1499.00, true),
   ('HealthifyMe Pro', 'Fitness', 399.67, true),
   ('Fitpass', 'Fitness', 799.00, true),
-  ('Nike Training Club', 'Fitness', 499.00, true),
+  -- ('Nike Training Club', 'Fitness', 499.00, true), -- REMOVED: Made completely free in 2020
 
   -- News & Magazines
   ('Times Prime', 'News', 83.25, true),

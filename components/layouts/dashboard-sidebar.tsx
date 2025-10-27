@@ -1,6 +1,6 @@
 "use client"
 
-import { BarChart3, Settings, LogOut, Home, TrendingDown, Zap, Package, PiggyBank, type LucideIcon } from "lucide-react"
+import { BarChart3, Settings, LogOut, Home, TrendingDown, Zap, Package, PiggyBank, BookText, type LucideIcon } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { auth } from "@/lib/auth/auth-helpers"
@@ -64,6 +64,12 @@ export function DashboardSidebar() {
           label="Bundles"
           href="/dashboard/bundles"
           active={pathname === '/dashboard/bundles'}
+        />
+        <NavItem
+          icon={BookText}
+          label="Guides"
+          href="/dashboard/guides"
+          active={pathname?.startsWith('/dashboard/guides') === true}
         />
       </nav>
 
