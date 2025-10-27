@@ -11,6 +11,7 @@ import { Search, Clock } from 'lucide-react'
 import Link from 'next/link'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import type { CancellationGuide, DifficultyLevel } from '@/lib/guides/guide-actions'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 
@@ -65,13 +66,13 @@ export function GuidesContent({ guides }: GuidesContentProps) {
 
       {/* Search Bar */}
       <div className="relative">
-        <Search className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
-        <input
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none z-10" />
+        <Input
           type="text"
           placeholder="Search for a service…"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+          className="pl-10"
         />
       </div>
 

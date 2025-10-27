@@ -8,6 +8,14 @@
 import { AlertTriangle, Calendar, Flag } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
 import { useState } from 'react'
 
 interface GuideDisclaimerProps {
@@ -57,36 +65,32 @@ export function GuideDisclaimer({ lastVerified }: GuideDisclaimerProps) {
         </CardContent>
       </Card>
 
-      {/* Placeholder Modal */}
-      {showReportModal && (
-        <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-          onClick={() => setShowReportModal(false)}
-        >
-          <Card className="max-w-md w-full" onClick={(e) => e.stopPropagation()}>
-            <CardContent className="pt-6">
-              <div className="flex items-start gap-3 mb-4">
-                <Flag className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <div>
-                  <h3 className="font-semibold text-foreground mb-2">Report an Issue</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Thank you for helping us keep our guides accurate! Issue reporting will be available soon.
-                  </p>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    For now, please reach out to us through the Feedback button in the bottom right corner.
-                  </p>
-                </div>
-              </div>
+      {/* Report Issue Dialog */}
+      <Dialog open={showReportModal} onOpenChange={setShowReportModal}>
+        <DialogContent>
+          <DialogHeader>
+            <div className="flex items-center gap-2">
+              <Flag className="w-5 h-5 text-primary" />
+              <DialogTitle>Report an Issue</DialogTitle>
+            </div>
+            <DialogDescription className="pt-2">
+              Thank you for helping us keep our guides accurate! Issue reporting will be available soon.
+            </DialogDescription>
+          </DialogHeader>
 
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" size="sm" onClick={() => setShowReportModal(false)}>
-                  Close
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+          <div className="py-4">
+            <p className="text-sm text-muted-foreground">
+              For now, please reach out to us through the Feedback button in the bottom right corner.
+            </p>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowReportModal(false)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

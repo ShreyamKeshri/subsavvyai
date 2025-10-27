@@ -15,6 +15,7 @@ export interface GuideStep {
   description: string
   imageUrl?: string
   deepLink?: string
+  isImportant?: boolean
 }
 
 export interface UPIMandateProvider {
@@ -54,6 +55,26 @@ interface GuideWithService {
 }
 
 /**
+ * Transform database response to CancellationGuide format
+ * Extracts and flattens service info from nested structure
+ */
+function transformGuideData(guideWithService: GuideWithService): CancellationGuide {
+  return {
+    id: guideWithService.id,
+    service_id: guideWithService.service_id,
+    service_name: guideWithService.services?.name || 'Unknown',
+    service_logo_url: guideWithService.services?.logo_url || null,
+    service_category: guideWithService.services?.category || 'other',
+    steps: guideWithService.steps,
+    upi_mandate_instructions: guideWithService.upi_mandate_instructions,
+    estimated_time_minutes: guideWithService.estimated_time_minutes,
+    difficulty_level: guideWithService.difficulty_level,
+    last_verified_at: guideWithService.last_verified_at,
+    created_at: guideWithService.created_at,
+  }
+}
+
+/**
  * Get all cancellation guides with service info
  */
 export async function getAllGuides(): Promise<{ success: boolean; data?: CancellationGuide[]; error?: string }> {
@@ -85,22 +106,9 @@ export async function getAllGuides(): Promise<{ success: boolean; data?: Cancell
     }
 
     // Transform data to flatten service info
-    const guides: CancellationGuide[] = (data || []).map((guide) => {
-      const guideWithService = guide as unknown as GuideWithService
-      return {
-        id: guideWithService.id,
-        service_id: guideWithService.service_id,
-        service_name: guideWithService.services?.name || 'Unknown',
-        service_logo_url: guideWithService.services?.logo_url || null,
-        service_category: guideWithService.services?.category || 'other',
-        steps: guideWithService.steps,
-        upi_mandate_instructions: guideWithService.upi_mandate_instructions,
-        estimated_time_minutes: guideWithService.estimated_time_minutes,
-        difficulty_level: guideWithService.difficulty_level,
-        last_verified_at: guideWithService.last_verified_at,
-        created_at: guideWithService.created_at,
-      }
-    })
+    const guides: CancellationGuide[] = (data || []).map((guide) =>
+      transformGuideData(guide as unknown as GuideWithService)
+    )
 
     return { success: true, data: guides }
   } catch (error) {
@@ -148,20 +156,7 @@ export async function getGuideByServiceId(
     }
 
     // Transform data to flatten service info
-    const guideData = data as unknown as GuideWithService
-    const guide: CancellationGuide = {
-      id: guideData.id,
-      service_id: guideData.service_id,
-      service_name: guideData.services?.name || 'Unknown',
-      service_logo_url: guideData.services?.logo_url || null,
-      service_category: guideData.services?.category || 'other',
-      steps: guideData.steps,
-      upi_mandate_instructions: guideData.upi_mandate_instructions,
-      estimated_time_minutes: guideData.estimated_time_minutes,
-      difficulty_level: guideData.difficulty_level,
-      last_verified_at: guideData.last_verified_at,
-      created_at: guideData.created_at,
-    }
+    const guide: CancellationGuide = transformGuideData(data as unknown as GuideWithService)
 
     return { success: true, data: guide }
   } catch (error) {
@@ -205,22 +200,9 @@ export async function searchGuides(
     }
 
     // Transform data to flatten service info
-    const guides: CancellationGuide[] = (data || []).map((guide) => {
-      const guideWithService = guide as unknown as GuideWithService
-      return {
-        id: guideWithService.id,
-        service_id: guideWithService.service_id,
-        service_name: guideWithService.services?.name || 'Unknown',
-        service_logo_url: guideWithService.services?.logo_url || null,
-        service_category: guideWithService.services?.category || 'other',
-        steps: guideWithService.steps,
-        upi_mandate_instructions: guideWithService.upi_mandate_instructions,
-        estimated_time_minutes: guideWithService.estimated_time_minutes,
-        difficulty_level: guideWithService.difficulty_level,
-        last_verified_at: guideWithService.last_verified_at,
-        created_at: guideWithService.created_at,
-      }
-    })
+    const guides: CancellationGuide[] = (data || []).map((guide) =>
+      transformGuideData(guide as unknown as GuideWithService)
+    )
 
     return { success: true, data: guides }
   } catch (error) {

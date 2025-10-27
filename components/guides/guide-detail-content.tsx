@@ -44,9 +44,15 @@ export function GuideDetailContent({ guide }: GuideDetailContentProps) {
   // Find the primary deep link from the first step if available
   const primaryDeepLink = guide.steps.find((step) => step.deepLink && !step.deepLink.startsWith('#'))?.deepLink
 
-  // Extract important notes from steps (steps with titles like "Important" or "Note")
+  // Extract important notes from steps
+  // Prioritize explicit isImportant flag, fallback to title-based detection
   const importantNotes = guide.steps
-    .filter((step) => step.title.toLowerCase().includes('important') || step.title.toLowerCase().includes('note'))
+    .filter(
+      (step) =>
+        step.isImportant === true ||
+        step.title.toLowerCase().includes('important') ||
+        step.title.toLowerCase().includes('note')
+    )
     .map((step) => step.description)
 
   return (
