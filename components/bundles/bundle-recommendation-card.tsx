@@ -167,6 +167,39 @@ export function BundleRecommendationCard({
                 <p className="text-sm text-blue-700 dark:text-blue-300">{bundle.notes}</p>
               </div>
             )}
+
+            {/* Sources - Transparency */}
+            {bundle.sources && bundle.sources.length > 0 && (
+              <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded p-3">
+                <p className="text-sm font-medium mb-2 flex items-center gap-1">
+                  {bundle.is_verified && <Check className="w-4 h-4 text-green-600" />}
+                  Verified Sources
+                  {bundle.last_verified && (
+                    <span className="text-xs text-muted-foreground ml-1">
+                      (Last checked: {new Date(bundle.last_verified).toLocaleDateString('en-IN', {
+                        year: 'numeric',
+                        month: 'short'
+                      })})
+                    </span>
+                  )}
+                </p>
+                <ul className="space-y-1">
+                  {bundle.sources.map((source, idx) => (
+                    <li key={idx}>
+                      <a
+                        href={source}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                      >
+                        <ExternalLink className="w-3 h-3" />
+                        {new URL(source).hostname.replace('www.', '')}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         )}
 

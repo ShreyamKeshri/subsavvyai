@@ -24,6 +24,9 @@ export interface TelecomBundle {
   is_currently_active: boolean
   notes: string | null
   value_score: number
+  sources?: string[] | null
+  is_verified?: boolean | null
+  last_verified?: string | null
 }
 
 export interface UserSubscription {
