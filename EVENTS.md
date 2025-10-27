@@ -1,8 +1,8 @@
 # Analytics Events & Funnels
 
-**Last Updated:** October 19, 2025
+**Last Updated:** October 27, 2025
 **Analytics Platform:** PostHog
-**Total Events:** 38 unique events
+**Total Events:** 41 unique events
 **Critical Revenue Events:** 3 (affiliate tracking)
 
 ---
@@ -31,10 +31,12 @@
 - user_activated
 - session_started
 
-### 💳 Subscription Management (3 events)
+### 💳 Subscription Management (5 events)
 - subscription_added
 - subscription_edited
 - subscription_deleted
+- subscription_cancelled
+- subscription_reactivated
 
 ### 🔗 OAuth & Data Collection (6 events)
 - spotify_connected
@@ -56,6 +58,10 @@
 - affiliate_clicked
 - paywall_viewed
 - upgrade_clicked
+
+### 💵 Savings Tracking (2 events)
+- savings_dashboard_viewed
+- savings_shared
 
 ### 💬 Feedback & Engagement (1 event)
 - feedback_modal_opened
@@ -212,6 +218,35 @@
 }
 ```
 **Importance:** 🟡 Medium (Churn signal if all deleted)
+
+---
+
+#### `subscription_cancelled`
+**Trigger:** User cancels a subscription with reason (starts savings tracking)
+**Properties:**
+```typescript
+{
+  subscriptionId: string,
+  serviceName: string,
+  reason: 'not_using' | 'too_expensive' | 'found_alternative' | 'downgraded' | 'temporary' | 'other',
+  monthlyCost: number,
+  billingCycle: string
+}
+```
+**Importance:** 🔴 Critical (Savings tracking start, engagement signal)
+
+---
+
+#### `subscription_reactivated`
+**Trigger:** User reactivates a previously cancelled subscription
+**Properties:**
+```typescript
+{
+  subscriptionId: string,
+  serviceName: string
+}
+```
+**Importance:** 🟡 Medium (User behavior insight)
 
 ---
 
@@ -453,7 +488,38 @@
 
 ---
 
-### 7. Engagement & UX
+### 7. Savings Tracking
+
+#### `savings_dashboard_viewed`
+**Trigger:** User views the savings dashboard
+**Properties:**
+```typescript
+{
+  totalLifetimeSavings: number,
+  totalYearToDateSavings: number,
+  cancelledCount: number,
+  tier: 'bronze' | 'silver' | 'gold' | 'platinum'
+}
+```
+**Importance:** 🟢 High (Feature engagement, retention)
+
+---
+
+#### `savings_shared`
+**Trigger:** User shares their savings achievement
+**Properties:**
+```typescript
+{
+  method: 'clipboard' | 'whatsapp' | 'native',
+  yearToDateSavings: number,
+  lifetimeSavings: number
+}
+```
+**Importance:** 🔴 Critical (Viral growth loop)
+
+---
+
+### 8. Engagement & UX
 
 #### `dashboard_viewed`
 **Trigger:** User views dashboard

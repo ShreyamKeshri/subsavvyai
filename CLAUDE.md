@@ -66,7 +66,7 @@ Multi-method authentication via Supabase Auth:
 
 ### Database (Supabase/PostgreSQL)
 
-**Migrations Applied (10 total):**
+**Migrations Applied (11 total):**
 1. `001_initial_schema.sql` - Core tables, RLS policies, triggers
 2. `002_security_events.sql` - Security audit logging
 3. `003_auto_create_profile.sql` - Auto-create profile on signup
@@ -77,11 +77,12 @@ Multi-method authentication via Supabase Auth:
 8. `008_currency_conversion.sql` - Currency conversion (original_cost, original_currency columns)
 9. `009_gmail_tokens.sql` - Gmail OAuth tokens table (encrypted access_token, refresh_token)
 10. `010_gmail_scan_tracking.sql` - Gmail scan completion tracking (gmail_scan_completed field)
+11. `011_savings_optimization_types.sql` - Savings tracker (optimization_type, previous_cost, monthly_savings, optimization_date, optimization_notes) + auto-calculation trigger
 
 **Upcoming Migrations (Final Sprint):**
-11. `011_payment_system.sql` - Add tier field to profiles, payment_transactions table for Razorpay
+12. `012_payment_system.sql` - Add tier field to profiles, payment_transactions table for Razorpay
 
-**Note:** Savings tracking fields (`cancelled_at`, `cancellation_reason`) and `cancellation_guides` table already exist in migration 001!
+**Note:** Basic savings tracking fields (`cancelled_at`, `cancellation_reason`) and `cancellation_guides` table exist in migration 001. Migration 011 extends this with multi-type optimization support!
 
 **Seed Data (run separately in Supabase):**
 - `supabase/seeds/001_indian_services.sql` - 52 popular Indian services (Netflix, Spotify, etc.)
@@ -187,6 +188,9 @@ unsubscribr/
 │   ├── recommendations/          # AI recommendation engine
 │   │   ├── recommendation-engine.ts  # Core AI logic
 │   │   └── recommendation-actions.ts # Server actions (with validation & debouncing)
+│   ├── savings/                  # Savings tracker (NEW - Day 8)
+│   │   ├── savings-actions.ts    # Server actions for savings data
+│   │   └── savings-utils.ts      # Calculation utilities & optimization types
 │   ├── settings/                 # Settings management
 │   │   └── settings-actions.ts   # Server actions for user settings
 │   ├── subscriptions/            # Subscription CRUD
@@ -211,14 +215,23 @@ unsubscribr/
 │   ├── feedback/                 # Feedback system (NEW - Day 6)
 │   │   ├── CannyModal.tsx        # Canny feedback modal with SSO
 │   │   └── FloatingFeedbackButton.tsx  # Floating feedback button
+│   ├── savings/                  # Savings tracker (NEW - Day 8)
+│   │   ├── savings-content.tsx   # Main layout component
+│   │   ├── savings-metrics.tsx   # Animated counter cards
+│   │   ├── quarterly-progress.tsx # Q1-Q4 progress visualization
+│   │   ├── cancelled-timeline.tsx # Timeline with color-coded badges
+│   │   └── quick-stats.tsx       # Sidebar stats card
 │   ├── subscriptions/            # Subscription components
 │   │   ├── add-subscription-dialog.tsx
-│   │   └── edit-subscription-dialog.tsx
+│   │   ├── edit-subscription-dialog.tsx
+│   │   └── cancel-subscription-dialog.tsx  # Cancel dialog (NEW - Day 8)
 │   ├── recommendations/          # Recommendation components
 │   │   └── recommendations-list.tsx
 │   └── usage/                    # Usage tracking components
 │       └── usage-survey-dialog.tsx  # Manual usage survey
-├── supabase/migrations/          # Database migrations (8 total)
+├── hooks/                        # Custom React hooks
+│   └── useReducedMotion.ts      # Accessibility hook (NEW - Day 8)
+├── supabase/migrations/          # Database migrations (11 total)
 ├── supabase/seeds/               # Seed data (run separately)
 ├── middleware.ts                 # Next.js middleware (auth + security)
 ├── tsconfig.json                 # TypeScript config
@@ -229,24 +242,27 @@ unsubscribr/
 
 **Phase:** MVP Final Sprint (Days 7-16) - In Progress 🚀
 **Security Status:** 🟢 Production-Ready (All critical vulnerabilities fixed)
-**Completion:** 72% → Target 95%
+**Completion:** 80% → Target 95%
 **Target Launch:** November 5, 2025
 
 ## MVP Final Sprint Overview
 
-After completing Gmail OAuth integration (PR #27), we are now in the **Final Sprint** to complete 4 critical features before MVP launch:
+After completing Savings Tracker (PR #28), we are now in the **Final Sprint** to complete 3 remaining features before MVP launch:
 
 ### Sprint Phases (10 days / 80 hours)
 
-**Phase 1: Savings Tracker (Days 7-8)** - Track savings from cancelled subscriptions
-- Use existing `cancelled_at`, `cancellation_reason` fields (already in schema!)
-- Cancel subscription dialog with reason selection
-- Savings progress card (total saved, monthly savings rate)
-- Cancelled subscriptions timeline
-- Dedicated `/dashboard/savings` page
+**Phase 1: Savings Tracker (Days 7-8)** ✅ **COMPLETE (PR #28)**
+- ✅ Migration 011: Multi-type optimization support (cancel, downgrade, bundle, upgrade)
+- ✅ Dedicated `/dashboard/savings` page with modern 3-column layout
+- ✅ Animated counter cards (Total Savings YTD, Annual Projection)
+- ✅ Quarterly progress visualization (Q1-Q4 auto-calculated)
+- ✅ Timeline with color-coded badges (Red=Cancel, Blue=Downgrade, Purple=Bundle)
+- ✅ Share functionality with native share API and clipboard fallback
+- ✅ Accessibility-first design with useReducedMotion hook
+- ✅ Framer Motion animations respecting prefers-reduced-motion
 
-**Phase 2: Razorpay Payment System (Days 9-10)** - Free vs Pro tier with gating
-- Migration 011: Add `tier` field to profiles, `payment_transactions` table
+**Phase 2: Razorpay Payment System (Days 9-10)** ⏳ **NEXT**
+- Migration 012: Add `tier` field to profiles, `payment_transactions` table
 - Free tier: 5 subscriptions max
 - Pro tier: ₹99/month or ₹999/year (7-day trial)
 - Premium feature gating middleware
@@ -272,7 +288,20 @@ After completing Gmail OAuth integration (PR #27), we are now in the **Final Spr
 
 **Day 16: Testing & Polish** - Final QA and bug fixes
 
-**Recent Completions (Day 7 - Gmail OAuth & Onboarding Tracking):**
+**Recent Completions (Day 8 - Savings Tracker):**
+
+**Savings Tracker Implementation (PR #28):**
+- ✅ Comprehensive dashboard with Vercel V0 design (3-column layout)
+- ✅ Migration 011: Multi-type optimization support (cancel, downgrade, bundle)
+- ✅ Database trigger for auto-calculating monthly_savings
+- ✅ 5 new components: savings-content, savings-metrics, quarterly-progress, cancelled-timeline, quick-stats
+- ✅ Animated counters with Framer Motion
+- ✅ Accessibility-first: useReducedMotion hook respects prefers-reduced-motion
+- ✅ Color-coded badges: Red (Cancelled), Blue (Downgraded), Purple (Bundled)
+- ✅ Share functionality with error handling (ignores AbortError)
+- ✅ PostHog analytics: trackSavingsShared event
+
+**Previous Completions (Day 7 - Gmail OAuth & Onboarding Tracking):**
 
 **Gmail OAuth Integration (PR #27):**
 - ✅ Gmail OAuth flow with proper token management
@@ -691,8 +720,9 @@ NEXT_PUBLIC_APP_URL=http://127.0.0.1:3000
 6. **Server Actions:** All mutations should be server actions
 7. **TypeScript:** Never use `any`, prefer `unknown` with type guards
 8. **RLS:** All tables must have RLS enabled
-9. **Migrations:** 10 migrations applied (001-010). Only 1 more needed (011: payment_system). Seed data in `supabase/seeds/` must be run separately
-23. **Existing Schema Features:** The initial schema (001) already includes `cancelled_at`, `cancellation_reason` in subscriptions table, and `cancellation_guides` table - no new migrations needed for these!
+9. **Migrations:** 11 migrations applied (001-011). Next migration: 012 (payment_system). Seed data in `supabase/seeds/` must be run separately
+23. **Savings Tracker (NEW - Day 8):** Migration 011 extends basic savings tracking with multi-type optimization support (cancel, downgrade, bundle, upgrade) + auto-calculation trigger
+24. **Framer Motion (NEW - Day 8):** Use for animations with accessibility support - always respect prefers-reduced-motion via useReducedMotion hook
 10. **Subscription Form:** "Last/Current Billing Date" calculates next billing automatically
 11. **Spotify OAuth:** Use 127.0.0.1 not localhost (security requirement)
 12. **Manual Usage Tracking:** For services without OAuth APIs (Netflix, Hotstar, etc.)

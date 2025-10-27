@@ -1,3 +1,5 @@
+'use client'
+
 import posthog from 'posthog-js'
 
 // User events
@@ -327,4 +329,13 @@ export function trackSearchPerformed(query: string, results: number, userId?: st
     results,
     userId,
   })
+}
+
+// 11. SAVINGS TRACKING
+export function trackSavingsShared(data: {
+  method: 'clipboard' | 'whatsapp' | 'native'
+  yearToDateSavings: number
+  lifetimeSavings: number
+}) {
+  posthog.capture('savings_shared', data)
 }
