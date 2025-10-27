@@ -1,8 +1,8 @@
 # SubSavvyAI - Database Schema Documentation
 
-**Version:** 1.1
+**Version:** 1.2
 **Database:** PostgreSQL (Supabase)
-**Last Updated:** October 25, 2025
+**Last Updated:** October 27, 2025
 
 ---
 
@@ -316,6 +316,11 @@ Main table storing user subscription records.
 | notes | TEXT | | User notes |
 | cancellation_reason | TEXT | | Reason for cancellation |
 | cancelled_at | TIMESTAMPTZ | | Cancellation timestamp |
+| optimization_type | optimization_type | | Type of optimization (cancel, downgrade, bundle, upgrade) |
+| previous_cost | NUMERIC(10, 2) | | Previous cost before optimization (for downgrades) |
+| monthly_savings | NUMERIC(10, 2) | DEFAULT 0 | Auto-calculated monthly savings from optimization |
+| optimization_date | TIMESTAMPTZ | | Date when optimization was performed |
+| optimization_notes | TEXT | | Notes about the optimization |
 | paused_at | TIMESTAMPTZ | | Pause timestamp |
 | paused_until | DATE | | Resume date if paused |
 | created_at | TIMESTAMPTZ | NOT NULL | Record creation timestamp |
@@ -619,6 +624,18 @@ CREATE TYPE difficulty_level AS ENUM (
   'hard'
 );
 ```
+
+### `optimization_type` (NEW - Migration 011)
+```sql
+CREATE TYPE optimization_type AS ENUM (
+  'cancel',    -- Full cancellation: monthly_savings = full cost
+  'downgrade', -- Plan downgrade: monthly_savings = previous_cost - current_cost
+  'bundle',    -- Bundle optimization: monthly_savings manually set
+  'upgrade'    -- Upgrade: monthly_savings = 0 (not a saving)
+);
+```
+
+**Usage:** Tracks different types of subscription optimizations in the Savings Tracker feature. Each type has specific savings calculation logic handled by the `auto_calculate_savings()` trigger function.
 
 ---
 
