@@ -12,6 +12,7 @@ import { validateInput, uuidSchema, cancellationReasonSchema } from '@/lib/valid
 import {
   projectAnnualSavings,
   calculateGoalProgress,
+  calculateMonthsSince,
   type CancellationReason,
 } from './savings-utils'
 import type { Subscription } from '@/lib/subscriptions/subscription-actions'
@@ -173,11 +174,9 @@ export async function getSavingsData(): Promise<{ success: boolean; data?: Savin
       const monthlySavings = sub.monthly_savings || 0
       const optimizationDate = sub.optimization_date || sub.cancelled_at!
 
-      // Calculate total saved = monthly_savings × months since optimization
-      const monthsSince = Math.floor(
-        (Date.now() - new Date(optimizationDate).getTime()) / (1000 * 60 * 60 * 24 * 30)
-      )
-      const totalSaved = monthlySavings * Math.max(0, monthsSince)
+      // Calculate total saved = monthly_savings × whole calendar months since optimization
+      const monthsSince = calculateMonthsSince(optimizationDate)
+      const totalSaved = monthlySavings * monthsSince
 
       return {
         ...sub,
