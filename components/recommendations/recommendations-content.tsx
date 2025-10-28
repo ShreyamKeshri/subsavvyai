@@ -251,7 +251,7 @@ export function RecommendationsContent() {
                     </p>
                   </div>
                   <Button
-                    onClick={() => router.push('/dashboard')}
+                    onClick={() => router.push('/dashboard/subscriptions')}
                     className="bg-blue-500 hover:bg-blue-600 text-white"
                   >
                     <Plus className="w-4 h-4 mr-2" />
