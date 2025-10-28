@@ -64,9 +64,10 @@ INSERT INTO public.telecom_bundles (
  'Unlimited @30 Mbps', '30 days',
  ARRAY['Unlimited calls', '800+ TV channels'],
  'Budget-conscious Netflix lovers',
- 'https://www.jio.com/selfcare/plans/fiber/jiofiber-prepaid-plans-home/',
+ 'https://www.jio.com/selfcare/plans/fiber/fiber-prepaid-plans-home/',
  'VERIFIED: Lowest priced JioFiber plan with Netflix Basic (launched May 2024). Previously Netflix was only available in ₹1499+ plans.',
  ARRAY[
+   'https://www.jio.com/selfcare/plans/fiber/fiber-prepaid-plans-home/',
    'https://www.desidime.com/news/jiofiber-jio-airfiber-888-plan-launched-with-netflix',
    'https://www.businesstoday.in/technology/news/story/reliance-jio-launches-new-plan-with-netflix-amazon-prime-and-jiocinema-check-price-other-details-429152-2024-05-10',
    'https://www.jio.com/help/faq/jiofiber/ott-subscriptions/netflix/'
@@ -128,7 +129,7 @@ ON CONFLICT (provider, plan_name) DO UPDATE SET
 -- Update Jio Fiber bundles with sources
 UPDATE public.telecom_bundles SET
   sources = ARRAY[
-    'https://www.jio.com/selfcare/plans/fiber/jiofiber-prepaid-plans-home/',
+    'https://www.jio.com/selfcare/plans/fiber/fiber-prepaid-plans-home/',
     'https://www.jio.com/help/faq/jiofiber/postpaid-offerings/plans/what-are-the-digital-subscription-services-available-in-new-jiofiber-plans/',
     'https://www.jio.com/ott/'
   ],
@@ -139,7 +140,7 @@ WHERE provider = 'Jio' AND plan_type = 'fiber';
 -- Update Airtel prepaid bundles with sources
 UPDATE public.telecom_bundles SET
   sources = ARRAY[
-    'https://www.airtel.in/thanks/recharge',
+    'https://www.airtel.in/recharge',
     'https://www.airtel.in/press-release/05-2025/airtel-introduces-indias-first-all-in-one-ott-entertainment-packs-for-prepaid-users/'
   ],
   is_verified = true,
