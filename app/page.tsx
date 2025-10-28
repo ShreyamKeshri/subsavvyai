@@ -524,22 +524,12 @@ export default function LandingPage() {
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Company</h4>
+              <h4 className="font-semibold mb-4">Contact</h4>
               <ul className="space-y-2 text-sm text-gray-400">
                 <li>
-                  <Link href="#" className="hover:text-white transition">
-                    About
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-white transition">
-                    Blog
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-white transition">
-                    Contact
-                  </Link>
+                  <a href="mailto:contact.subsavvyai@gmail.com" className="hover:text-white transition">
+                    Email Support
+                  </a>
                 </li>
               </ul>
             </div>
@@ -547,20 +537,30 @@ export default function LandingPage() {
               <h4 className="font-semibold mb-4">Legal</h4>
               <ul className="space-y-2 text-sm text-gray-400">
                 <li>
-                  <Link href="#" className="hover:text-white transition">
+                  <Link href="/legal/terms" className="hover:text-white transition">
+                    Terms of Service
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/legal/privacy" className="hover:text-white transition">
                     Privacy Policy
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-white transition">
-                    Terms of Service
+                  <Link href="/legal/refund" className="hover:text-white transition">
+                    Refund & Cancellation
                   </Link>
                 </li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
-            <p>&copy; 2025 {branding.name}. All rights reserved.</p>
+          <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400">
+            <p>&copy; {new Date().getFullYear()} {branding.name}. All rights reserved.</p>
+            <div className="flex items-center gap-4 text-xs">
+              <span>Made with ❤️ in India</span>
+              <span>•</span>
+              <span>DPDP Act 2023 Compliant</span>
+            </div>
           </div>
         </div>
       </footer>

@@ -9,6 +9,7 @@ import { ProfileSection } from './profile-section'
 import { AppearanceSection } from './appearance-section'
 import { ConnectedServicesSection } from './connected-services-section'
 import { AccountActionsSection } from './account-actions-section'
+import { LegalSection } from './legal-section'
 
 export function SettingsContent() {
   return (
@@ -24,6 +25,7 @@ export function SettingsContent() {
         <ProfileSection />
         <ConnectedServicesSection />
         <AppearanceSection />
+        <LegalSection />
         <AccountActionsSection />
       </div>
     </div>
