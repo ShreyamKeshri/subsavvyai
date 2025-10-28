@@ -55,9 +55,6 @@ export async function deleteUserAccount(): Promise<DeleteAccountResult> {
       'user_preferences',
       'security_events',
       'notifications',
-
-      // Parent table last
-      'profiles',
     ]
 
     // Delete data from each table

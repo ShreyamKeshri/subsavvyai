@@ -50,10 +50,10 @@ export function AccountActionsSection() {
 
       if (result.success) {
         toast.success('Your account has been deleted')
-        // Wait a moment to show the toast, then redirect
-        setTimeout(() => {
-          router.push('/')
-        }, 1000)
+        setShowDeleteConfirm(false)
+        setDeleteConfirmText('')
+        // Use replace to prevent navigating back to deleted session
+        router.replace('/')
       } else {
         toast.error(result.error || 'Failed to delete account')
         setIsDeleting(false)
