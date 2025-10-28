@@ -1226,52 +1226,140 @@ The `user_preferences` table has been extended to track Gmail scan completion fo
 | 1.1 | Oct 11, 2025 | Added Bundle Optimizer tables (migration 006) |
 | 1.2 | Oct 11, 2025 | Extended service_usage for manual tracking (migration 007) |
 | 1.3 | Oct 17, 2025 | Extended subscriptions for currency conversion (migration 008) |
-| .4 | Oct 25, 2025 | Added Gmail OAuth tables (migration 009) |
+| 1.4 | Oct 25, 2025 | Added Gmail OAuth tables (migration 009) |
 | 1.5 | Oct 25, 2025 | Added Gmail scan tracking (migration 010) |
-| 1.6 | Oct 27, 2025 | Migration 011: Savings optimization types (optimization_type, previous_cost, monthly_savings, optimization_date, optimization_notes) |
-| 1.7 | TBD | MVP Final Sprint - Upcoming migration 012 (payment_transactions + tier field) |
+| 1.6 | Oct 28, 2025 | Migration 011: Savings optimization types - COMPLETE ✅ |
+| 1.7 | TBD | Upcoming migration 012 (payment_transactions + tier field) |
+
+---
+
+## Savings Optimization Types (Migration 011) - ✅ COMPLETE
+
+### Extended: `subscriptions` - Multi-Type Optimization Tracking
+
+Migration 011 extends the subscriptions table with comprehensive optimization tracking capabilities.
+
+**New Columns Added:**
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| optimization_type | optimization_type | ENUM | Type of optimization performed (cancel, downgrade, bundle, upgrade) |
+| previous_cost | NUMERIC(10, 2) | CHECK >= 0 | Previous monthly cost (for downgrade tracking) |
+| monthly_savings | NUMERIC(10, 2) | DEFAULT 0 | Auto-calculated monthly savings amount |
+| optimization_date | TIMESTAMPTZ | | Date when optimization was performed |
+| optimization_notes | TEXT | | User/system notes about the optimization |
+
+**New ENUM: `optimization_type`**
+```sql
+CREATE TYPE optimization_type AS ENUM (
+  'cancel',    -- Full cancellation: monthly_savings = full monthly cost
+  'downgrade', -- Plan downgrade: monthly_savings = previous_cost - current_cost
+  'bundle',    -- Bundle switch: monthly_savings manually set (e.g., from bundle recommendation)
+  'upgrade'    -- Plan upgrade: monthly_savings = 0 (not a saving)
+);
+```
+
+**Auto-Calculation Trigger:**
+```sql
+CREATE TRIGGER auto_calculate_savings
+  BEFORE INSERT OR UPDATE ON subscriptions
+  FOR EACH ROW
+  EXECUTE FUNCTION auto_calculate_savings();
+```
+
+**Savings Calculation Logic:**
+- **Cancel:** `monthly_savings = calculate_monthly_cost(cost, billing_cycle)`
+- **Downgrade:** `monthly_savings = previous_cost - current_cost` (previous_cost must be set)
+- **Bundle:** `monthly_savings` manually set by user/system (from bundle recommendation)
+- **Upgrade:** `monthly_savings = 0` (not treated as savings)
+
+**Backward Compatibility:**
+- Existing cancelled subscriptions auto-assigned `optimization_type = 'cancel'`
+- `monthly_savings` auto-calculated for existing cancelled subscriptions
+- No data migration needed
+
+**Use Cases:**
+1. **Savings Dashboard** - Display total savings from all optimization types
+2. **Analytics** - Track which optimization types generate most savings
+3. **User Insights** - Show users their optimization journey over time
+4. **ROI Tracking** - Demonstrate SubSavvyAI's value proposition
 
 ---
 
 ## MVP Final Sprint - Upcoming Schema Changes
 
-### Migration 012: Payment System & Tiering (Days 9-10)
+### Migration 014: Payment System & Tiering (Days 11-12) - ⏳ **IN PROGRESS**
 
 **New Table: `payment_transactions`**
-- Transaction history for Razorpay payments
-- Columns: id, user_id, tier, amount, currency, razorpay_order_id, razorpay_payment_id, status, created_at
+```sql
+CREATE TABLE payment_transactions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  razorpay_order_id TEXT NOT NULL UNIQUE,
+  razorpay_payment_id TEXT UNIQUE,
+  razorpay_subscription_id TEXT,
+  amount NUMERIC(10, 2) NOT NULL CHECK (amount >= 0),
+  currency TEXT NOT NULL DEFAULT 'INR',
+  status transaction_status DEFAULT 'pending',
+  payment_method TEXT,
+  plan_type TEXT NOT NULL, -- 'monthly' or 'yearly'
+  tier user_tier NOT NULL,
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
 
 **Modify Table: `profiles`**
-- Add `tier` field (ENUM: 'free', 'pro')
-- Add `tier_expires_at` TIMESTAMPTZ for trial tracking
-- Add `stripe_customer_id` TEXT for future Stripe integration
+```sql
+ALTER TABLE profiles
+  ADD COLUMN tier user_tier DEFAULT 'free',
+  ADD COLUMN tier_expires_at TIMESTAMPTZ,
+  ADD COLUMN trial_ends_at TIMESTAMPTZ,
+  ADD COLUMN razorpay_customer_id TEXT,
+  ADD COLUMN razorpay_subscription_id TEXT,
+  ADD COLUMN subscription_status TEXT DEFAULT 'inactive'; -- 'active', 'inactive', 'cancelled', 'paused'
+```
 
 **New ENUM: `user_tier`**
-- Values: 'free', 'pro'
+```sql
+CREATE TYPE user_tier AS ENUM ('free', 'pro');
+```
 
 **New ENUM: `transaction_status`**
-- Values: 'pending', 'completed', 'failed', 'refunded'
+```sql
+CREATE TYPE transaction_status AS ENUM ('pending', 'completed', 'failed', 'refunded');
+```
+
+**RLS Policies:**
+- Users can view their own payment_transactions
+- Only authenticated users can create transactions
+- Webhook service role can update transaction status
 
 **Free Tier Limits:**
-- Max 5 subscriptions
-- Basic recommendations only
-- No access to `/dashboard/savings` or `/dashboard/guides`
+- Max 5 subscriptions (enforced in add-subscription dialog)
+- No access to `/dashboard/savings` (Premium feature badge shown)
+- No access to `/dashboard/guides` (Premium feature badge shown)
+- Basic AI recommendations only
+- Standard email support
 
 **Pro Tier Benefits:**
 - Unlimited subscriptions
-- Full AI recommendations
-- Cancellation guides
-- Savings tracker
-- Priority support
+- Full access to Savings Tracker
+- Access to 13+ Cancellation Guides
+- Full AI recommendations (all 4 types)
+- Bundle optimizer with verified sources
+- Priority email support
+- 7-day free trial (auto-cancels if not paid)
 
 ---
 
-**Next Steps:**
-1. ✅ All 10 migrations applied
-2. 📅 **Phase 1 (Days 7-8):** Implement Savings Tracker (uses existing `cancelled_at`, `cancellation_reason`)
-3. 📅 **Phase 2 (Days 9-10):** Create migration 011 + implement Razorpay payment system
-4. 📅 **Phase 3 (Days 11-13):** Populate `cancellation_guides` table with 20 guides
-5. 📅 **Phase 4 (Days 14-15):** Implement email notification system
-6. 🎯 **Day 16:** Testing & Launch Prep
-
-**Note:** `cancelled_at`, `cancellation_reason` (savings tracker) and `cancellation_guides` table already exist in migration 001!
+**Migration Status:**
+1. ✅ **Migrations 001-013:** All applied and tested
+2. ✅ **Phase 1 (Days 7-8):** Savings Tracker - COMPLETE (PR #28)
+3. ✅ **Phase 3 (Days 11-13):** Cancellation Guides - COMPLETE (PR #29, 65% - 13/20 guides)
+4. ✅ **Bonus:** Bundle Transparency - COMPLETE (PRs #30, #31, #32)
+5. ⏳ **Phase 2 (Days 11-12):** Payment System (migration 014) - **IN PROGRESS**
+6. 📅 **Landing Page Redesign (Day 13):** Hero, pricing, features, FAQ
+7. ⚠️ **Phase 4 (Days 14-15):** Email notification automation (25% complete)
+8. 🎯 **Day 16:** Testing & Launch Prep

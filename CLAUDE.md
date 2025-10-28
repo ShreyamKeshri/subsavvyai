@@ -66,8 +66,8 @@ Multi-method authentication via Supabase Auth:
 
 ### Database (Supabase/PostgreSQL)
 
-**Migrations Applied (11 total):**
-1. `001_initial_schema.sql` - Core tables, RLS policies, triggers
+**Migrations Applied (13 total):**
+1. `001_initial_schema.sql` - Core tables, RLS policies, triggers, cancellation_guides table
 2. `002_security_events.sql` - Security audit logging
 3. `003_auto_create_profile.sql` - Auto-create profile on signup
 4. `004_proper_schema.sql` - User preferences & category preferences
@@ -78,9 +78,16 @@ Multi-method authentication via Supabase Auth:
 9. `009_gmail_tokens.sql` - Gmail OAuth tokens table (encrypted access_token, refresh_token)
 10. `010_gmail_scan_tracking.sql` - Gmail scan completion tracking (gmail_scan_completed field)
 11. `011_savings_optimization_types.sql` - Savings tracker (optimization_type, previous_cost, monthly_savings, optimization_date, optimization_notes) + auto-calculation trigger
+12. `012_add_upi_mandate_instructions.sql` - **NEW** - UPI mandate instructions JSONB column for cancellation guides
+13. `013_add_bundle_sources.sql` - **NEW** - Sources & verification fields for bundle transparency
 
-**Upcoming Migrations (Final Sprint):**
-12. `012_payment_system.sql` - Add tier field to profiles, payment_transactions table for Razorpay
+**Seed Data (3 files):**
+1. `001_indian_services.sql` - 52 popular Indian services
+2. `002_cancellation_guides.sql` - **NEW** - 13 cancellation guides (10 deep + 3 basic)
+3. `003_update_bundles_with_sources.sql` - **NEW** - 3 new verified bundles (total now 23)
+
+**Upcoming Migrations (Next Phase):**
+14. `014_payment_system.sql` - NEXT - payment_transactions table + tier field in profiles
 
 **Note:** Basic savings tracking fields (`cancelled_at`, `cancellation_reason`) and `cancellation_guides` table exist in migration 001. Migration 011 extends this with multi-type optimization support!
 
@@ -240,10 +247,11 @@ unsubscribr/
 
 ## Current Status
 
-**Phase:** MVP Final Sprint (Days 7-16) - In Progress 🚀
+**Phase:** MVP Final Sprint - **Phases 1 & 3 Complete!** 🎉
 **Security Status:** 🟢 Production-Ready (All critical vulnerabilities fixed)
-**Completion:** 80% → Target 95%
+**Completion:** **88%** → Target 95%
 **Target Launch:** November 5, 2025
+**Next Up:** Razorpay Payment System + Landing Page Redesign
 
 ## MVP Final Sprint Overview
 
@@ -261,32 +269,54 @@ After completing Savings Tracker (PR #28), we are now in the **Final Sprint** to
 - ✅ Accessibility-first design with useReducedMotion hook
 - ✅ Framer Motion animations respecting prefers-reduced-motion
 
-**Phase 2: Razorpay Payment System (Days 9-10)** ⏳ **NEXT**
-- Migration 012: Add `tier` field to profiles, `payment_transactions` table
+**Phase 3: Cancellation Guides (Days 11-13)** ✅ **COMPLETE (PR #29)**
+- ✅ Migration 012: UPI mandate instructions JSONB column (NOT payment system!)
+- ✅ Seed 002: 13 cancellation guides (10 deep + 3 basic)
+- ✅ Deep guides: Netflix, Prime, Hotstar, Spotify, YouTube Music, ZEE5, SonyLIV, Zomato Gold, Swiggy One, JioSaavn
+- ✅ Basic guides: Gaana Plus, Cult.fit, Times Prime
+- ✅ UPI mandate instructions for GPay, PhonePe, Paytm, Amazon Pay
+- ✅ Guide difficulty ratings (Easy/Medium/Hard) and time estimates
+- ✅ Dedicated `/dashboard/guides` and `/dashboard/guides/[serviceId]` pages
+- ✅ 3 new guide components (list, detail, disclaimer)
+- ⚠️ Missing: 7 additional basic guides (can be added post-launch)
+
+**Bundle Improvements (Bonus)** ✅ **COMPLETE (PRs #30, #31, #32)**
+- ✅ Migration 013: Sources & verification fields for transparency
+- ✅ Seed 003: 3 new verified bundles (Airtel, Jio, Times Prime)
+- ✅ Total bundles: 20 → 23 with verified source URLs
+- ✅ UI enhancements: Sources section, verified badges, freshness indicators
+- ✅ Fixed broken URLs in existing bundles
+- ✅ Account deletion feature (GDPR-compliant)
+- ✅ Recommendations redirect fix
+
+**Phase 2: Razorpay Payment System (Days 11-12)** ⏳ **NEXT - IN PROGRESS**
+- Migration 014: payment_transactions table + tier field in profiles
 - Free tier: 5 subscriptions max
 - Pro tier: ₹99/month or ₹999/year (7-day trial)
 - Premium feature gating middleware
-- Razorpay checkout integration
-- Webhook handlers for payment events
+- Razorpay checkout integration (Standard Checkout flow)
+- Webhook handlers for payment events (payment.captured, subscription.charged)
 - Upgrade prompts and paywall UI
+- `/upgrade` page with pricing cards
+- Subscription limit enforcement
+- **Status:** Top priority - Starting implementation now!
 
-**Phase 3: Cancellation Guides (Days 11-13)** - Step-by-step cancellation instructions
-- Use existing `cancellation_guides` table (already in schema!)
-- Populate guides for 20 services (10 deep + 10 basic)
-- Deep guides: Netflix, Prime, Hotstar, Spotify, YouTube Premium, Zee5, SonyLIV, Zomato Pro, Swiggy One, JioSaavn
-- Basic guides: Voot, Gaana, MakeMyTrip, BookMyShow, etc.
-- UPI mandate cancellation instructions
-- Guide difficulty ratings and time estimates
-- Dedicated `/dashboard/guides` page (Pro feature)
+**Landing Page Redesign (Day 13)** 📋 **PLANNED**
+- Hero section redesign with social proof
+- Feature showcase with visual demos
+- Pricing section (Free vs Pro tier comparison)
+- FAQ section expansion
+- Mobile responsiveness improvements
+- CTA optimization for conversions
+- **Target:** 1 day after payment system
 
-**Phase 4: Email Notification System (Days 14-15)** - Automated reminders and alerts
-- React Email templates (billing reminders, unused alerts, welcome emails)
-- Resend API integration
-- Vercel Cron jobs (daily billing reminders, monthly unused alerts)
-- Email preference management
-- Notification preview and testing
-
-**Day 16: Testing & Polish** - Final QA and bug fixes
+**Phase 4: Email Notification System (Days 14-15)** ⚠️ **PARTIAL (25%)**
+- ✅ React Email templates created (welcome, verification, reset)
+- ✅ Resend API configured
+- ❌ Vercel Cron jobs not configured
+- ❌ Billing reminder automation
+- ❌ Unused subscription alerts
+- **Status:** Templates ready, automation pending
 
 **Recent Completions (Day 8 - Savings Tracker):**
 
