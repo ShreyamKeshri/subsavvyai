@@ -12,6 +12,7 @@ import { LogOut, Trash2, AlertTriangle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { deleteUserAccount } from '@/lib/user/delete-account'
 
 export function AccountActionsSection() {
   const router = useRouter()
@@ -44,14 +45,28 @@ export function AccountActionsSection() {
 
     setIsDeleting(true)
 
-    // TODO: Implement account deletion API
-    // For now, just simulate the process
-    await new Promise(resolve => setTimeout(resolve, 1500))
+    try {
+      const result = await deleteUserAccount()
 
-    toast.info('Account deletion is not yet implemented')
-    setIsDeleting(false)
-    setShowDeleteConfirm(false)
-    setDeleteConfirmText('')
+      if (result.success) {
+        toast.success('Your account has been deleted')
+        // Wait a moment to show the toast, then redirect
+        setTimeout(() => {
+          router.push('/')
+        }, 1000)
+      } else {
+        toast.error(result.error || 'Failed to delete account')
+        setIsDeleting(false)
+        setShowDeleteConfirm(false)
+        setDeleteConfirmText('')
+      }
+    } catch (error) {
+      console.error('Error deleting account:', error)
+      toast.error('An unexpected error occurred. Please try again.')
+      setIsDeleting(false)
+      setShowDeleteConfirm(false)
+      setDeleteConfirmText('')
+    }
   }
 
   return (
