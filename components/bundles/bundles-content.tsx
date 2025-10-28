@@ -8,7 +8,7 @@
 import { useEffect, useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Package, Zap, TrendingDown, Loader2 } from 'lucide-react'
+import { Package, Zap, TrendingDown, Loader2, ExternalLink, Check } from 'lucide-react'
 import { getBundleRecommendations, type BundleRecommendation } from '@/lib/bundles/bundle-actions'
 import { toast } from 'sonner'
 
@@ -140,6 +140,39 @@ export function BundlesContent() {
                       </div>
                     )}
                   </div>
+
+                  {/* Verified Sources */}
+                  {bundleInfo?.sources && bundleInfo.sources.length > 0 && (
+                    <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg">
+                      <p className="text-xs font-medium mb-2 flex items-center gap-1">
+                        {bundleInfo.is_verified && <Check className="w-3 h-3 text-green-600" />}
+                        Verified Sources
+                        {bundleInfo.last_verified && (
+                          <span className="text-[10px] text-muted-foreground ml-1">
+                            (Last checked: {new Date(bundleInfo.last_verified).toLocaleDateString('en-IN', {
+                              year: 'numeric',
+                              month: 'short'
+                            })})
+                          </span>
+                        )}
+                      </p>
+                      <ul className="space-y-1">
+                        {bundleInfo.sources.map((source: string, idx: number) => (
+                          <li key={idx}>
+                            <a
+                              href={source}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[10px] text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                            >
+                              <ExternalLink className="w-2.5 h-2.5" />
+                              {new URL(source).hostname.replace('www.', '')}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
 
                 {/* CTA Button */}
