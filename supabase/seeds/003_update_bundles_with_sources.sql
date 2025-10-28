@@ -140,7 +140,7 @@ WHERE provider = 'Jio' AND plan_type = 'fiber';
 -- Update Airtel prepaid bundles with sources
 UPDATE public.telecom_bundles SET
   sources = ARRAY[
-    'https://www.airtel.in/thanks/recharge',
+    'https://www.airtel.in/recharge',
     'https://www.airtel.in/press-release/05-2025/airtel-introduces-indias-first-all-in-one-ott-entertainment-packs-for-prepaid-users/'
   ],
   is_verified = true,
