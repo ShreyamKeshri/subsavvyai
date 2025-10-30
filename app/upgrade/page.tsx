@@ -5,13 +5,17 @@
  * Displays pricing tiers and initiates Razorpay checkout
  */
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Check, X, ArrowRight, Shield, Lock, Zap } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { motion } from 'framer-motion'
+import { toast } from 'sonner'
 import { razorpayConfig } from '@/lib/payments/razorpay-config'
 import type { BillingCycle } from '@/lib/payments/razorpay-config'
+import { useRazorpay, type RazorpayResponse, type RazorpayPaymentFailedResponse } from '@/hooks/useRazorpay'
+import { createPaymentOrder, verifyPaymentAndUpgrade } from '@/lib/payments/payment-actions'
+import { useRouter } from 'next/navigation'
 
 // Pricing data from config
 const pricingPlans = {
@@ -97,25 +101,125 @@ const testimonials = [
 ]
 
 export default function UpgradePage() {
+  const router = useRouter()
+  const { isLoaded: isRazorpayLoaded, Razorpay } = useRazorpay()
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly')
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [userEmail, setUserEmail] = useState<string>('')
+  const [userName, setUserName] = useState<string>('')
+
+  // Get user details on mount
+  useEffect(() => {
+    async function getUserDetails() {
+      try {
+        const { createClient } = await import('@/lib/supabase/client')
+        const supabase = createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (user) {
+          setUserEmail(user.email || '')
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('name')
+            .eq('id', user.id)
+            .single()
+
+          setUserName(profile?.name || user.email?.split('@')[0] || '')
+        }
+      } catch (error) {
+        console.error('Error fetching user details:', error)
+      }
+    }
+
+    getUserDetails()
+  }, [])
 
   const handleUpgrade = async (tier: 'free' | 'pro') => {
     if (tier === 'free') {
-      // Redirect to dashboard for free tier
-      window.location.href = '/dashboard'
+      router.push('/dashboard')
+      return
+    }
+
+    if (!isRazorpayLoaded) {
+      toast.error('Payment system is loading. Please try again in a moment.')
       return
     }
 
     setIsLoading(true)
     try {
-      // TODO: Implement Razorpay checkout flow
-      console.log('Initiating checkout for:', { tier, cycle: billingCycle })
-      // Will be implemented in next step
+      // Step 1: Create payment order
+      const orderResult = await createPaymentOrder(tier, billingCycle)
+
+      if (!orderResult.success || !orderResult.data) {
+        toast.error(orderResult.error || 'Failed to create payment order')
+        return
+      }
+
+      const { orderId, amount, currency } = orderResult.data
+
+      // Step 2: Initialize Razorpay checkout
+      const options = {
+        key: razorpayConfig.keyId,
+        amount: amount * 100, // Convert to paise
+        currency,
+        name: razorpayConfig.options.name,
+        description: razorpayConfig.options.description,
+        image: razorpayConfig.options.image,
+        order_id: orderId,
+        prefill: {
+          email: userEmail,
+          name: userName,
+        },
+        theme: razorpayConfig.options.theme,
+        handler: async function (response: RazorpayResponse) {
+          // Step 3: Verify payment and upgrade user
+          try {
+            const verifyResult = await verifyPaymentAndUpgrade(
+              response.razorpay_order_id,
+              response.razorpay_payment_id,
+              response.razorpay_signature
+            )
+
+            if (verifyResult.success) {
+              toast.success('Payment successful! Welcome to Pro! 🎉')
+              // Redirect to dashboard
+              setTimeout(() => {
+                router.push('/dashboard')
+              }, 1500)
+            } else {
+              toast.error(verifyResult.error || 'Payment verification failed')
+            }
+          } catch (error) {
+            console.error('Payment verification error:', error)
+            toast.error('Payment verification failed. Please contact support.')
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            setIsLoading(false)
+            toast.info('Payment cancelled')
+          },
+        },
+      }
+
+      if (!Razorpay) {
+        toast.error('Payment system not loaded. Please refresh and try again.')
+        setIsLoading(false)
+        return
+      }
+
+      const rzp = new Razorpay(options)
+
+      rzp.on('payment.failed', function (response: RazorpayPaymentFailedResponse) {
+        setIsLoading(false)
+        toast.error(`Payment failed: ${response.error.description}`)
+      })
+
+      rzp.open()
     } catch (error) {
       console.error('Checkout error:', error)
-    } finally {
+      toast.error('Failed to initiate checkout. Please try again.')
       setIsLoading(false)
     }
   }
