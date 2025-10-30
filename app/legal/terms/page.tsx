@@ -1,7 +1,8 @@
 import { Metadata } from 'next'
-import { readFileSync } from 'fs'
+import { readFile } from 'fs/promises'
 import { join } from 'path'
 import { MarkdownRenderer } from '@/components/legal/markdown-renderer'
+import { legalDates } from '@/lib/config/legal'
 import { Scale } from 'lucide-react'
 
 export const metadata: Metadata = {
@@ -13,8 +14,8 @@ export const metadata: Metadata = {
   },
 }
 
-export default function TermsPage() {
-  const content = readFileSync(
+export default async function TermsPage() {
+  const content = await readFile(
     join(process.cwd(), 'content', 'legal', 'terms-of-service.md'),
     'utf-8'
   )
@@ -39,7 +40,7 @@ export default function TermsPage() {
             Terms of Service
           </h1>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            Last updated: October 2025
+            Last updated: {legalDates.terms}
           </p>
         </div>
       </div>

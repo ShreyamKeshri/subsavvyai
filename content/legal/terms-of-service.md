@@ -1,5 +1,6 @@
 # Terms of Service
-_Last Updated: October 2025_
+
+**Last Updated: October 2025**
 
 ## 1. Introduction
 Welcome to **SubSavvyAI** (“we”, “our”, or “us”). These Terms of Service (“Terms”) govern your access to and use of our website, web application, and related services (collectively, the “Service”).  
@@ -47,5 +48,7 @@ Our recommendations are advisory in nature — users should verify before acting
 We may update these Terms periodically. Continued use of the Service after such updates constitutes your acceptance of the revised Terms.
 
 ## 11. Contact Us
-If you have any questions or concerns, please contact us at:  
-📧 **contact.subsavvyai@gmail.com**
+
+If you have any questions or concerns, please contact us at:
+
+📧 **Email:** [contact.subsavvyai@gmail.com](mailto:contact.subsavvyai@gmail.com)

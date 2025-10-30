@@ -7,6 +7,7 @@
 
 import Link from 'next/link'
 import { Card } from '@/components/ui/card'
+import { legalDates } from '@/lib/config/legal'
 import { ExternalLink, Scale, Shield, RefreshCw } from 'lucide-react'
 
 export function LegalSection() {
@@ -16,21 +17,21 @@ export function LegalSection() {
       description: 'Review our terms and conditions',
       href: '/legal/terms',
       icon: Scale,
-      updated: 'October 2025',
+      updated: legalDates.terms,
     },
     {
       title: 'Privacy Policy',
       description: 'Learn how we protect your data (DPDP Act 2023 compliant)',
       href: '/legal/privacy',
       icon: Shield,
-      updated: 'October 2025',
+      updated: legalDates.privacy,
     },
     {
       title: 'Refund & Cancellation',
       description: 'Understand our refund and cancellation policy',
       href: '/legal/refund',
       icon: RefreshCw,
-      updated: 'October 2025',
+      updated: legalDates.refund,
     },
   ]
 

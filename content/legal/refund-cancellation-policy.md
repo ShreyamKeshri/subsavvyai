@@ -1,6 +1,6 @@
 # Refund & Cancellation Policy
 
-_Last updated: October 2025_
+**Last updated: October 2025**
 
 Thank you for choosing **SubSavvyAI**.
 
@@ -56,7 +56,7 @@ Refunds will **not** be issued in the following cases:
 
 If you face payment-related issues, please contact our support team:
 
-📧 **contact.subsavvyai@gmail.com**
+📧 **Email:** [contact.subsavvyai@gmail.com](mailto:contact.subsavvyai@gmail.com)
 
 We will respond to all refund and cancellation queries within **48 working hours**.
 

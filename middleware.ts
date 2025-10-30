@@ -97,7 +97,10 @@ export async function middleware(request: NextRequest) {
     '/api/gmail/callback',
     '/api/gmail/connect'
   ]
-  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route))
+
+  // Use exact path matching for most routes, regex for OAuth callbacks
+  const isPublicRoute = publicRoutes.some(route => pathname === route) ||
+    /^\/api\/oauth\/[^/]+\/(callback|connect)$/.test(pathname)
 
   // Auth routes (redirect to dashboard if already logged in)
   const authRoutes = ['/login', '/signup']
