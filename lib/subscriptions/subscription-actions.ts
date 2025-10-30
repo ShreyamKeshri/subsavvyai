@@ -130,6 +130,30 @@ export async function createSubscription(
       return { success: false, error: 'Not authenticated' }
     }
 
+    // Check subscription limit based on user tier
+    const { data: canAdd, error: limitError } = await supabase.rpc('can_add_subscription', {
+      user_uuid: user.id
+    })
+
+    if (limitError) {
+      console.error('Error checking subscription limit:', limitError)
+    } else if (!canAdd) {
+      // Get user's tier to show appropriate error message
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('tier')
+        .eq('id', user.id)
+        .single()
+
+      const tier = profile?.tier || 'free'
+      const limit = tier === 'free' ? 5 : 999999
+
+      return {
+        success: false,
+        error: `Subscription limit reached. ${tier === 'free' ? 'Upgrade to Pro for unlimited subscriptions' : `You can add up to ${limit} subscriptions`}`
+      }
+    }
+
     // Validate input using Zod schema
     const validation = validateInput(subscriptionSchema, {
       ...input,
