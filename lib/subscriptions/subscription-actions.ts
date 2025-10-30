@@ -13,6 +13,7 @@ import { generateBundleRecommendations } from '@/lib/bundles/bundle-actions'
 import { generateRecommendations } from '@/lib/recommendations/recommendation-actions'
 import { validateInput, subscriptionSchema, uuidSchema } from '@/lib/validators'
 import { debounce } from '@/lib/utils/debounce'
+import { razorpayConfig } from '@/lib/payments/razorpay-config'
 
 // Debounced recommendation generators (prevent race conditions)
 // These will only execute once if called multiple times within 2 seconds
@@ -128,6 +129,38 @@ export async function createSubscription(
 
     if (authError || !user) {
       return { success: false, error: 'Not authenticated' }
+    }
+
+    // Check subscription limit based on user tier
+    const { data: canAdd, error: limitError } = await supabase.rpc('can_add_subscription', {
+      user_uuid: user.id
+    })
+
+    if (limitError) {
+      console.error('Error checking subscription limit:', limitError)
+      return {
+        success: false,
+        error: 'Unable to verify subscription limits. Please try again.'
+      }
+    }
+
+    if (!canAdd) {
+      // Get user's tier to show appropriate error message
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('tier')
+        .eq('id', user.id)
+        .single()
+
+      const tier = profile?.tier || 'free'
+      const limit = tier === 'free'
+        ? razorpayConfig.plans.free.subscriptionLimit
+        : razorpayConfig.plans.pro.subscriptionLimit
+
+      return {
+        success: false,
+        error: `Subscription limit reached. ${tier === 'free' ? 'Upgrade to Pro for unlimited subscriptions' : `You can add up to ${limit} subscriptions`}`
+      }
     }
 
     // Validate input using Zod schema
