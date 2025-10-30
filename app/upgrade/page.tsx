@@ -153,6 +153,7 @@ export default function UpgradePage() {
 
       if (!orderResult.success || !orderResult.data) {
         toast.error(orderResult.error || 'Failed to create payment order')
+        setIsLoading(false)
         return
       }
 
@@ -183,15 +184,18 @@ export default function UpgradePage() {
 
             if (verifyResult.success) {
               toast.success('Payment successful! Welcome to Pro! 🎉')
+              setIsLoading(false)
               // Redirect to dashboard
               setTimeout(() => {
                 router.push('/dashboard')
               }, 1500)
             } else {
+              setIsLoading(false)
               toast.error(verifyResult.error || 'Payment verification failed')
             }
           } catch (error) {
             console.error('Payment verification error:', error)
+            setIsLoading(false)
             toast.error('Payment verification failed. Please contact support.')
           }
         },
