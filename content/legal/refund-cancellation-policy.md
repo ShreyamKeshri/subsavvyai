@@ -1,6 +1,6 @@
 # Refund & Cancellation Policy
 
-**Last updated: October 2025**
+**Last updated: October 28, 2025**
 
 Thank you for choosing **SubSavvyAI**.
 

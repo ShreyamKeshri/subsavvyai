@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { cache } from 'react'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
 import { MarkdownRenderer } from '@/components/legal/markdown-renderer'
@@ -14,11 +15,16 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function TermsPage() {
-  const content = await readFile(
+// Cache the markdown file read for better performance
+const getTermsContent = cache(async () => {
+  return await readFile(
     join(process.cwd(), 'content', 'legal', 'terms-of-service.md'),
     'utf-8'
   )
+})
+
+export default async function TermsPage() {
+  const content = await getTermsContent()
 
   return (
     <div>

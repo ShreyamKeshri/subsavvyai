@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last Updated: October 2025**
+**Last Updated: October 28, 2025**
 
 ## 1. Introduction
 Welcome to **SubSavvyAI** (“we”, “our”, or “us”). These Terms of Service (“Terms”) govern your access to and use of our website, web application, and related services (collectively, the “Service”).  

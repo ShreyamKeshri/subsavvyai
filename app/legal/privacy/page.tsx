@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { cache } from 'react'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
 import { MarkdownRenderer } from '@/components/legal/markdown-renderer'
@@ -14,11 +15,16 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function PrivacyPage() {
-  const content = await readFile(
+// Cache the markdown file read for better performance
+const getPrivacyContent = cache(async () => {
+  return await readFile(
     join(process.cwd(), 'content', 'legal', 'privacy-policy.md'),
     'utf-8'
   )
+})
+
+export default async function PrivacyPage() {
+  const content = await getPrivacyContent()
 
   return (
     <div>
