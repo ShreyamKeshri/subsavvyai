@@ -18,7 +18,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify webhook signature
-    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET!
+    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET
+    if (!webhookSecret) {
+      console.error('[Razorpay Webhook] RAZORPAY_WEBHOOK_SECRET not configured')
+      return NextResponse.json({ error: 'Webhook not configured' }, { status: 500 })
+    }
+
     const isValid = verifyWebhookSignature(body, signature, webhookSecret)
 
     if (!isValid) {
@@ -133,14 +138,36 @@ export async function POST(request: NextRequest) {
         break
       }
 
-      case 'refund.created':
       case 'refund.processed': {
-        // Refund was created or processed
+        // Refund was processed (only handle final refund, not refund.created)
         const refund = payload.refund.entity
         const paymentId = refund.payment_id
         const amount = refund.amount / 100
 
         console.log('[Razorpay Webhook] Refund processed:', { paymentId, amount })
+
+        // Fetch transaction with status to validate state
+        const { data: transaction } = await supabase
+          .from('payment_transactions')
+          .select('user_id, status')
+          .eq('razorpay_payment_id', paymentId)
+          .single()
+
+        if (!transaction) {
+          console.error('[Razorpay Webhook] Transaction not found for refund')
+          break
+        }
+
+        // Only process if transaction was previously captured (prevent duplicate processing)
+        if (transaction.status === 'refunded') {
+          console.log('[Razorpay Webhook] Refund already processed')
+          break
+        }
+
+        if (transaction.status !== 'captured') {
+          console.log('[Razorpay Webhook] Skipping downgrade - transaction not in valid state:', transaction.status)
+          break
+        }
 
         // Update transaction status to refunded
         const { error: updateError } = await supabase
@@ -152,26 +179,19 @@ export async function POST(request: NextRequest) {
 
         if (updateError) {
           console.error('[Razorpay Webhook] Error updating transaction:', updateError)
+          break
         }
 
-        // Downgrade user tier if they got refunded
-        const { data: transaction } = await supabase
-          .from('payment_transactions')
-          .select('user_id')
-          .eq('razorpay_payment_id', paymentId)
-          .single()
-
-        if (transaction) {
-          await supabase
-            .from('profiles')
-            .update({
-              tier: 'free',
-              trial_ends_at: null,
-              subscription_started_at: null,
-              subscription_ends_at: null,
-            })
-            .eq('id', transaction.user_id)
-        }
+        // Downgrade user tier
+        await supabase
+          .from('profiles')
+          .update({
+            tier: 'free',
+            trial_ends_at: null,
+            subscription_started_at: null,
+            subscription_ends_at: null,
+          })
+          .eq('id', transaction.user_id)
 
         break
       }

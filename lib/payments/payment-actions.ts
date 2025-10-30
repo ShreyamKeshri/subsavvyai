@@ -8,6 +8,7 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { getRazorpayInstance, verifyPaymentSignature } from './razorpay-server'
+import { razorpayConfig, getPlanDetails } from './razorpay-config'
 import type { BillingCycle, SubscriptionTier } from './razorpay-config'
 
 type ActionResponse<T = unknown> = {
@@ -33,13 +34,18 @@ export async function createPaymentOrder(
       return { success: false, error: 'Not authenticated' }
     }
 
-    // Validate tier (only pro/premium can be purchased)
+    // Validate tier (only pro can be purchased)
     if (tier === 'free') {
       return { success: false, error: 'Cannot purchase free tier' }
     }
 
-    // Calculate amount based on tier and cycle
-    const amount = tier === 'pro' ? (cycle === 'monthly' ? 99 : 999) : 0
+    // Get plan details and calculate amount
+    const planDetails = getPlanDetails(tier, cycle)
+    const amount = 'price' in planDetails ? planDetails.price : 0
+
+    if (amount === 0) {
+      return { success: false, error: `Invalid pricing for tier: ${tier}` }
+    }
 
     // Create Razorpay order
     const razorpay = getRazorpayInstance()
@@ -139,7 +145,8 @@ export async function verifyPaymentAndUpgrade(
     // Calculate subscription dates
     const now = new Date()
     const trialEndsAt = new Date(now)
-    trialEndsAt.setDate(trialEndsAt.getDate() + 7) // 7-day trial
+    const trialDays = transaction.tier === 'pro' ? razorpayConfig.plans.pro.trialDays : 0
+    trialEndsAt.setDate(trialEndsAt.getDate() + trialDays)
 
     const subscriptionEndsAt = new Date(now)
     if (transaction.billing_cycle === 'monthly') {
@@ -219,7 +226,9 @@ export async function getSubscriptionStatus(): Promise<
       .eq('status', 'active')
 
     const currentSubscriptions = count || 0
-    const subscriptionLimit = profile.tier === 'free' ? 5 : 999999
+    const subscriptionLimit = profile.tier === 'free'
+      ? razorpayConfig.plans.free.subscriptionLimit
+      : razorpayConfig.plans.pro.subscriptionLimit
     const canAddMore = currentSubscriptions < subscriptionLimit
 
     // Check if subscription is active

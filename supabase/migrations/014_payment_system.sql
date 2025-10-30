@@ -9,11 +9,10 @@
 -- CUSTOM TYPES FOR PAYMENT SYSTEM
 -- =====================================================
 
--- Subscription tier enum
+-- Subscription tier enum (only free and pro for MVP)
 CREATE TYPE subscription_tier AS ENUM (
   'free',
-  'pro',
-  'premium'
+  'pro'
 );
 
 -- Payment transaction status

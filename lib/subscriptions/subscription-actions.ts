@@ -13,6 +13,7 @@ import { generateBundleRecommendations } from '@/lib/bundles/bundle-actions'
 import { generateRecommendations } from '@/lib/recommendations/recommendation-actions'
 import { validateInput, subscriptionSchema, uuidSchema } from '@/lib/validators'
 import { debounce } from '@/lib/utils/debounce'
+import { razorpayConfig } from '@/lib/payments/razorpay-config'
 
 // Debounced recommendation generators (prevent race conditions)
 // These will only execute once if called multiple times within 2 seconds
@@ -137,7 +138,13 @@ export async function createSubscription(
 
     if (limitError) {
       console.error('Error checking subscription limit:', limitError)
-    } else if (!canAdd) {
+      return {
+        success: false,
+        error: 'Unable to verify subscription limits. Please try again.'
+      }
+    }
+
+    if (!canAdd) {
       // Get user's tier to show appropriate error message
       const { data: profile } = await supabase
         .from('profiles')
@@ -146,7 +153,9 @@ export async function createSubscription(
         .single()
 
       const tier = profile?.tier || 'free'
-      const limit = tier === 'free' ? 5 : 999999
+      const limit = tier === 'free'
+        ? razorpayConfig.plans.free.subscriptionLimit
+        : razorpayConfig.plans.pro.subscriptionLimit
 
       return {
         success: false,

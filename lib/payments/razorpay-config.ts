@@ -68,7 +68,7 @@ export const razorpayConfig = {
 } as const
 
 // Type exports
-export type SubscriptionTier = 'free' | 'pro' | 'premium'
+export type SubscriptionTier = 'free' | 'pro'
 export type BillingCycle = 'monthly' | 'yearly'
 
 // Helper to check if Razorpay is configured
