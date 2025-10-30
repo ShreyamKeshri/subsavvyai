@@ -82,8 +82,25 @@ export async function middleware(request: NextRequest) {
 
   // Public routes (accessible without authentication)
   // Note: /api/oauth/*/callback needs to be public to receive OAuth redirects
-  const publicRoutes = ['/login', '/signup', '/callback', '/reset-password', '/forgot-password', '/verify-email', '/api/oauth/spotify/callback', '/api/oauth/spotify/connect', '/api/gmail/callback', '/api/gmail/connect']
-  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route))
+  const publicRoutes = [
+    '/login',
+    '/signup',
+    '/callback',
+    '/reset-password',
+    '/forgot-password',
+    '/verify-email',
+    '/legal/terms',
+    '/legal/privacy',
+    '/legal/refund',
+    '/api/oauth/spotify/callback',
+    '/api/oauth/spotify/connect',
+    '/api/gmail/callback',
+    '/api/gmail/connect'
+  ]
+
+  // Use exact path matching for most routes, regex for OAuth callbacks
+  const isPublicRoute = publicRoutes.some(route => pathname === route) ||
+    /^\/api\/oauth\/[^/]+\/(callback|connect)$/.test(pathname)
 
   // Auth routes (redirect to dashboard if already logged in)
   const authRoutes = ['/login', '/signup']

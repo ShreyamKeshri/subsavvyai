@@ -26,7 +26,7 @@ export default function LandingPage() {
       <header className="border-b border-gray-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <Image src="/logo-icon.png" alt={branding.name} width={40} height={40} className="h-10 w-10" />
+            <Image src={branding.logo.icon} alt={branding.name} width={40} height={40} className="h-10 w-10" />
             <span className="text-2xl font-bold text-gray-900">{branding.name}</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
@@ -493,7 +493,7 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <Image src="/logo-icon.png" alt={branding.name} width={32} height={32} className="h-8 w-8" />
+                <Image src={branding.logo.icon} alt={branding.name} width={32} height={32} className="h-8 w-8" />
                 <div className="text-2xl font-bold">{branding.name}</div>
               </div>
               <p className="text-gray-400 text-sm">{branding.tagline}</p>
@@ -524,22 +524,12 @@ export default function LandingPage() {
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Company</h4>
+              <h4 className="font-semibold mb-4">Contact</h4>
               <ul className="space-y-2 text-sm text-gray-400">
                 <li>
-                  <Link href="#" className="hover:text-white transition">
-                    About
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-white transition">
-                    Blog
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-white transition">
-                    Contact
-                  </Link>
+                  <a href="mailto:contact.subsavvyai@gmail.com" className="hover:text-white transition">
+                    Email Support
+                  </a>
                 </li>
               </ul>
             </div>
@@ -547,20 +537,30 @@ export default function LandingPage() {
               <h4 className="font-semibold mb-4">Legal</h4>
               <ul className="space-y-2 text-sm text-gray-400">
                 <li>
-                  <Link href="#" className="hover:text-white transition">
+                  <Link href="/legal/terms" className="hover:text-white transition">
+                    Terms of Service
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/legal/privacy" className="hover:text-white transition">
                     Privacy Policy
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-white transition">
-                    Terms of Service
+                  <Link href="/legal/refund" className="hover:text-white transition">
+                    Refund & Cancellation
                   </Link>
                 </li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
-            <p>&copy; 2025 {branding.name}. All rights reserved.</p>
+          <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400">
+            <p>&copy; {new Date().getFullYear()} {branding.name}. All rights reserved.</p>
+            <div className="flex items-center gap-4 text-xs">
+              <span>Made with ❤️ in India</span>
+              <span>•</span>
+              <span>DPDP Act 2023 Compliant</span>
+            </div>
           </div>
         </div>
       </footer>

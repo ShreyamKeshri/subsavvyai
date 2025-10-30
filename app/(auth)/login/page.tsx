@@ -273,16 +273,16 @@ export default function LoginPage() {
       <div className="w-full max-w-md mt-8 space-y-6 text-center relative z-10">
         {/* Footer Links */}
         <div className="flex flex-wrap justify-center gap-4 text-sm">
-          <Link href="/help" className="text-gray-600 hover:text-gray-900 transition-colors">
-            Need Help?
+          <Link href="/legal/terms" className="text-gray-600 hover:text-gray-900 transition-colors">
+            Terms of Service
           </Link>
           <span className="text-gray-300">•</span>
-          <Link href="/terms" className="text-gray-600 hover:text-gray-900 transition-colors">
-            Terms of Use
-          </Link>
-          <span className="text-gray-300">•</span>
-          <Link href="/privacy" className="text-gray-600 hover:text-gray-900 transition-colors">
+          <Link href="/legal/privacy" className="text-gray-600 hover:text-gray-900 transition-colors">
             Privacy Policy
+          </Link>
+          <span className="text-gray-300">•</span>
+          <Link href="/legal/refund" className="text-gray-600 hover:text-gray-900 transition-colors">
+            Refund & Cancellation
           </Link>
         </div>
       </div>
